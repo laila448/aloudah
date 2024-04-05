@@ -14,7 +14,7 @@ return [
     */
 
     'defaults' => [
-        'guard' => 'web',
+        'guard' => 'api',
         'passwords' => 'users',
     ],
 
@@ -40,6 +40,41 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+
+        'api' => [
+            'driver' => 'jwt',
+            'provider' => 'users',
+        ],
+
+        'admin' => [
+            'driver' => 'jwt',
+            'provider' => 'users',
+        ],
+
+        'employee' => [
+            'driver' => 'jwt',
+            'provider' => 'users',
+        ],
+        
+        'branch-manager' => [
+            'driver' => 'jwt',
+            'provider' => 'branch_managers',
+        ],
+
+        'customer' => [
+            'driver' => 'jwt',
+            'provider' => 'users',
+        ],
+
+        'driver' => [
+            'driver' => 'jwt',
+            'provider' => 'users',
+        ],
+
+        'warehouse-manager' => [
+            'driver' => 'jwt',
+            'provider' => 'users',
+        ],
     ],
 
     /*
@@ -63,6 +98,10 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
+        ],
+        'branch_managers'=> [
+            'driver' => 'eloquent',
+            'model' => App\Models\Branch_Manager::class,
         ],
 
         // 'users' => [
