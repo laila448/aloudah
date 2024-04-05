@@ -15,8 +15,11 @@ return new class extends Migration
     {
         Schema::create('drivers', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->string('name')->unique();
+           //  $table->string('email')->unique();
+            // $table->timestamp('email_verified_at')->nullable();
+             //$table->string('password');
+            $table->integer('phone_number')->unique();
             $table->string('mother_name');
             $table->string('gender');
             $table->date('date_of_birth');

@@ -13,13 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('branches', function (Blueprint $table) {
+        Schema::create('warehouses', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('branchmanager_id');
-            $table->foreign('branchmanager_id')->references('id')->on('branch_managers')->onDelete('cascade');
-            $table->string('address');
-            $table->integer('phone');
-            $table->date('date');
+           // $table->unsignedBigInteger('wmanager_id');
+            //$table->foreign('wmanager_id')->references('id')->on('warehouse_managers')->onDelete('cascade');
+           $table->string('address');
+           $table->integer('phone_number');
             $table->timestamps();
         });
     }
@@ -31,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('branches');
+        Schema::dropIfExists('warehouses');
     }
 };

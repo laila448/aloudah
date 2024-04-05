@@ -5,20 +5,24 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 
 class Branch_Manager extends  Authenticatable implements JWTSubject
 {
-    use HasFactory;
+    use HasApiTokens, HasFactory, Notifiable;
+    
     protected $table = 'branch_managers';
+    protected $guard = 'branch_manager';
     protected $fillable = [
         'name',
         'email',
         'phone_number',
         'password',
-        'user_id',
+        'branch_id',
+        //'user_id',
         'gender',
-        
          ];
 
          public function getJWTIdentifier()
@@ -33,5 +37,9 @@ class Branch_Manager extends  Authenticatable implements JWTSubject
     
          public function user(){
             return $this->belongsTo(user::class, 'user_id');
+         }
+
+         public function branch(){
+            return $this->belongsTo(Branch::class , 'branch_id');
          }
 }

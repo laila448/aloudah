@@ -14,10 +14,15 @@ return new class extends Migration
     public function up()
     {
         Schema::create('warehouse_managers', function (Blueprint $table) {
-            $table->id();      
-            $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->string('gender');
+            $table->id();  
+            $table->string('name')->unique();
+             $table->string('email')->unique();
+             $table->timestamp('email_verified_at')->nullable();
+             $table->string('password');
+            $table->integer('phone_number')->unique();
+            $table->string('gender');    
+            $table->unsignedBigInteger('warehouse_id');
+             $table->foreign('warehouse_id')->references('id')->on('warehouses')->onDelete('cascade');
             $table->timestamps();
         });
     }

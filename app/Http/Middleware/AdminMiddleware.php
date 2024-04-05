@@ -8,7 +8,9 @@ use Illuminate\Auth\Middleware\Authenticate as Middleware;
 use PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException;
 use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenExpiredException;
 
-class UserType 
+;
+
+class AdminMiddleware extends Middleware
 {
     /**
      * Handle an incoming request.
@@ -17,18 +19,22 @@ class UserType
      * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
-    public function handle(Request $request, Closure $next, $usertype)
+    protected function authenticate($request, array $guards)
     {
-        /*$user = auth()->user();
+        try{
 
-        if (!$user || !in_array(auth()->guard()->name, $guards)) {
-           return response()->json(['msg'=>'Unauthorized'] , 403); 
-        }*/
-    //return $next($request);
-    if(auth()->user()->type == $usertype){
-        return $next($request);
-    }
+            if ($this->auth->guard('admin')->check()) {
+                return $this->auth->shouldUse('admin');
+            }
 
-    return response()->json(['msg'=>'Unauthorized'] , 403); 
+           $this->unauthenticated($request, ['admin']);
+        }
+        catch (TokenExpiredException $e){
+            return  response()->json(['msg'=>'Unauthenticated user']);
+        }catch (JWTException $e)
+        {
+            return  response()->json(['msg'=>'token_invaled',$e ->getMessage()]);
+        }
+
     }
 }

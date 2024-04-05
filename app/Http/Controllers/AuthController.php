@@ -14,8 +14,8 @@ class AuthController extends Controller
     public function Register (Request $request)
     {
         $validator =Validator::make($request->all(),[
-            'name'=>'required|min:6|max:255',
-            'email'=>'required|string|email|unique:users',
+            'name'=>'required|min:6|max:255|unique:admins',
+            'email'=>'required|string|email|unique:admins',
             'phone_number'=> 'required|max:10',
             'gender'=>'required|in:male,female',
             'password'=>'required|min:8',
@@ -24,21 +24,18 @@ class AuthController extends Controller
         {
             return response()->json($validator->errors()->toJson(),400);
         }
-        $user=User::create(array_merge(
+    
+        $admin=Admin::create(array_merge(
             $validator->validated(),
-            ['password'=>bcrypt($request->password),
-            'type' =>'admin'],
+            ['password'=>bcrypt($request->password)]
         ));
-        $admin=Admin::create([
-            'user_id'=> $user->id
-        ]);
-        $credentials=$request->only(['email','password']);
+        $credentials=$request->only(['name','password']);
         $token=Auth::guard('admin')->attempt($credentials);
 
         return response()->json([
             'message'=>'Registered successfully',
-            'access_token'=>$token,
-            'user'=>$user,
+            'token'=>$token,
+            'admin'=>$admin,
         ],201);
     }
 
@@ -51,35 +48,45 @@ class AuthController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 422);
         }
-        $credentials = $request->only(['name', 'password']);
-        if ( !$token = auth()->attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
 
-        return response()->json([
-            'msg'=>'Login successfully',
-            'token'=> $token
-        ]);
+       $credentials = $request->only(['name', 'password']);
 
-       // $user = Auth::user();
-        //$token = $user->createToken('myapp')->accessToken;
-
-        /*if ($token = Auth::guard('admin')->attempt($credentials)) {
+        if ($token = Auth::guard('admin')->attempt($credentials)) {
             $user = Auth::guard('admin')->user();
         return response()->json([
-            'access_token' => $token,
+            'token' => $token,
             'user' => $user
         ]);
         }
-       else if ($token = Auth::guard('branch-manager')->attempt($credentials)) {
-            $user = Auth::guard('branch-manager')->user();
+       else if ($token = Auth::guard('branch_manager')->attempt($credentials)) {
+            $user = Auth::guard('branch_manager')->user();
         return response()->json([
-            'access_token' => $token,
+            'token' => $token,
             'user' => $user
         ]);
-        }*/
-
-        //return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        else if ($token = Auth::guard('employee')->attempt($credentials)) {
+            $user = Auth::guard('employee')->user();
+        return response()->json([
+            'token' => $token,
+            'user' => $user
+        ]);
+        }
+        else if ($token = Auth::guard('customer')->attempt($credentials)) {
+            $user = Auth::guard('customer')->user();
+        return response()->json([
+            'token' => $token,
+            'user' => $user
+        ]);
+        }
+        else if ($token = Auth::guard('warehouse_manager')->attempt($credentials)) {
+            $user = Auth::guard('warehouse_manager')->user();
+        return response()->json([
+            'token' => $token,
+            'user' => $user
+        ]);
+        }
+        return response()->json(['error' => 'Unauthorized'], 401);
     }
 
     public function AddBranchManager (Request $request)

@@ -48,32 +48,32 @@ return [
 
         'admin' => [
             'driver' => 'jwt',
-            'provider' => 'users',
+            'provider' => 'admins',
         ],
 
         'employee' => [
             'driver' => 'jwt',
-            'provider' => 'users',
+            'provider' => 'employees',
         ],
         
-        'branch-manager' => [
+        'branch_manager' => [
             'driver' => 'jwt',
             'provider' => 'branch_managers',
         ],
 
         'customer' => [
             'driver' => 'jwt',
-            'provider' => 'users',
+            'provider' => 'customers',
         ],
 
         'driver' => [
             'driver' => 'jwt',
-            'provider' => 'users',
+            'provider' => 'drivers',
         ],
 
-        'warehouse-manager' => [
+        'warehouse_manager' => [
             'driver' => 'jwt',
-            'provider' => 'users',
+            'provider' => 'warehouse_managers',
         ],
     ],
 
@@ -102,6 +102,26 @@ return [
         'branch_managers'=> [
             'driver' => 'eloquent',
             'model' => App\Models\Branch_Manager::class,
+        ],
+        'admins' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Admin::class,
+        ],
+        'employees' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Employee::class,
+        ],
+        'customers' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Customer::class,
+        ],
+        'drivers' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Driver::class,
+        ],
+        'warehouse_managers' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Warehouse_Manager::class,
         ],
 
         // 'users' => [

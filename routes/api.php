@@ -15,21 +15,32 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 Route::post( 'register' , [AuthController::class , 'Register']);
 Route::post( 'login' , [AuthController::class , 'Login']);
 
 
-Route::group(['midlleware' => ['auth','UserType:admin'],
+Route::group(['middleware' => 'Admin',
               'prefix' => 'admin'], function() {
          Route::post('addbranchmanager' , [AuthController::class , 'AddBranchManager']);
               });
 
 
-Route::group(['midlleware' => ['auth','UserType:branch-manager'],
+Route::group(['middleware' => 'BranchManager',
               'prefix' => 'branchmanager'], function() {
          Route::get('test' , [AuthController::class , 'test']);
               });
+
+Route::group(['middleware' => 'Customer',
+              'prefix' => 'customer'], function() {
+        
+              });   
+              
+Route::group(['middleware' => 'Employee',
+              'prefix' => 'employee'], function() {
+        
+              });  
+
+Route::group(['middleware' => 'WarehouseManager',
+              'prefix' => 'warehousemanager'], function() {
+        
+              });  
