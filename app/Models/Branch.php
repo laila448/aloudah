@@ -9,10 +9,9 @@ class Branch extends Model
 {
     use HasFactory;
     protected $fillable = [
-   'branchmanager_id',
    'address',
     'phone',
-    'date',
+   
     ];
     public function branch_manager(){
         return $this->belongsTo(branch_manager::class, 'branchmanager_id');
