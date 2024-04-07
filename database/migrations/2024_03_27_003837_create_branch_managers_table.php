@@ -23,6 +23,13 @@ return new class extends Migration
              $table->unsignedBigInteger('branch_id');
              $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
              $table->string('gender');
+             $table->string('mother_name');
+             $table->date('date_of_birth');
+             $table->string('address');
+             $table->integer('vacations');
+             $table->integer('salary');
+             $table->string('rank');
+             $table->date('employment_date');
             $table->timestamps();
         });
     }

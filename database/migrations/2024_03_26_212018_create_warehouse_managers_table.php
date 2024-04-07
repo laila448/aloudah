@@ -23,7 +23,14 @@ return new class extends Migration
             $table->string('gender');    
             $table->unsignedBigInteger('warehouse_id');
              $table->foreign('warehouse_id')->references('id')->on('warehouses')->onDelete('cascade');
-            $table->timestamps();
+             $table->string('mother_name');
+             $table->date('date_of_birth');
+             $table->string('address');
+             $table->integer('vacations');
+             $table->integer('salary');
+             $table->string('rank');
+             $table->date('employment_date');
+             $table->timestamps();
         });
     }
 

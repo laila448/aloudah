@@ -11,7 +11,9 @@ class Warehouse extends Model
     protected $fillable = [
        // 'wmanager',
         'address',
-         'phone_number',
+         'branch',
+         'area',
+         'notes',
          ];
          public function wmanager(){
              return $this->belongsTo(warehouse_manager::class, 'wmanager_id');

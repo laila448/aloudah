@@ -49,7 +49,7 @@ Route::group(['middleware' => 'Admin',
               'prefix' => 'admin'], function() {
          //Route::post('addbranchmanager' , [AuthController::class , 'AddBranchManager']);
          Route::post('addbranch' , [AdminController::class , 'AddBranch']);
-         Route::post('addwarehose' , [AdminController::class , 'addwarehose']);
+         Route::post('addwarehouse' , [AdminController::class , 'addwarehouse']);
      
      
      });
