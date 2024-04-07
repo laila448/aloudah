@@ -18,7 +18,10 @@ return new class extends Migration
            // $table->unsignedBigInteger('wmanager_id');
             //$table->foreign('wmanager_id')->references('id')->on('warehouse_managers')->onDelete('cascade');
            $table->string('address');
-           $table->integer('phone_number');
+           $table->string('branch');
+           $table->string('area');
+           $table->string('notes');
+         //  $table->integer('phone_number');
             $table->timestamps();
         });
     }

@@ -9,9 +9,11 @@ class Warehouse extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'wmanager',
+       // 'wmanager',
         'address',
-         'phone',
+         'branch',
+         'area',
+         'notes',
          ];
          public function wmanager(){
              return $this->belongsTo(warehouse_manager::class, 'wmanager_id');

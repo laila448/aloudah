@@ -23,6 +23,15 @@ class Branch_Manager extends  Authenticatable implements JWTSubject
         'branch_id',
         //'user_id',
         'gender',
+        'mother_name',
+        'date_of_birth',
+        'address',
+       'national_number',
+       'vacations',
+       'salary',
+       'rewards',
+        'employment_date',
+        'resignation_date',
          ];
 
          public function getJWTIdentifier()

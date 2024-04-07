@@ -4,6 +4,8 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AdminController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -20,11 +22,7 @@ Route::post( 'register' , [AuthController::class , 'Register']);
 Route::post( 'login' , [AuthController::class , 'Login']);
 
 
-Route::group(['middleware' => 'Admin',
-              'prefix' => 'admin'], function() {
-      //   Route::post('addbranchmanager' , [AuthController::class , 'AddBranchManager']);
-           Route::post('addbranch' , [AdminController::class , 'AddBranch']);
-              });
+
 
 
 Route::group(['middleware' => 'BranchManager',
@@ -46,3 +44,25 @@ Route::group(['middleware' => 'WarehouseManager',
               'prefix' => 'warehousemanager'], function() {
         
               });  
+
+              ///////////////Admin_APIs////////////////
+Route::group(['middleware' => 'Admin',
+              'prefix' => 'admin'], function() {
+         //Route::post('addbranchmanager' , [AuthController::class , 'AddBranchManager']);
+         Route::post('addbranch' , [AdminController::class , 'AddBranch']);
+         Route::post('addwarehouse' , [AdminController::class , 'addwarehouse']);
+     
+     
+     });
+
+
+
+
+
+
+
+
+
+
+
+
