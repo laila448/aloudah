@@ -11,6 +11,8 @@ class Branch extends Model
     protected $fillable = [
    'address',
     'phone',
+    'opening_date',
+    'closing_date',
    
     ];
     public function branch_manager(){
