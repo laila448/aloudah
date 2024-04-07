@@ -19,7 +19,8 @@ return new class extends Migration
             //$table->foreign('branchmanager_id')->references('id')->on('branch_managers')->onDelete('cascade');
             $table->string('address');
             $table->integer('phone');
-            $table->date('date');
+            $table->date('opening_date');
+            $table->date('closing_date')->nullable();
             $table->timestamps();
         });
     }

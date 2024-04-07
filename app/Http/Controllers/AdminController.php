@@ -33,6 +33,7 @@ class AdminController extends Controller
        //$branch->desk = $validator['desk'];
         $branch->address = $validator['address'];
         $branch->phone = $validator['phone'];
+        $branch->opening_date = now()->format('Y-m-d');
         $branch->save();
       
 

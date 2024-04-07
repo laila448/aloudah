@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -21,7 +22,8 @@ Route::post( 'login' , [AuthController::class , 'Login']);
 
 Route::group(['middleware' => 'Admin',
               'prefix' => 'admin'], function() {
-         Route::post('addbranchmanager' , [AuthController::class , 'AddBranchManager']);
+      //   Route::post('addbranchmanager' , [AuthController::class , 'AddBranchManager']);
+           Route::post('addbranch' , [AdminController::class , 'AddBranch']);
               });
 
 
