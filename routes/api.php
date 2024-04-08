@@ -50,6 +50,15 @@ Route::group(['middleware' => 'Admin',
          //Route::post('addbranchmanager' , [AuthController::class , 'AddBranchManager']);
          Route::post('addbranch' , [AdminController::class , 'AddBranch']);
          Route::post('addwarehouse' , [AdminController::class , 'addwarehouse']);
+
+         Route::post('updatebranch', [AdminController::class , 'UpdateBranch'] );
+         
+         Route::post('UpdateWarehouse', [AdminController::class , 'UpdateWarehouse'] );
+
+         Route::post('deleteBranch', [AdminController::class , 'deleteBranch'] );
+         Route::post('deleteWarehouse', [AdminController::class , 'deleteWarehouse'] );
+
+
      
      
      });

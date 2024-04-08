@@ -119,4 +119,56 @@ class AdminController extends Controller
     ],201);
 
     }
+
+
+    public function UpdateBranch(Request $request)
+    {
+
+      
+
+      $branch = Branch::find($request->branch_id);
+      $updatedbranch= $branch->update($request->all());
+
+
+      $branchManager = Branch_Manager::where('branch_id', $request->branch_id)->first();
+      $updatedmanager= $branchManager->update($request->all());
+
+      return response()->json(['message' => 'Branch updated successfully']);
+
+
+    }
+    public function UpdateWarehouse(Request $request)
+    {
+
+      
+
+      $warehouse = Warehouse::find($request->warehouse_id);
+      $updatedbranch= $warehouse->update($request->all());
+
+
+      $w_Manager = Warehouse_Manager::where('warehouse_id', $request->warehouse_id)->first();
+      $updatedmanager= $w_Manager->update($request->all());
+
+      return response()->json(['message' => 'warehouse updated successfully']);
+
+
+    }
+
+    public function deleteBranch(Request $request)
+    {
+        $branch = Branch::find($request->branch_id)->delete();
+        $branchManager = Branch_Manager::where('branch_id', $request->branch_id)->delete();
+
+        return response()->json(['msg'=>'Branch has been deleted'], 200) ;
+    }
+
+
+    public function deleteWarehouse(Request $request)
+    {
+        $Warehouse = Warehouse::find($request->warehouse_id)->delete();
+      $WarehouseManager = Warehouse_Manager::where('warehouse_id', $request->warehouse_id)->delete();
+
+        return response()->json(['msg'=>'Warehouse has been deleted'], 200) ;
+    }
+   
 }
