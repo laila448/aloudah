@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Driver extends Model
 {
-    use HasFactory;
+    use HasFactory , SoftDeletes;
     protected $fillable = [
       'name',
       //'email',
@@ -16,14 +17,16 @@ class Driver extends Model
       //'password',
        // 'user_id',
         'branch_id',
-        'grnder',
-      ' mother_name',
-       'date_of_birth',
+      'mother_name',
+       'birth_date',
+       'birth_place',
+       'mobile',
         'address',
-        'national_number',
-        'vacations',
+       // 'national_number',
+       // 'vacations',
         'salary',
-        'rewards',
+        'rank',
+      //  'rewards',
         'employment_date',
         'resignation_date',
         'manager_name',

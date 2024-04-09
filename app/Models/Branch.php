@@ -15,6 +15,10 @@ class Branch extends Model
     'phone',
     'opening_date',
     'closing_date',
+    'created_by',
+    'edited_by',
+    'editing_date',
+
    
     ];
     public function branch_manager(){

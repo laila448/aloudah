@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -11,7 +12,7 @@ use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 
 class Employee extends Authenticatable implements JWTSubject
 { 
-   use HasApiTokens, HasFactory, Notifiable;
+   use HasApiTokens, HasFactory, Notifiable , SoftDeletes;
   
     protected $fillable = [
       'name',
@@ -21,14 +22,16 @@ class Employee extends Authenticatable implements JWTSubject
       'password',
         //'user_id',
         'branch_id',
-        'grnder',
-      ' mother_name',
-       'date_of_birth',
+      'mother_name',
+       'birth_date',
+       'birth_place',
+       'mobile',
         'address',
-        'national_number',
-        'vacations',
+       // 'national_number',
+       // 'vacations',
         'salary',
-        'rewards',
+        'rank',
+       // 'rewards',
         'employment_date',
         'resignation_date',
         'manager_name',

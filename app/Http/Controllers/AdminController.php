@@ -7,6 +7,7 @@ use App\Models\Branch_Manager;
 use App\Models\Warehouse_Manager;
 use App\Models\Warehouse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 
@@ -30,7 +31,6 @@ class AdminController extends Controller
             'vacations'=>'required',
             'salary'=>'required',
             'rank'=>'required',
-            'employment_date'=>'required',
           
         ]);
       
@@ -40,6 +40,7 @@ class AdminController extends Controller
         $branch->address = $validator['address'];
         $branch->phone = $validator['phone'];
         $branch->opening_date = now()->format('Y-m-d');
+        $branch->created_by = Auth::guard('admin')->user()->name;
         $branch->save();
       
 
@@ -56,7 +57,7 @@ class AdminController extends Controller
                  $branchmanager->vacations = $validator['vacations'];
                  $branchmanager->salary = $validator['salary'];
                  $branchmanager->rank = $validator['rank'];
-                  $branchmanager->employment_date = $validator['employment_date'];
+                  $branchmanager->employment_date = now()->format('Y-m-d');
                 $branchmanager->save();
 
 
@@ -87,7 +88,6 @@ class AdminController extends Controller
                      'vacations'=>'required',
                      'salary'=>'required',
                      'rank'=>'required',
-                     'employment_date'=>'required',
                 ]);
               
                 $warehouse = new Warehouse();
@@ -110,7 +110,7 @@ class AdminController extends Controller
                  $warehousemanager->vacations = $validator['vacations'];
                  $warehousemanager->salary = $validator['salary'];
                  $warehousemanager->rank = $validator['rank'];
-                  $warehousemanager->employment_date = $validator['employment_date'];
+                  $warehousemanager->employment_date = now()->format('Y-m-d');
                 $warehousemanager->save();
         
                
@@ -125,10 +125,15 @@ class AdminController extends Controller
     public function UpdateBranch(Request $request)
     {
 
+      $user = Auth::guard('admin')->user();
       
 
       $branch = Branch::find($request->branch_id);
-      $updatedbranch= $branch->update($request->all());
+      $updatedbranch= $branch->update(array_merge($request->all() ,[
+      'edited_by' => $user->name,
+      'editing_date' => now()->format('Y-m-d')
+      ]
+    ));
 
 
       $branchManager = Branch_Manager::where('branch_id', $request->branch_id)->first();

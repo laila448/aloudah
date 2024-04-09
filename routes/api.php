@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BranchManagerController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -26,7 +27,11 @@ Route::post( 'login' , [AuthController::class , 'Login']);
 
 Route::group(['middleware' => 'BranchManager',
               'prefix' => 'branchmanager'], function() {
-         Route::get('test' , [AuthController::class , 'test']);
+       Route::post('addemployee' , [BranchManagerController::class , 'AddEmployee']);
+       Route::post('updateemployee' , [BranchManagerController::class , 'UpdateEmployee']);
+       Route::post('updatedriver' , [BranchManagerController::class , 'UpdateDriver']);
+       Route::post('deleteemployee' , [BranchManagerController::class , 'DeleteEmployee']);
+       Route::post('deletedriver' , [BranchManagerController::class , 'DeleteDriver']);
               });
 
 Route::group(['middleware' => 'Customer',
