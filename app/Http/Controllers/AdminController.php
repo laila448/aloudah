@@ -28,7 +28,7 @@ class AdminController extends Controller
              'mother_name'=>'required',
              'date_of_birth'=>'required',
              'manager_address'=>'required',
-            'vacations'=>'required',
+            //'vacations'=>'required',
             'salary'=>'required',
             'rank'=>'required',
           
@@ -54,7 +54,7 @@ class AdminController extends Controller
                 $branchmanager->mother_name = $validator['mother_name']; 
                 $branchmanager->date_of_birth = $validator['date_of_birth'];
                  $branchmanager->address = $validator['manager_address'];
-                 $branchmanager->vacations = $validator['vacations'];
+                // $branchmanager->vacations = $validator['vacations'];
                  $branchmanager->salary = $validator['salary'];
                  $branchmanager->rank = $validator['rank'];
                   $branchmanager->employment_date = now()->format('Y-m-d');

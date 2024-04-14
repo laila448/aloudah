@@ -32,6 +32,8 @@ Route::group(['middleware' => 'BranchManager',
        Route::post('updatedriver' , [BranchManagerController::class , 'UpdateDriver']);
        Route::post('deleteemployee' , [BranchManagerController::class , 'DeleteEmployee']);
        Route::post('deletedriver' , [BranchManagerController::class , 'DeleteDriver']);
+       Route::post('promoteemployee' , [BranchManagerController::class , 'PromoteEmployee']);
+       Route::post('rateemployee' , [BranchManagerController::class , 'RateEmployee']);
               });
 
 Route::group(['middleware' => 'Customer',

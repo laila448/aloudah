@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Branch_Manager;
 use App\Models\Driver;
 use App\Models\Employee;
+use App\Models\Rating;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -174,5 +176,80 @@ class BranchManagerController extends Controller
 
            return response()->json(['message'=>'Driver has been deleted'], 200,); 
         }
+    }
+
+    public function PromoteEmployee (Request $request){
+
+        $validator = Validator::make($request->all() , [
+            'rank' => 'required',
+            'branch_id' => 'required' ,
+            'employee_id' => 'required'
+        ]);
+
+        if ($validator->fails())
+        {
+            return response()->json($validator->errors()->toJson(),400);
+        }
+
+        $employee = Employee::where('id' , $request->employee_id)->first();
+        if($employee){
+
+        if ($request->rank == 'branch manager'){
+            $manager = Branch_Manager::create([
+                'name' => $employee->name,
+                'email' => $employee->email,
+                'password' => $employee->password,
+                'phone_number' => $employee->phone_number,
+                'branch_id' => $request->branch_id,
+                'gender' => $employee->gender,
+                'mother_name' => $employee->mother_name,
+                'date_of_birth' => $employee->birth_date,
+                'address' =>$employee->address,
+                'salary' => $employee->salary,
+                'rank' => $request->rank,
+                'employment_date' => now()->format('Y-m-d'),
+            ]);
+
+            $deletemp = $employee->delete();
+
+            return response()->json(['message'=>'Employee has been promoted to manager'], 200,);  
+        }
+        else{
+            $updateemp = $employee->update([
+                'rank' => $request->rank , 
+                'branch_id' => $request->branch_id ,
+            ]);
+
+            return response()->json(['message'=>'Employee has been promoted'], 200,);  
+        }
+    }
+     
+    return response()->json(['message'=>'Employee not found'], 400,);  
+    }
+
+    public function RateEmployee (Request $request){
+
+        $validator = Validator::make($request->all() ,[
+            'rate' => 'required|numeric|between:1,5' ,
+            'employee_id' => 'required',
+        ]);
+
+        if ($validator->fails())
+        {
+            return response()->json($validator->errors()->toJson(),400);
+        }
+
+        $employee = Employee::where('id' , $request->employee_id)->first();
+        if($employee){
+
+            $ratingemp = Rating::create([
+                'rate' => $request->rate ,
+                'employee_id' => $request->employee_id
+            ]);
+            
+            return response()->json(['message' => 'Rating addedd successfully'] , 201);
+        }
+
+        return response()->json(['message'=>'Employee not found'], 400,);  
     }
 }

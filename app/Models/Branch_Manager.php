@@ -32,6 +32,7 @@ class Branch_Manager extends  Authenticatable implements JWTSubject
        'vacations',
        'salary',
        'rewards',
+       'rank',
         'employment_date',
         'resignation_date',
          ];
