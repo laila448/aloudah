@@ -25,7 +25,7 @@ return new class extends Migration
              $table->foreign('warehouse_id')->references('id')->on('warehouses')->onDelete('cascade');
              $table->string('mother_name');
              $table->date('date_of_birth');
-             $table->string('address');
+             $table->string('manager_address');
              $table->integer('vacations');
              $table->integer('salary');
              $table->string('rank');

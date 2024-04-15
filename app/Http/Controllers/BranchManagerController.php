@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Driver;
 use App\Models\Employee;
+use App\Models\Truck;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -116,7 +117,7 @@ class BranchManagerController extends Controller
             'birth_date'=>'date_format:Y-m-d',
             'birth_place'=>'string',
             'mobile'=>'max:10',
-            'address'=>'string',
+            'address'=>'string', 
             'driver_id'=>'required|numeric'
         ]);
         if ($validator->fails())
@@ -175,4 +176,94 @@ class BranchManagerController extends Controller
            return response()->json(['message'=>'Driver has been deleted'], 200,); 
         }
     }
+
+
+
+    public function AddTruck(Request $request){
+
+        $validator =Validator::make($request->all(),[
+            'number'=>'required|min:4|max:20',
+            'line'=>'string|required',
+            'notes'=>'string',
+        ]);
+
+        if ($validator->fails())
+        {
+            return response()->json($validator->errors()->toJson(),400);
+        }
+        $createdby = Auth::guard('branch_manager')->user()->name;
+        $truck=Truck::create([
+            'number'=>$request->number,
+            'line'=> $request->line,
+            'notes'=>$request->notes,
+            'created_by'=>$createdby,
+            'adding_data'=>now()->format('Y-m-d'),
+            
+        ]);
+      
+        return response()->json([
+            'message'=>'Truck addedd successfully',
+        ],201);
+    
+       
+    }
+
+
+
+    public function UpdateTruck(Request $request){
+
+        $validator =Validator::make($request->all(),[
+            'truck_id'=>'required',
+            'number'=>'min:4|max:20',
+            'line'=>'string',
+            'notes'=>'string',
+        ]);
+
+        if ($validator->fails())
+        {
+            return response()->json($validator->errors()->toJson(),400);
+        }
+      
+      
+        $edit_by = Auth::guard('branch_manager')->user()->name;
+         
+        $truck = Truck::where('id' , $request->truck_id)->first();
+
+        if($truck){
+
+            $updated_truck = $truck->update( array_merge(
+                $validator->validated(),
+                ['editing_by'=>$edit_by,
+                'editing_date'=>now()->format('Y-m-d'),
+                ]
+            ));
+
+        }
+      
+        return response()->json([
+            'message'=>'Truck updated successfully',
+        ],201);
+    
+       
+    }
+
+    public function DeleteTruck(Request $request){
+
+        $validator =Validator::make($request->all(),[
+            'truck_id'=>'required',
+        ]);
+
+        if ($validator->fails())
+        {
+            return response()->json($validator->errors()->toJson(),400);
+        }
+
+
+        $truck = Truck::find($request->truck_id)->delete();
+      
+        return response()->json([
+            'message'=>'Truck deleted successfully',
+        ],201);
+        }
+ 
 }

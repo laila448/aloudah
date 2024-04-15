@@ -11,7 +11,7 @@ class Truck extends Model
     protected $fillable = [
        'number',
         'line',
-        'created_by',
+        'created_by',  
        'adding_data',
         'editing_by',
        'editing_date',

@@ -32,6 +32,11 @@ Route::group(['middleware' => 'BranchManager',
        Route::post('updatedriver' , [BranchManagerController::class , 'UpdateDriver']);
        Route::post('deleteemployee' , [BranchManagerController::class , 'DeleteEmployee']);
        Route::post('deletedriver' , [BranchManagerController::class , 'DeleteDriver']);
+       Route::post('addtruck' , [BranchManagerController::class , 'AddTruck']);
+       Route::post('updatetruck' , [BranchManagerController::class , 'UpdateTruck']);
+       Route::post('deletetruck' , [BranchManagerController::class , 'DeleteTruck']);
+
+
               });
 
 Route::group(['middleware' => 'Customer',
@@ -55,11 +60,8 @@ Route::group(['middleware' => 'Admin',
          //Route::post('addbranchmanager' , [AuthController::class , 'AddBranchManager']);
          Route::post('addbranch' , [AdminController::class , 'AddBranch']);
          Route::post('addwarehouse' , [AdminController::class , 'addwarehouse']);
-
-         Route::post('updatebranch', [AdminController::class , 'UpdateBranch'] );
-         
+         Route::post('updatebranch', [AdminController::class , 'UpdateBranch'] );         
          Route::post('UpdateWarehouse', [AdminController::class , 'UpdateWarehouse'] );
-
          Route::post('deleteBranch', [AdminController::class , 'deleteBranch'] );
          Route::post('deleteWarehouse', [AdminController::class , 'deleteWarehouse'] );
 
