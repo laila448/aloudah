@@ -231,7 +231,7 @@ class BranchManagerController extends Controller
                 'gender' => $employee->gender,
                 'mother_name' => $employee->mother_name,
                 'date_of_birth' => $employee->birth_date,
-                'address' =>$employee->address,
+                'manager_address' =>$employee->address,
                 'salary' => $employee->salary,
                 'rank' => $request->rank,
                 'employment_date' => now()->format('Y-m-d'),
