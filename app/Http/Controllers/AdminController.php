@@ -28,7 +28,7 @@ class AdminController extends Controller
              'mother_name'=>'required',
              'date_of_birth'=>'required|date_format:Y-m-d',
              'manager_address'=>'required',
-            'vacations'=>'required',
+            //'vacations'=>'required',
             'salary'=>'required',
             'rank'=>'required',
           
