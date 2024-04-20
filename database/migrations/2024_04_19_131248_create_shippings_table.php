@@ -42,7 +42,6 @@ return new class extends Migration
             $table->string('discount');
             $table->string('collection');
             $table->timestamps();
-      
         });
     }
 

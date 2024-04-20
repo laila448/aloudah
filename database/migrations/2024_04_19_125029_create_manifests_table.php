@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('manifests', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('trip_id');
-            $table->foreign('trip_id')->references('id')->on('trips')->onDelete('cascade');
+            // $table->unsignedBigInteger('trip_id');
+            // $table->foreign('trip_id')->references('id')->on('trips')->onDelete('cascade');
             $table->string('number');
             $table->string('status');
             $table->string('general_total');
@@ -27,7 +27,7 @@ return new class extends Migration
             $table->string('adapter');
             $table->string('advance');
             $table->string('collection');
-            $table->timestamps();   
+            $table->timestamps(); 
         });
     }
 

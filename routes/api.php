@@ -3,6 +3,8 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BranchManagerController;
+use App\Http\Controllers\EmployeeController;
+use App\Models\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -41,15 +43,29 @@ Route::group(['middleware' => 'BranchManager',
 
               });
 
-Route::group(['middleware' => 'Customer',
-              'prefix' => 'customer'], function() {
-        
-              });   
+/////////Employee///////  
               
 Route::group(['middleware' => 'Employee',
               'prefix' => 'employee'], function() {
-        
-              });  
+        Route::post('addtrip' , [EmployeeController::class , 'AddTrip']);
+        Route::post('edittrip' , [EmployeeController::class , 'EditTrip']);
+        Route::post('canceltrip' , [EmployeeController::class , 'CancelTrip']);
+        Route::post('archiveData' , [EmployeeController::class , 'ArchiveData']);
+        Route::get('GetArchiveData' , [EmployeeController::class , 'GetArchiveData']);         
+        Route::get('getbranches' , [EmployeeController::class , 'GetBranches']);   
+        Route::get('getallactivetrips' , [EmployeeController::class , 'GetActiveTrips']);       
+              });
+              
+              
+
+
+
+
+
+Route::group(['middleware' => 'Customer',
+              'prefix' => 'customer'], function() {
+
+              });   
 
 Route::group(['middleware' => 'WarehouseManager',
               'prefix' => 'warehousemanager'], function() {

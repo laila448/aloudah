@@ -54,7 +54,7 @@ class AdminController extends Controller
                 $branchmanager->mother_name = $validator['mother_name']; 
                 $branchmanager->date_of_birth = $validator['date_of_birth'];
                  $branchmanager->manager_address = $validator['manager_address'];
-                 $branchmanager->vacations = $validator['vacations'];
+                //  $branchmanager->vacations = $validator['vacations'];
                  $branchmanager->salary = $validator['salary'];
                  $branchmanager->rank = $validator['rank'];
                   $branchmanager->employment_date = now()->format('Y-m-d');
@@ -85,7 +85,6 @@ class AdminController extends Controller
                       'mother_name'=>'required',
                       'date_of_birth'=>'required|date_format:Y-m-d',
                       'manager_address'=>'required',
-                     'vacations'=>'required',
                      'salary'=>'required',
                      'rank'=>'required',
                 ]);
@@ -107,7 +106,6 @@ class AdminController extends Controller
                 $warehousemanager->mother_name = $validator['mother_name'];
                 $warehousemanager->date_of_birth = $validator['date_of_birth'];
                  $warehousemanager->manager_address = $validator['manager_address'];
-                 $warehousemanager->vacations = $validator['vacations'];
                  $warehousemanager->salary = $validator['salary'];
                  $warehousemanager->rank = $validator['rank'];
                   $warehousemanager->employment_date = now()->format('Y-m-d');
@@ -137,7 +135,6 @@ class AdminController extends Controller
         'mother_name'=>'string',
         'birth_date'=>'date_format:Y-m-d',
         'salary'=>'string',
-        'vacations'=>'string',
         'rank'=>'string',
         
     ]);
@@ -179,7 +176,6 @@ class AdminController extends Controller
         'mother_name'=>'string',
         'birth_date'=>'date_format:Y-m-d',
         'salary'=>'string',
-        'vacations'=>'string',
         'rank'=>'string',
         
     ]);

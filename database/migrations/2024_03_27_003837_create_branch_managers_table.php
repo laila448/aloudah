@@ -26,7 +26,6 @@ return new class extends Migration
              $table->string('mother_name');
              $table->date('date_of_birth');
              $table->string('manager_address');
-             $table->integer('vacations')->nullable();
              $table->integer('salary');
              $table->string('rank')->nullable();
              $table->date('employment_date');

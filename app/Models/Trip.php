@@ -13,6 +13,7 @@ class Trip extends Model
                    'driver_id',
                    'employee_id',
                    'branch_id',
+                   'manifest_id',
                   'number',
                   'date',
                   'source',
@@ -21,7 +22,7 @@ class Trip extends Model
                   'arrival_date',
                   'created_by',
                   'edited_by',
-                   'notes',
+                  'archived',
           ]; 
 
 }
