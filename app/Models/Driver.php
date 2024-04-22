@@ -31,10 +31,13 @@ class Driver extends Model
         'resignation_date',
         'manager_name',
           ]; 
+          protected $hidden = ['created_at','updated_at'];
+          
           public function user(){
             return $this->belongsTo(user::class, 'user_id');
          }
-         public function trip(){
-             return $this->hasMany(trip::class, 'truck_id');
+         public function trips(){
+            //  return $this->hasMany(trip::class, 'truck_id');
+            return $this->hasMany(trip::class, 'driver_id');
          }
 }

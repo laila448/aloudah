@@ -17,7 +17,7 @@ class AdminController extends Controller
     public function AddBranch (Request $request)
     {
         $validator =  $request->validate([
-          //'desk'=>'required|min:3',
+          'desk'=>'required|min:3',
             'address'=>'required',
             'phone'=>'required|min:4|max:15',
              'manager_name'=>'required',
@@ -36,7 +36,7 @@ class AdminController extends Controller
       
 
         $branch = new Branch();
-       //$branch->desk = $validator['desk'];
+      $branch->desk = $validator['desk'];
         $branch->address = $validator['address'];
         $branch->phone = $validator['phone'];
         $branch->opening_date = now()->format('Y-m-d');

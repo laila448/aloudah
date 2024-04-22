@@ -12,6 +12,7 @@ class Branch extends Model
     use SoftDeletes;
     protected $fillable = [
    'address',
+   'desk',
     'phone',
     'opening_date',
     'closing_date',
@@ -30,5 +31,8 @@ class Branch extends Model
     public function trip(){
         return $this->hasMany(trip::class, 'branch_id');
     }
-
+    public function trucks(){
+        return $this->hasMany(Truck::class, 'branch_id');
+    }
+ 
 }

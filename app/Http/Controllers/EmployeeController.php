@@ -1,12 +1,12 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Models\Branch;
 use App\Models\Trip;
-//use Illuminate\Contracts\Validation\Rule;
+use App\Models\Truck;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
@@ -124,7 +124,9 @@ class EmployeeController extends Controller
         public function GetActiveTrips()
         {
            
-            $trips = Trip::where('status', 'active')->get();
+            $trips = Trip::with('driver:id,name', 'branch:id,address,desk', 'truck:id,number')
+            ->where('status', 'active')
+            ->get();
 
             
             if ($trips->isEmpty()) {
@@ -160,20 +162,69 @@ class EmployeeController extends Controller
    
           public function GetArchiveData(Request $request)
            {
+
+            $archivedRecords = Trip::with('driver:id,name', 'branch:id,address', 'truck:id,number')
+            ->where('archived', true)->get();
             
-            $archivedRecords = Trip::where('archived', true)->get();
-            if ($archivedRecords->isEmpty()) {
+            
+            if ($archivedRecords->isEmpty())
+             {
                
                 return response()->json(['message' => 'No archive trips found']);
-            }
+             }
 
             return response()->json(['Archived trips' => $archivedRecords]);
        
-    
-             
 
-             return response()->json([''], 200) ;
+          }
+
+          public function  GetTruckInformation( $truckNumber)
+          {
+            $truck = Truck::where('number', $truckNumber)->first();
+
+            if (!$truck) {
+                return response()->json(['message' => 'Truck not found'], 404);
+            }
+    
+            $trips = DB::table('trips')
+                ->select( 'number', 'date','driver_id')
+                ->where('truck_id', $truck->id)
+                ->get();
+    
+            $driverIds = $trips->pluck('driver_id')->unique();
+            $drivers = DB::table('drivers')
+                ->select('id', 'name')
+                ->whereIn('id', $driverIds)
+                ->get();
+    
+            $truck->trips = $trips;
+            $truck->drivers = $drivers;
+    
+            return response()->json(['truck information' => $truck]);
+
         
+
+          }
+          public function  GetTrucks ()
+          {
+            $trucks=Truck::all();
+            return response()->json(['truck information' => $trucks]);
+          }
+
+
+          public function GetTruckRecord($desk)
+          {
+              $branch = Branch::where('desk', $desk)->first();
+          
+              if (!$branch) {
+                  return response()->json([
+                      'message' => 'Branch not found',
+                  ], 404);
+              }
+          
+              $trucks = $branch->trucks;
+          
+              return response()->json($trucks);
           }
 
 

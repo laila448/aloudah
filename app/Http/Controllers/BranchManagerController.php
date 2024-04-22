@@ -186,12 +186,14 @@ class BranchManagerController extends Controller
     public function AddTruck(Request $request){
 
         $validator =Validator::make($request->all(),[
+            'branch_id'=>'required',
             'number'=>'required|min:4|max:20',
             'line'=>'string|required',
             'notes'=>'string',
         ]);
             $createdby = Auth::guard('branch_manager')->user()->name;
             $truck=Truck::create([
+                'branch_id'=>$request->branch_id,
                 'number'=>$request->number,
                 'line'=> $request->line,
                 'notes'=>$request->notes,

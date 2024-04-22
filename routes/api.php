@@ -53,8 +53,15 @@ Route::group(['middleware' => 'Employee',
         Route::post('archiveData' , [EmployeeController::class , 'ArchiveData']);
         Route::get('GetArchiveData' , [EmployeeController::class , 'GetArchiveData']);         
         Route::get('getbranches' , [EmployeeController::class , 'GetBranches']);   
-        Route::get('getallactivetrips' , [EmployeeController::class , 'GetActiveTrips']);       
-              });
+        Route::get('getallactivetrips' , [EmployeeController::class , 'GetActiveTrips']);
+
+        ////////////////emp adm BM////////////////////////////
+        Route::get('gettrucks' , [EmployeeController::class , 'GetTrucks']);       
+        Route::get('truckinformation/{truckNumber}' , [EmployeeController::class , 'GetTruckInformation']);       
+        Route::get('truckrecord/{desk}' , [EmployeeController::class , 'GetTruckRecord']);       
+      
+      
+      });
               
               
 

@@ -9,7 +9,8 @@ class Truck extends Model
 {
     use HasFactory;
     protected $fillable = [
-       'number',
+      'branch_id',
+      'number',
         'line',
         'created_by',  
        'adding_data',
@@ -17,7 +18,16 @@ class Truck extends Model
        'editing_date',
         'notes',
          ]; 
-         public function trip(){
-            return $this->hasMany(trip::class, 'truck_id');
-        }
+
+         protected $hidden = ['created_at','updated_at'];
+
+         public function trips()
+         {
+            return $this->hasMany(Trip::class,'truck_id');
+         } 
+         public function branch()
+             {
+                return $this->belongsTo(Branch::class);
+             }
+       
 }
