@@ -2,8 +2,12 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BranchController;
 use App\Http\Controllers\BranchManagerController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\TripController;
+use App\Http\Controllers\TruckController;
+use App\Http\Controllers\WarehouseController;
 use App\Models\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -29,16 +33,16 @@ Route::post( 'login' , [AuthController::class , 'Login']);
 
 Route::group(['middleware' => 'BranchManager',
               'prefix' => 'branchmanager'], function() {
-       Route::post('addemployee' , [BranchManagerController::class , 'AddEmployee']);
-       Route::post('updateemployee' , [BranchManagerController::class , 'UpdateEmployee']);
-       Route::post('updatedriver' , [BranchManagerController::class , 'UpdateDriver']);
-       Route::post('deleteemployee' , [BranchManagerController::class , 'DeleteEmployee']);
-       Route::post('deletedriver' , [BranchManagerController::class , 'DeleteDriver']);
-       Route::post('promoteemployee' , [BranchManagerController::class , 'PromoteEmployee']);
-       Route::post('rateemployee' , [BranchManagerController::class , 'RateEmployee']);
-       Route::post('addtruck' , [BranchManagerController::class , 'AddTruck']);
-       Route::post('updatetruck' , [BranchManagerController::class , 'UpdateTruck']);
-       Route::post('deletetruck' , [BranchManagerController::class , 'DeleteTruck']);
+       Route::post('addemployee' , [EmployeeController::class , 'AddEmployee']);
+       Route::post('updateemployee' , [EmployeeController::class , 'UpdateEmployee']);
+       Route::post('updatedriver' , [EmployeeController::class , 'UpdateDriver']);
+       Route::post('deleteemployee' , [EmployeeController::class , 'DeleteEmployee']);
+       Route::post('deletedriver' , [EmployeeController::class , 'DeleteDriver']);
+       Route::post('promoteemployee' , [EmployeeController::class , 'PromoteEmployee']);
+       Route::post('rateemployee' , [EmployeeController::class , 'RateEmployee']);
+       Route::post('addtruck' , [TruckController::class , 'AddTruck']);
+       Route::post('updatetruck' , [TruckController::class , 'UpdateTruck']);
+       Route::post('deletetruck' , [TruckController::class , 'DeleteTruck']);
 
 
               });
@@ -47,13 +51,13 @@ Route::group(['middleware' => 'BranchManager',
               
 Route::group(['middleware' => 'Employee',
               'prefix' => 'employee'], function() {
-        Route::post('addtrip' , [EmployeeController::class , 'AddTrip']);
-        Route::post('edittrip' , [EmployeeController::class , 'EditTrip']);
-        Route::post('canceltrip' , [EmployeeController::class , 'CancelTrip']);
-        Route::post('archiveData' , [EmployeeController::class , 'ArchiveData']);
-        Route::get('GetArchiveData' , [EmployeeController::class , 'GetArchiveData']);         
-        Route::get('getbranches' , [EmployeeController::class , 'GetBranches']);   
-        Route::get('getallactivetrips' , [EmployeeController::class , 'GetActiveTrips']);
+        Route::post('addtrip' , [TripController::class , 'AddTrip']);
+        Route::post('edittrip' , [TripController::class , 'EditTrip']);
+        Route::post('canceltrip' , [TripController::class , 'CancelTrip']);
+        Route::post('archiveData' , [TripController::class , 'ArchiveData']);
+        Route::get('GetArchiveData' , [TripController::class , 'GetArchiveData']);         
+        Route::get('getbranches' , [BranchController::class , 'GetBranches']);   
+        Route::get('getallactivetrips' , [TripController::class , 'GetActiveTrips']);
 
         ////////////////emp adm BM////////////////////////////
         Route::get('gettrucks' , [EmployeeController::class , 'GetTrucks']);       
@@ -83,12 +87,12 @@ Route::group(['middleware' => 'WarehouseManager',
 Route::group(['middleware' => 'Admin',
               'prefix' => 'admin'], function() {
          //Route::post('addbranchmanager' , [AuthController::class , 'AddBranchManager']);
-         Route::post('addbranch' , [AdminController::class , 'AddBranch']);
-         Route::post('addwarehouse' , [AdminController::class , 'addwarehouse']);
-         Route::post('updatebranch', [AdminController::class , 'UpdateBranch'] );         
-         Route::post('UpdateWarehouse', [AdminController::class , 'UpdateWarehouse'] );
-         Route::post('deleteBranch', [AdminController::class , 'deleteBranch'] );
-         Route::post('deleteWarehouse', [AdminController::class , 'deleteWarehouse'] );
+         Route::post('addbranch' , [BranchController::class , 'AddBranch']);
+         Route::post('addwarehouse' , [WarehouseController::class , 'addwarehouse']);
+         Route::post('updatebranch', [BranchController::class , 'UpdateBranch'] );         
+         Route::post('UpdateWarehouse', [WarehouseController::class , 'UpdateWarehouse'] );
+         Route::post('deleteBranch', [BranchController::class , 'deleteBranch'] );
+         Route::post('deleteWarehouse', [WarehouseController::class , 'deleteWarehouse'] );
 
 
      
