@@ -88,41 +88,4 @@ class AuthController extends Controller
         }
         return response()->json(['error' => 'Unauthorized'], 401);
     }
-
-    public function AddBranchManager (Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'name'=>'required|min:6|max:255',
-            'email'=>'required|string|email|unique:users',
-            'phone_number'=> 'required|max:10',
-            'gender'=>'required|in:male,female',
-            'password'=>'required|min:8',
-        ]);
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 422);
-        }
-        $user = User::create(array_merge(
-            $validator->validated(),
-            ['password'=>bcrypt($request->password),
-            'type' =>'branch-manager'],
-        ));
-        $branch_manager = Branch_Manager::create([//array_merge(
-           // $validator->validated(),
-            //['password'=>bcrypt($request->password)]
-            //'gender'=> $request->gender,
-            'user_id'=>$user->id]
-       // )
-    );
-        return response()->json([
-            'message'=>'added successfully',
-            'user'=>$user,
-        ],201);
-
-    }
-
-    public function test(){
-        return response()->json(['msg'=>'it works',
-            'user' => auth()->user()
-    ]);
-    }
 }

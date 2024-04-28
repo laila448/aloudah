@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 use App\Models\Branch;
+use App\Models\Branch_Manager;
+use App\Models\Driver;
+use App\Models\Employee;
+use App\Models\Rating;
 use App\Models\Trip;
 use App\Models\Truck;
 use Illuminate\Http\Request;
@@ -13,220 +17,248 @@ use Illuminate\Validation\Rule;
 
 class EmployeeController extends Controller
 {
-    public function AddTrip(Request $request)
-    {
+
+    public function AddEmployee(Request $request){
 
         $validator =Validator::make($request->all(),[
+            'name'=>'required|min:5|max:255|unique:employees',
+            'email'=>'string|email|unique:employees',
+            'phone_number'=> 'required|max:10',
+            'gender'=>'required|in:male,female',
+            'password'=>'min:8',
             'branch_id'=>'required',
-            'truck_id'=>'required',
-            'driver_id'=>'required',
-            'manifest_id'=> 'required',
-            'trip_number'=>'required|string',
-            'source'=>'required|string',
-            'destination'=>'required|string',
-           
+            'mother_name'=>'required|string',
+            'birth_date'=>'required',
+            'birth_place'=>'required|string',
+            'mobile'=>'required',
+            'address'=>'required|string',
+            'salary'=>'required',
+            'rank'=>'required',
         ]);
         if ($validator->fails())
         {
             return response()->json($validator->errors()->toJson(),400);
         }
 
-        $employee = Auth::guard('employee')->user()->name;
-            $trip=Trip::create([
+        $manager = Auth::guard('branch_manager')->user();
+        if($request->rank == 'driver')
+        {
+            $driver=Driver::create([
+                'name'=>$request->name,
+                'phone_number'=> $request->phone_number,
+                'gender'=>$request->gender,
                 'branch_id'=>$request->branch_id,
-                'truck_id'=>$request->truck_id,
-                'driver_id'=>$request->driver_id,
-                'manifest_id'=>$request->manifest_id,
-                'number'=>$request->trip_number,
-                'source'=> $request->source,
-                'destination'=>$request->destination,
-                'date'=>now()->format('Y-m-d'),
-                'created_by'=>$employee,
-
+                'mother_name'=>$request->mother_name,
+                'birth_date'=>$request->birth_date,
+                'birth_place'=>$request->birth_place,
+                'mobile'=>$request->mobile,
+                'address'=>$request->address,
+                'salary'=>$request->salary,
+                'rank'=>$request->rank,
+                'employment_date'=>now()->format('Y-m-d'),
+                'manager_name'=>$manager->name,
            ]);
-           return response()->json(['message'=>'trip addedd successfully', ],200);
-    
+           return response()->json([
+            'message'=>'Driver addedd successfully',
+        ],201);
+        }
+            else{
+        $employee=Employee::create(array_merge(
+            $validator->validated(),
+            ['password'=>bcrypt($request->password),
+             'employment_date'=>now()->format('Y-m-d'),
+             'manager_name'=>$manager->name
+            ]
+        ));
+        return response()->json([
+            'message'=>'Employee addedd successfully',
+        ],201);
     }
-      
-    public function EditTrip(Request $request)
-    {
+       
+    }
 
-        $user = Auth::guard('employee')->user();
-   
-     
+    public function UpdateEmployee(Request $request){
+
         $validator =Validator::make($request->all(),[
-            'trip_id'=>'required',
+            'name'=>'min:5|max:255|unique:employees',
+            'email'=>'string|email|unique:employees',
+            'phone_number'=> 'max:10',
+            'gender'=>'in:male,female',
+            'password'=>'min:8',
             'branch_id'=>'numeric',
-            'truck_id'=>'numeric',
-            'driver_id'=>'numeric',
-            'manifest_id'=>'numeric',
-            'trip_number'=>'string',
-            'source'=>'string',
-            'destination'=>'string',
-           'arrival_date'=>'date ',
-           'status' => ['required',Rule::in(['active', 'closed', 'temporary'])  ],
-      ]);
-      if ($validator->fails())
-      {
-          return response()->json($validator->errors()->toJson(),400);
-      }
-
-    //   $arrival_date=$request->arrival_date;
-  
-        $trip = Trip::find($request->trip_id);
-        $updatedtrip= $trip->update(array_merge($request->all() ,[
-        'edited_by' => $user->name,
-        'editing_date' => now()->format('Y-m-d')
-        ]
-      ));
-  
-
-  
-        return response()->json(['message' => 'trip edited successfully']);
-  
-  
-    }
-
-
-
-
-    public function CancelTrip(Request $request)
-    {
-       
-        
-          $validator =Validator::make($request->all(),[
-            'trip_id'=>'required',
+            'mother_name'=>'string',
+            'birth_date'=>'date_format:Y-m-d',
+            'birth_place'=>'string',
+            'mobile'=>'max:10',
+            'address'=>'string',
+            'employee_id'=>'required|numeric'
         ]);
-    
         if ($validator->fails())
         {
             return response()->json($validator->errors()->toJson(),400);
         }
-    
-            $trip = Trip::find($request->trip_id)->delete();
-    
-            return response()->json(['msg'=>'trip has been canceled'], 200) ;
-        
+
+        $employee = Employee::where('id' , $request->employee_id)->first();
+
+        if($employee){
+
+            $updated_employee = $employee->update( array_merge(
+                $validator->validated(),
+                ['password'=>bcrypt($request->password)]
+            ));
+
+            return response()->json([
+                'message'=>'Employee updated successfully',
+            ],200); 
+        }
+    }
+
+    public function UpdateDriver(Request $request){
+
+        $validator =Validator::make($request->all(),[
+            'name'=>'min:5|max:255|unique:drivers',
+            'phone_number'=> 'max:10',
+            'gender'=>'in:male,female',
+            'branch_id'=>'numeric',
+            'mother_name'=>'string',
+            'birth_date'=>'date_format:Y-m-d',
+            'birth_place'=>'string',
+            'mobile'=>'max:10',
+            'address'=>'string', 
+            'driver_id'=>'required|numeric'
+        ]);
+        if ($validator->fails())
+        {
+            return response()->json($validator->errors()->toJson(),400);
+        }
+
+        $driver = Driver::where('id' , $request->driver_id)->first();
+
+        if($driver){
+
+            $updated_driver = $driver->update( $validator->validated());
+
+            return response()->json([
+                'message'=>'Driver updated successfully',
+            ],200); 
+        }
+    }
+
+    public function DeleteEmployee(Request $request){
+
+        $validator =Validator::make($request->all(),[
+            'employee_id'=>'required|numeric',
+        ]);
+
+        if ($validator->fails())
+        {
+            return response()->json($validator->errors()->toJson(),400);
+        }
+
+        $employee = Employee::where('id' , $request->employee_id)->first();
+
+        if($employee){
+           $deletedemp = $employee->delete();
+
+           return response()->json(['message'=>'Employee has been deleted'], 200,); 
+        }
+    }
+
+    public function DeleteDriver(Request $request){
+
+        $validator =Validator::make($request->all(),[
+            'driver_id'=>'required|numeric',
+        ]);
+
+        if ($validator->fails())
+        {
+            return response()->json($validator->errors()->toJson(),400);
+        }
+
+        $driver = Driver::where('id' , $request->driver_id)->first();
+
+        if($driver){
+           $deleteddriver = $driver->delete();
+
+           return response()->json(['message'=>'Driver has been deleted'], 200,); 
+        }
+    }
+
+    public function PromoteEmployee (Request $request){
+
+        $validator = Validator::make($request->all() , [
+            'rank' => 'required',
+            'branch_id' => 'required' ,
+            'employee_id' => 'required'
+        ]);
+        if ($validator->fails())
+        {
+            return response()->json($validator->errors()->toJson(),400);
+        }
+
+
+        $employee = Employee::where('id' , $request->employee_id)->first();
+        if($employee){
+
+        if ($request->rank == 'branch manager'){
+            $manager = Branch_Manager::create([
+                'name' => $employee->name,
+                'email' => $employee->email,
+                'password' => $employee->password,
+                'phone_number' => $employee->phone_number,
+                'branch_id' => $request->branch_id,
+                'gender' => $employee->gender,
+                'mother_name' => $employee->mother_name,
+                'date_of_birth' => $employee->birth_date,
+                'manager_address' =>$employee->address,
+                'salary' => $employee->salary,
+                'rank' => $request->rank,
+                'employment_date' => now()->format('Y-m-d'),
+            ]);
+
+            $deletemp = $employee->delete();
+
+            return response()->json(['message'=>'Employee has been promoted to manager'], 200,);  
+        }
+        else{
+            $updateemp = $employee->update([
+                'rank' => $request->rank , 
+                'branch_id' => $request->branch_id ,
+            ]);
+
+            return response()->json(['message'=>'Employee has been promoted'], 200,);  
+        }
+    }
+     
+    return response()->json(['message'=>'Employee not found'], 400,);  
     }
 
 
-    public function GetBranches()
-        {
-            $branches = Branch::pluck('address');
-            if ($branches->isEmpty()) {
-                return response()->json(['message' => 'No branches found']);
-            }
-            return response()->json(['branches' => $branches]);
+    public function RateEmployee (Request $request){
 
-        }
-        
+        $validator = Validator::make($request->all() ,[
+            'rate' => 'required|numeric|between:1,5' ,
+            'employee_id' => 'required',
+        ]);
 
-        public function GetActiveTrips()
-        {
-           
-            $trips = Trip::with('driver:id,name', 'branch:id,address,desk', 'truck:id,number')
-            ->where('status', 'active')
-            ->get();
-
-            
-            if ($trips->isEmpty()) {
-                return response()->json(['message' => 'No active trips found']);
-            }
-
-            return response()->json(['trips' => $trips]);
-        }
-
-
-
-     public function ArchiveData(Request $request)
-           {
-            
-          $validator =Validator::make($request->all(),[
-            'trip_id'=>'required',
-               ]);
-    
         if ($validator->fails())
         {
             return response()->json($validator->errors()->toJson(),400);
         }
-    
-             $record = Trip::findOrFail($request->trip_id);
-             $record->archived = true;
-             $record->save();
 
+        $employee = Employee::where('id' , $request->employee_id)->first();
+        if($employee){
 
-             return response()->json(['msg'=>'trip has been archived'], 200) ;
-        
-          }
-
-   
-          public function GetArchiveData(Request $request)
-           {
-
-            $archivedRecords = Trip::with('driver:id,name', 'branch:id,address', 'truck:id,number')
-            ->where('archived', true)->get();
+            $ratingemp = Rating::create([
+                'rate' => $request->rate ,
+                'employee_id' => $request->employee_id
+            ]);
             
-            
-            if ($archivedRecords->isEmpty())
-             {
-               
-                return response()->json(['message' => 'No archive trips found']);
-             }
+            return response()->json(['message' => 'Rating addedd successfully'] , 201);
+        }
 
-            return response()->json(['Archived trips' => $archivedRecords]);
-       
-
-          }
-
-          public function  GetTruckInformation( $truckNumber)
-          {
-            $truck = Truck::where('number', $truckNumber)->first();
-
-            if (!$truck) {
-                return response()->json(['message' => 'Truck not found'], 404);
-            }
+        return response()->json(['message'=>'Employee not found'], 400,);  
+    }
     
-            $trips = DB::table('trips')
-                ->select( 'number', 'date','driver_id')
-                ->where('truck_id', $truck->id)
-                ->get();
-    
-            $driverIds = $trips->pluck('driver_id')->unique();
-            $drivers = DB::table('drivers')
-                ->select('id', 'name')
-                ->whereIn('id', $driverIds)
-                ->get();
-    
-            $truck->trips = $trips;
-            $truck->drivers = $drivers;
-    
-            return response()->json(['truck information' => $truck]);
-
-        
-
-          }
-          public function  GetTrucks ()
-          {
-            $trucks=Truck::all();
-            return response()->json(['truck information' => $trucks]);
-          }
-
-
-          public function GetTruckRecord($desk)
-          {
-              $branch = Branch::where('desk', $desk)->first();
-          
-              if (!$branch) {
-                  return response()->json([
-                      'message' => 'Branch not found',
-                  ], 404);
-              }
-          
-              $trucks = $branch->trucks;
-          
-              return response()->json($trucks);
-          }
-
-
 }
 
