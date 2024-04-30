@@ -226,11 +226,11 @@ class EmployeeController extends Controller
                 'branch_id' => $request->branch_id ,
             ]);
 
-            return response()->json(['message'=>'Employee has been promoted'], 200,);  
+            return response()->json(['message'=>'Employee has been promoted'], 200);  
         }
     }
      
-    return response()->json(['message'=>'Employee not found'], 400,);  
+    return response()->json(['message'=>'Employee not found'], 400);  
     }
 
 
