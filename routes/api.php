@@ -9,6 +9,7 @@ use App\Http\Controllers\TripController;
 use App\Http\Controllers\TruckController;
 use App\Http\Controllers\WarehouseController;
 use App\Models\Employee;
+use App\Models\Truck;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -43,48 +44,39 @@ Route::group(['middleware' => 'BranchManager',
        Route::post('addtruck' , [TruckController::class , 'AddTruck']);
        Route::post('updatetruck' , [TruckController::class , 'UpdateTruck']);
        Route::post('deletetruck' , [TruckController::class , 'DeleteTruck']);
+       Route::get('getemployees' , [EmployeeController::class , 'GetAllEmployees']);
+
+
 
 
               });
 
-/////////Employee///////  
+                   /////////Employee///////  
               
 Route::group(['middleware' => 'Employee',
               'prefix' => 'employee'], function() {
         Route::post('addtrip' , [TripController::class , 'AddTrip']);
+        Route::post('addtripinvoice' , [TripController::class , 'AddTripInvoice']);
         Route::post('edittrip' , [TripController::class , 'EditTrip']);
         Route::post('canceltrip' , [TripController::class , 'CancelTrip']);
         Route::post('archiveData' , [TripController::class , 'ArchiveData']);
         Route::get('GetArchiveData' , [TripController::class , 'GetArchiveData']);         
-        Route::get('getbranches' , [BranchController::class , 'GetBranches']);   
+        Route::get('getbranches' , [BranchController::class , 'GetBranches']);  
+        Route::get('gettrips' , [TripController::class , 'GetAllTrips']);    
         Route::get('getallactivetrips' , [TripController::class , 'GetActiveTrips']);
 
         ////////////////emp adm BM////////////////////////////
-        Route::get('gettrucks' , [EmployeeController::class , 'GetTrucks']);       
-        Route::get('truckinformation/{truckNumber}' , [EmployeeController::class , 'GetTruckInformation']);       
-        Route::get('truckrecord/{desk}' , [EmployeeController::class , 'GetTruckRecord']);       
+        Route::get('gettrucks' , [TruckController::class , 'GetTrucks']);       
+        Route::get('truckinformation/{truckNumber}' , [TruckController::class , 'GetTruckInformation']);       
+        Route::get('truckrecord/{desk}' , [TruckController::class , 'GetTruckRecord']);       
       
       
       });
               
-              
 
-
-
-
-
-Route::group(['middleware' => 'Customer',
-              'prefix' => 'customer'], function() {
-
-              });   
-
-Route::group(['middleware' => 'WarehouseManager',
-              'prefix' => 'warehousemanager'], function() {
-        
-              });  
 
               ///////////////Admin_APIs////////////////
-Route::group(['middleware' => 'Admin',
+ Route::group(['middleware' => 'Admin',
               'prefix' => 'admin'], function() {
          //Route::post('addbranchmanager' , [AuthController::class , 'AddBranchManager']);
          Route::post('addbranch' , [BranchController::class , 'AddBranch']);
@@ -93,6 +85,7 @@ Route::group(['middleware' => 'Admin',
          Route::post('UpdateWarehouse', [WarehouseController::class , 'UpdateWarehouse'] );
          Route::post('deleteBranch', [BranchController::class , 'deleteBranch'] );
          Route::post('deleteWarehouse', [WarehouseController::class , 'deleteWarehouse'] );
+         Route::get('getbranches', [BranchController::class , 'GetAllBranches'] );
 
 
      
@@ -101,12 +94,13 @@ Route::group(['middleware' => 'Admin',
 
 
 
+     Route::group(['middleware' => 'Customer',
+     'prefix' => 'customer'], function() {
 
+     });   
 
+Route::group(['middleware' => 'WarehouseManager',
+     'prefix' => 'warehousemanager'], function() {
 
-
-
-
-
-
+     });  
 

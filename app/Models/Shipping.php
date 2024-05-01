@@ -9,11 +9,13 @@ class Shipping extends Model
 {
     use HasFactory;
     protected $fillable = [
-      'manifest_id',
-      'customer_id',
-     'sender',
+      'source_id',
+      'destination_id',
+      'number',
+       'sender',
      'receiver',
-     'number',
+     'sender_number',
+     'receiver_number',
      'source',   
      'quantity',
      'type',
@@ -31,5 +33,12 @@ class Shipping extends Model
      'discount',
      'collection',
     ];
+    protected $hidden = ['created_at','updated_at'];
 
+    public function branchSource(){
+      return $this->belongsTo(Branch::class , 'source_id');
+   }
+   public function branchDest(){
+    return $this->belongsTo(Branch::class , 'destination_id');
+ }
 }

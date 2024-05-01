@@ -260,5 +260,21 @@ class EmployeeController extends Controller
         return response()->json(['message'=>'Employee not found'], 400,);  
     }
     
+   public function GetAllEmployees()
+   {
+    $branchid = Auth::guard('branch_manager')->user()->branch_id;
+
+
+    $employees=Employee::where('branch_id','=',$branchid)->pluck('name');
+    // $branchManager = BranchManager::findOrFail($id);
+
+    // $employees = $branchManager->branch->employees()->pluck('name');
+
+    return response()->json($employees);
+   }
+
+
+
+
 }
 

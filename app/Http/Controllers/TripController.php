@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Shipping;
 use App\Models\Trip;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -10,6 +11,14 @@ use Illuminate\Validation\Rule;
 
 class TripController extends Controller
 {
+    public function GetAllTrips()
+    {
+      $trips=Trip::all();
+      return response()->json($trips);
+
+    }
+
+
     public function AddTrip(Request $request)
     {
 
@@ -156,7 +165,72 @@ class TripController extends Controller
 
 
   }
+    public function AddTripInvoice(Request $request) 
+  { 
+    $validator =Validator::make($request->all(),[
+    'source_id'=>'required',
+    'destination_id' => 'required',
+    'number'=>'required',
+    'sender'=>'required',
+    'receiver'=> 'required',
+    'sender_number'=> 'required|max:15',
+    'receiver_number'=> 'required|max:15',
+    'num_of_packages'=>'required',
+    'package_type'=>'required',
+    'weight'=>'required',
+    'size'=>'required',
+     'content'=>'required',
+     'marks'=>'required',
+    'notes'=>'string',
+     'shipping_cost',
+     'against_shipping',
+     'adapter',
+     'advance',
+     'miscellaneous',
+     'prepaid',
+     'discount',
+     'collection',
+   
+    ]);
+    if ($validator->fails())
+    {
+        $errors = $validator->errors();
+   }
 
+  // $employee = Auth::guard('employee')->user()->name;
 
+    $trip=Shipping::create([
+        'source_id'=>$request->source_id,
+        'destination_id'=>$request->destination_id,
+        'number'=>$request->number,
+        'sender'=>$request->sender,
+        'receiver'=>$request->receiver,
+        'sender_number'=>$request->sender_number,
+        'receiver_number'=>$request->receiver_number,
+        'num_of_packages'=> $request->num_of_packages,
+        'type'=>$request->package_type,
+        'weight'=>$request->weight,
+        'size'=>$request->size,
+        'content'=>$request->content,
+        'marks'=>$request->marks,
+        'notes'=>$request->notes,
+        'shipping_cost'=>$request->shipping_cost,
+        'against_shipping'=>$request->against_shipping,
+        'adapter'=>$request->adapter,
+        'advance'=>$request->advance,
+        'miscellaneous'=>$request->miscellaneous,
+        'prepaid'=>$request->prepaid,
+        'discount'=>$request->discount,
+        'collection'=>$request->collection,
+
+      
+
+   ]);
+   return response()->json(['message'=>' Addedd Successfully', ],200);
 
 }
+    
+}
+
+
+

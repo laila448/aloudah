@@ -11,6 +11,14 @@ use Illuminate\Support\Facades\Validator;
 
 class BranchController extends Controller
 {
+
+     public function GetAllBranches()
+      {
+        $branches=Branch::pluck('desk');
+        return response()->json($branches);
+
+      }
+
     public function AddBranch (Request $request)
     {
         $validator =  $request->validate([
@@ -126,11 +134,18 @@ class BranchController extends Controller
 
     public function GetBranches()
     {
-        $branches = Branch::pluck('address');
+
+        $branches = Branch::pluck('desk');
         if ($branches->isEmpty()) {
             return response()->json(['message' => 'No branches found']);
         }
         return response()->json(['branches' => $branches]);
 
     }
+
+
+
+
+
+  
 }
