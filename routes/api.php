@@ -7,6 +7,7 @@ use App\Http\Controllers\BranchManagerController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\TripController;
 use App\Http\Controllers\TruckController;
+use App\Http\Controllers\VacationController;
 use App\Http\Controllers\WarehouseController;
 use App\Models\Employee;
 use App\Models\Truck;
@@ -44,9 +45,6 @@ Route::group(['middleware' => 'BranchManager',
        Route::post('addtruck' , [TruckController::class , 'AddTruck']);
        Route::post('updatetruck' , [TruckController::class , 'UpdateTruck']);
        Route::post('deletetruck' , [TruckController::class , 'DeleteTruck']);
-       Route::get('getemployees' , [EmployeeController::class , 'GetAllEmployees']);
-
-
 
 
               });
@@ -78,14 +76,12 @@ Route::group(['middleware' => 'Employee',
               ///////////////Admin_APIs////////////////
  Route::group(['middleware' => 'Admin',
               'prefix' => 'admin'], function() {
-         //Route::post('addbranchmanager' , [AuthController::class , 'AddBranchManager']);
          Route::post('addbranch' , [BranchController::class , 'AddBranch']);
          Route::post('addwarehouse' , [WarehouseController::class , 'addwarehouse']);
          Route::post('updatebranch', [BranchController::class , 'UpdateBranch'] );         
          Route::post('UpdateWarehouse', [WarehouseController::class , 'UpdateWarehouse'] );
          Route::post('deleteBranch', [BranchController::class , 'deleteBranch'] );
          Route::post('deleteWarehouse', [WarehouseController::class , 'deleteWarehouse'] );
-         Route::get('getbranches', [BranchController::class , 'GetAllBranches'] );
 
 
      
