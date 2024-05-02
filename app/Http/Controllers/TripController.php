@@ -24,12 +24,13 @@ class TripController extends Controller
 
         $validator =Validator::make($request->all(),[
             'branch_id'=>'required',
+            'destination_id'=>'required',
             'truck_id'=>'required',
             'driver_id'=>'required',
             'manifest_id'=> 'required',
             'trip_number'=>'required|string',
-            'source'=>'required|string',
-            'destination'=>'required|string',
+        //    'source'=>'required|string',
+          
            
         ]);
         if ($validator->fails())
@@ -40,12 +41,12 @@ class TripController extends Controller
         $employee = Auth::guard('employee')->user()->name;
             $trip=Trip::create([
                 'branch_id'=>$request->branch_id,
+                'destination_id'=>$request->destination_id,
                 'truck_id'=>$request->truck_id,
                 'driver_id'=>$request->driver_id,
                 'manifest_id'=>$request->manifest_id,
                 'number'=>$request->trip_number,
                 'source'=> $request->source,
-                'destination'=>$request->destination,
                 'date'=>now()->format('Y-m-d'),
                 'created_by'=>$employee,
 

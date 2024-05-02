@@ -19,16 +19,12 @@ return new class extends Migration
             $table->foreign('truck_id')->references('id')->on('trucks')->onDelete('cascade');
             $table->unsignedBigInteger('driver_id');
             $table->foreign('driver_id')->references('id')->on('drivers')->onDelete('cascade');
-            // $table->unsignedBigInteger('employee_id');
-            // $table->foreign('employee_id')->references('id')->on('employees')->onDelete('cascade');
             $table->unsignedBigInteger('branch_id');
             $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
              $table->unsignedBigInteger('manifest_id');
              $table->foreign('manifest_id')->references('id')->on('manifests')->onDelete('cascade');
             $table->string('number')->unique();
             $table->date('date');
-            $table->string('source');
-            $table->string('destination');
             $table->string('status')->default('active');
             $table->date('arrival_date')->nullable();
             $table->string('created_by');

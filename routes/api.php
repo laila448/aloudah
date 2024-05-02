@@ -45,6 +45,17 @@ Route::group(['middleware' => 'BranchManager',
        Route::post('addtruck' , [TruckController::class , 'AddTruck']);
        Route::post('updatetruck' , [TruckController::class , 'UpdateTruck']);
        Route::post('deletetruck' , [TruckController::class , 'DeleteTruck']);
+       Route::get('getemployees' , [EmployeeController::class , 'GetAllEmployees']);
+       Route::get('getbranches', [BranchController::class , 'GetAllBranches'] );
+       Route::get('gettrucks' , [TruckController::class , 'GetTrucks']);       
+       Route::get('truckinformation/{truckNumber}' , [TruckController::class , 'GetTruckInformation']);       
+       Route::get('truckrecord/{desk}' , [TruckController::class , 'GetTruckRecord']); 
+       Route::post('addvacationforemployee' , [VacationController::class , 'AddVacationForEmployee']);
+       Route::post('addvacationforwmanager' , [VacationController::class , 'AddVacationForWhManager']);
+       Route::post('getemployeevacation' , [VacationController::class , 'GetEmployeeVacation']);
+       Route::post('getwmanagervacation' , [VacationController::class , 'GetWhManagerVacation']);
+       Route::post('truckrecord' , [TruckController::class , 'GetTruckRecord']);       
+       Route::post('truckinformation' , [TruckController::class , 'GetTruckInformation']);       
 
 
               });
@@ -65,9 +76,9 @@ Route::group(['middleware' => 'Employee',
 
         ////////////////emp adm BM////////////////////////////
         Route::get('gettrucks' , [TruckController::class , 'GetTrucks']);       
-        Route::get('truckinformation/{truckNumber}' , [TruckController::class , 'GetTruckInformation']);       
-        Route::get('truckrecord/{desk}' , [TruckController::class , 'GetTruckRecord']);       
-      
+     Route::post('truckinformation' , [TruckController::class , 'GetTruckInformation']);       
+     Route::post('truckrecord' , [TruckController::class , 'GetTruckRecord']);       
+
       
       });
               
@@ -82,7 +93,12 @@ Route::group(['middleware' => 'Employee',
          Route::post('UpdateWarehouse', [WarehouseController::class , 'UpdateWarehouse'] );
          Route::post('deleteBranch', [BranchController::class , 'deleteBranch'] );
          Route::post('deleteWarehouse', [WarehouseController::class , 'deleteWarehouse'] );
-
+         Route::get('getbranches', [BranchController::class , 'GetAllBranches'] );
+         Route::post('getemployeevacation' , [VacationController::class , 'GetEmployeeVacation']);
+         Route::post('getwmanagervacation' , [VacationController::class , 'GetWhManagerVacation']);
+         Route::get('gettrucks' , [TruckController::class , 'GetTrucks']);       
+         Route::post('truckrecord' , [TruckController::class , 'GetTruckRecord']);       
+         Route::post('truckinformation' , [TruckController::class , 'GetTruckInformation']);       
 
      
      
