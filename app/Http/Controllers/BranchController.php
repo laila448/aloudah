@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\PasswordMail;
 use App\Models\Branch;
 use App\Models\Branch_Manager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class BranchController extends Controller
 {
@@ -27,13 +30,12 @@ class BranchController extends Controller
             'phone'=>'required|min:4|max:15',
              'manager_name'=>'required',
              'email'=>'required',
-             'password'=>'required',
+             //'password'=>'required',
              'phone_number'=>'required ',
              'gender'=>'required',   
              'mother_name'=>'required',
              'date_of_birth'=>'required|date_format:Y-m-d',
              'manager_address'=>'required',
-            //'vacations'=>'required',
             'salary'=>'required',
             'rank'=>'required',
           
@@ -49,10 +51,12 @@ class BranchController extends Controller
         $branch->save();
       
 
+        $password = Str::random(8);
         $branchmanager = new Branch_Manager();
                 $branchmanager->name = $validator['manager_name'];
                 $branchmanager->email = $validator['email'];
-                $branchmanager->password = Hash::make($validator['password']); 
+                $branchmanager->password = Hash::make($password); 
+               // $branchmanager->password = Hash::make($validator['password']); 
                 $branchmanager->phone_number = $validator['phone_number'];
                $branchmanager->branch_id = $branch->id;
                 $branchmanager->gender = $validator['gender'];
@@ -65,7 +69,9 @@ class BranchController extends Controller
                   $branchmanager->employment_date = now()->format('Y-m-d');
                 $branchmanager->save();
 
-
+                if($branchmanager){
+                  Mail::to($request->email)->send(new PasswordMail($request->manager_name , $password));
+                }
                 return response()->json([
                     'message'=>'branch added successfully',  
                 ],201);

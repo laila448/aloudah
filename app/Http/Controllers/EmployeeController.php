@@ -1,18 +1,19 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\Branch;
+
+use App\Mail\PasswordMail;
 use App\Models\Branch_Manager;
 use App\Models\Driver;
 use App\Models\Employee;
+use App\Models\Permission;
 use App\Models\Rating;
-use App\Models\Trip;
-use App\Models\Truck;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
+use Illuminate\Support\Str;
 
 
 class EmployeeController extends Controller
@@ -63,13 +64,23 @@ class EmployeeController extends Controller
         ],201);
         }
             else{
+
+               $password = Str::random(8);
+               
         $employee=Employee::create(array_merge(
             $validator->validated(),
-            ['password'=>bcrypt($request->password),
+            [ 'password'=>bcrypt($password),
+               // 'password'=>bcrypt($request->password),
              'employment_date'=>now()->format('Y-m-d'),
              'manager_name'=>$manager->name
             ]
         ));
+        if($employee){
+            Mail::to($request->email)->send(new PasswordMail($request->name , $password));
+            $permissions = Permission::create([
+                'employee_id' => $employee->id
+            ]);
+                }
         return response()->json([
             'message'=>'Employee addedd successfully',
         ],201);
@@ -218,7 +229,7 @@ class EmployeeController extends Controller
 
             $deletemp = $employee->delete();
 
-            return response()->json(['message'=>'Employee has been promoted to manager'], 200,);  
+            return response()->json(['message'=>'Employee has been promoted to manager'], 200);  
         }
         else{
             $updateemp = $employee->update([
@@ -272,6 +283,48 @@ class EmployeeController extends Controller
 
     return response()->json($employees);
    }
+
+   public function EditPermissions(Request $request){
+
+    $validator = Validator::make($request->all() , [
+        'employee_id' => 'required|numeric',
+        'add_trip' => 'boolean',
+        'edit_trip' => 'boolean',
+        'delete_trip' => 'boolean',
+        'drawer' => 'boolean',
+        'email' => 'boolean',
+        'trip_list' => 'boolean',
+        'print_road' => 'boolean',
+        'print_trips' => 'boolean',
+        'edit_close' => 'boolean',
+        'add_manifest' => 'boolean',
+        'edit_manifest' => 'boolean',
+        'delete_manifest' => 'boolean',
+        'view_manifest' => 'boolean',
+        'add_report' => 'boolean',
+        'edit_report' => 'boolean',
+        'delete_report' => 'boolean',
+        'view_report' => 'boolean',
+        'add_misc' => 'boolean',
+        'edit_misc' => 'boolean',
+        'delete_misc' => 'boolean',
+    ]);
+    if ($validator->fails())
+    {
+        return response()->json($validator->errors()->toJson(),400);
+    }
+
+    $employee = Employee::where('id' , $request->employee_id)->first();
+    if($employee){
+        $permissions = Permission::where('employee_id' , $request->employee_id)
+                                ->update($validator->validated());
+
+        return response()->json(['message'=>'Permissions updated successfully '], 200);  
+    }
+
+         return response()->json(['message'=>'Employee not found'], 400);  
+   }
+
 
 
 

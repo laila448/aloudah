@@ -56,6 +56,7 @@ Route::group(['middleware' => 'BranchManager',
        Route::post('getwmanagervacation' , [VacationController::class , 'GetWhManagerVacation']);
        Route::post('truckrecord' , [TruckController::class , 'GetTruckRecord']);       
        Route::post('truckinformation' , [TruckController::class , 'GetTruckInformation']);       
+       Route::post('editpermissions' , [EmployeeController::class , 'EditPermissions']);
 
 
               });

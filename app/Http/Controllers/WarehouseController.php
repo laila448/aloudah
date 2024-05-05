@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\PasswordMail;
 use App\Models\Warehouse;
 use App\Models\Warehouse_Manager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class WarehouseController extends Controller
 {
@@ -21,7 +24,7 @@ class WarehouseController extends Controller
                       'notes'=>'required ',
                       'manager_name'=>'required',
                       'email'=>'required',
-                      'password'=>'required',
+                      //'password'=>'required',
                       'phone_number'=>'required ',
                       'gender'=>'required',
                       'mother_name'=>'required',
@@ -38,10 +41,12 @@ class WarehouseController extends Controller
                 $warehouse->notes = $validator['notes']; 
                 $warehouse->save();
 
+                $password = Str::random(8);
                 $warehousemanager = new Warehouse_Manager();
                 $warehousemanager->name = $validator['manager_name'];
                 $warehousemanager->email = $validator['email'];
-                $warehousemanager->password =  Hash::make($validator['password']);
+                $warehousemanager->password =  Hash::make($password);
+               // $warehousemanager->password =  Hash::make($validator['password']);
                 $warehousemanager->phone_number = $validator['phone_number'];
                $warehousemanager->warehouse_id = $warehouse->id;
                 $warehousemanager->gender = $validator['gender'];
@@ -53,6 +58,9 @@ class WarehouseController extends Controller
                   $warehousemanager->employment_date = now()->format('Y-m-d');
                 $warehousemanager->save();
         
+                if($warehousemanager){
+                  Mail::to($request->email)->send(new PasswordMail($request->manager_name , $password));
+                }
                
 
       return response()->json([

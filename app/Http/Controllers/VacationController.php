@@ -15,9 +15,9 @@ class VacationController extends Controller
     public function AddVacationForEmployee(Request $request){
 
         $validator = Validator::make($request->all(),[
-            'user_id'=>'required',
-            'start'=>'required|date_format:d/m/y',
-            'end'=>'required|date_format:d/m/y',
+            'employee_id'=>'required',
+            'start'=>'required|date_format:Y-m-d',
+            'end'=>'required|date_format:Y-m-d',
             'reason'=>'required|string'      
         ]);
 
@@ -26,11 +26,11 @@ class VacationController extends Controller
             return response()->json($validator->errors()->toJson(),400);
         }
 
-        $employee = Employee::where('id' , $request->user_id)->first();
+        $employee = Employee::where('id' , $request->employee_id)->first();
         if($employee){
             $manager = Auth::guard('branch_manager')->user();
             $vacation = Vacation::create([
-                'user_id'=> $request->user_id,
+                'user_id'=> $request->employee_id,
                 'user_type'=> 'employee',
                 'start'=> $request->start,
                 'end'=> $request->end,
@@ -46,9 +46,9 @@ class VacationController extends Controller
     public function AddVacationForWhManager(Request $request){
 
         $validator = Validator::make($request->all(),[
-            'user_id'=>'required',
-            'start'=>'required|date_format:d/m/y',
-            'end'=>'required|date_format:d/m/y',
+            'wmanager_id'=>'required',
+            'start'=>'required|date_format:Y-m-d',
+            'end'=>'required|date_format:Y-m-d',
             'reason'=>'required|string'      
         ]);
 
@@ -57,11 +57,11 @@ class VacationController extends Controller
             return response()->json($validator->errors()->toJson(),400);
         }
 
-        $whmanager = Warehouse_Manager::where('id' , $request->user_id)->first();
+        $whmanager = Warehouse_Manager::where('id' , $request->wmanager_id)->first();
         if($whmanager){
             $manager = Auth::guard('branch_manager')->user();
             $vacation = Vacation::create([
-                'user_id'=> $request->user_id,
+                'user_id'=> $request->wmanager_id,
                 'user_type'=> 'warehouse_manager',
                 'start'=> $request->start,
                 'end'=> $request->end,
@@ -104,7 +104,7 @@ class VacationController extends Controller
     public function GetWhManagerVacation(Request $request){
 
         $validator = Validator::make($request->all() , [
-            'wmanger_id'=>'required'
+            'wmanager_id'=>'required'
         ]);
 
         if ($validator->fails())
@@ -112,11 +112,11 @@ class VacationController extends Controller
             return response()->json($validator->errors()->toJson(),400);
         }
 
-        $wmanager = Warehouse::where('id' , $request->wmanager)->first();
+        $wmanager = Warehouse::where('id' , $request->wmanager_id)->first();
 
         if($wmanager){
             $vacations = Vacation::where('user_type' , 'warehouse_manager')
-                                ->where('user_id' , $request->wmanager)
+                                ->where('user_id' , $request->wmanager_id)
                                 ->get();
             if(!$vacations){
                 return response()->json(['message'=>'No vacations found'], 400);  
