@@ -27,11 +27,9 @@ class Warehouse_Manager extends Authenticatable implements JWTSubject
         'mother_name',
         'date_of_birth',
         'manager_address',
-        'vacations',
         'salary',
         'rank',
        'employment_date',
-        //'user_id',
         
          ];
          public function user(){

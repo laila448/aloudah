@@ -11,15 +11,18 @@ class Warehouse extends Model
     use HasFactory;
     use SoftDeletes;
     protected $fillable = [
-       // 'wmanager',
-        'address',
-         'branch',
-         'area',
-         'notes',
+       'warehouse_name',
+       'address',
+       'branch-id',
+        'area',
+        'notes',
          ];
          public function wmanager(){
              return $this->belongsTo(warehouse_manager::class, 'wmanager_id');
          }
+         public function branch(){
+            return $this->belongsTo(Branch::class, 'branch_id');
+        }
          public function good(){
             return $this->hasMany(good::class, 'warehouse_id');
         }

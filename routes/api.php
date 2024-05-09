@@ -11,6 +11,7 @@ use App\Http\Controllers\VacationController;
 use App\Http\Controllers\WarehouseController;
 use App\Models\Employee;
 use App\Models\Truck;
+use App\Models\Warehouse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -47,9 +48,7 @@ Route::group(['middleware' => 'BranchManager',
        Route::post('deletetruck' , [TruckController::class , 'DeleteTruck']);
        Route::get('getemployees' , [EmployeeController::class , 'GetAllEmployees']);
        Route::get('getbranches', [BranchController::class , 'GetAllBranches'] );
-       Route::get('gettrucks' , [TruckController::class , 'GetTrucks']);       
-       Route::get('truckinformation/{truckNumber}' , [TruckController::class , 'GetTruckInformation']);       
-       Route::get('truckrecord/{desk}' , [TruckController::class , 'GetTruckRecord']); 
+       Route::get('gettrucks' , [TruckController::class , 'GetTrucks']);      
        Route::post('addvacationforemployee' , [VacationController::class , 'AddVacationForEmployee']);
        Route::post('addvacationforwmanager' , [VacationController::class , 'AddVacationForWhManager']);
        Route::post('getemployeevacation' , [VacationController::class , 'GetEmployeeVacation']);
@@ -90,6 +89,7 @@ Route::group(['middleware' => 'Employee',
               'prefix' => 'admin'], function() {
          Route::post('addbranch' , [BranchController::class , 'AddBranch']);
          Route::post('addwarehouse' , [WarehouseController::class , 'addwarehouse']);
+         Route::post('addwarehousemanager' , [WarehouseController::class , 'AddWarehouseManager']);
          Route::post('updatebranch', [BranchController::class , 'UpdateBranch'] );         
          Route::post('UpdateWarehouse', [WarehouseController::class , 'UpdateWarehouse'] );
          Route::post('deleteBranch', [BranchController::class , 'deleteBranch'] );

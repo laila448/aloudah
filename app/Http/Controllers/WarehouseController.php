@@ -19,36 +19,51 @@ class WarehouseController extends Controller
 
       $validator =  $request->validate([                  
                       'warehouse_address'=>'required',
-                      'branch'=>'required ',
+                      'branch_id'=>'required ',
+                      'warehouse_name'=>'required',
                       'area'=>'required ',
                       'notes'=>'required ',
-                      'manager_name'=>'required',
-                      'email'=>'required',
-                      //'password'=>'required',
-                      'phone_number'=>'required ',
-                      'gender'=>'required',
-                      'mother_name'=>'required',
-                      'date_of_birth'=>'required|date_format:Y-m-d',
-                      'manager_address'=>'required',
-                     'salary'=>'required',
-                     'rank'=>'required',
+                   
                 ]);
               
                 $warehouse = new Warehouse();
-                $warehouse->branch = $validator['branch']; 
                 $warehouse->address = $validator['warehouse_address']; 
+                $warehouse->branch_id = $validator['branch_id'];
+                $warehouse->warehouse_name = $validator['warehouse_name'];  
                 $warehouse->area = $validator['area']; 
                 $warehouse->notes = $validator['notes']; 
                 $warehouse->save();
 
-                $password = Str::random(8);
+            
+               
+
+      return response()->json([
+        'message'=>'warehouse added successfully',  
+    ],201);
+
+    }
+    public function AddWarehouseManager(Request $request)
+    {
+
+      $validator =  $request->validate([                  
+        'warehouse_id'=>'required',
+        'manager_name'=>'required',
+        'email'=>'required',
+        'phone_number'=>'required ',
+        'gender'=>'required',
+        'mother_name'=>'required',
+        'date_of_birth'=>'required|date_format:Y-m-d',
+        'manager_address'=>'required',
+       'salary'=>'required',
+       'rank'=>'required',
+  ]);
+             $password = Str::random(8);
                 $warehousemanager = new Warehouse_Manager();
+                $warehousemanager->warehouse_id = $validator['warehouse_id'];
                 $warehousemanager->name = $validator['manager_name'];
                 $warehousemanager->email = $validator['email'];
                 $warehousemanager->password =  Hash::make($password);
-               // $warehousemanager->password =  Hash::make($validator['password']);
                 $warehousemanager->phone_number = $validator['phone_number'];
-               $warehousemanager->warehouse_id = $warehouse->id;
                 $warehousemanager->gender = $validator['gender'];
                 $warehousemanager->mother_name = $validator['mother_name'];
                 $warehousemanager->date_of_birth = $validator['date_of_birth'];
@@ -61,14 +76,14 @@ class WarehouseController extends Controller
                 if($warehousemanager){
                   Mail::to($request->email)->send(new PasswordMail($request->manager_name , $password));
                 }
-               
-
+                
       return response()->json([
-        'message'=>'warehouse added successfully',  
+        'message'=>'warehouseManager added successfully',  
     ],201);
 
-    }
 
+
+    }
 
     public function UpdateWarehouse(Request $request)
     {
