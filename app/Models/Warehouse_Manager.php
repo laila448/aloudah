@@ -19,6 +19,7 @@ class Warehouse_Manager extends Authenticatable implements JWTSubject
     protected $guared = 'warehouse_manager';
     protected $fillable = [
         'name',
+        'national_id',
         'email',
         'phone_number',
         'gender',

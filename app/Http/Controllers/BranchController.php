@@ -19,7 +19,7 @@ class BranchController extends Controller
      public function GetAllBranches()
       {
       //  json(['Archived trips' => $archivedRecords]);
-        $branches=Branch::select('address','desk')->get();
+        $branches=Branch::select('id','address','desk')->get();
         return response()->json(['address  ' =>$branches]);
 
       }
@@ -30,6 +30,7 @@ class BranchController extends Controller
           'desk'=>'required|min:3',
             'address'=>'required',
             'phone'=>'required|min:4|max:15',
+            'national_id'=>'required|max:11',
              'manager_name'=>'required',
              'email'=>'required',
              //'password'=>'required',
@@ -55,6 +56,7 @@ class BranchController extends Controller
 
         $password = Str::random(8);
         $branchmanager = new Branch_Manager();
+                $branchmanager->national_id = $validator['national_id'];
                 $branchmanager->name = $validator['manager_name'];
                 $branchmanager->email = $validator['email'];
                 $branchmanager->password = Hash::make($password); 

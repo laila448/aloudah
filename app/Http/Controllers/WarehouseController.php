@@ -48,6 +48,7 @@ class WarehouseController extends Controller
 
       $validator =  $request->validate([                  
         'warehouse_id'=>'required',
+        'national_id'=>'required|max:11',
         'manager_name'=>'required',
         'email'=>'required',
         'phone_number'=>'required ',
@@ -62,6 +63,7 @@ class WarehouseController extends Controller
              $password = Str::random(8);
                 $warehousemanager = new Warehouse_Manager();
                 $warehousemanager->warehouse_id = $validator['warehouse_id'];
+                $warehousemanager->national_id = $validator['national_id'];
                 $warehousemanager->name = $validator['manager_name'];
                 $warehousemanager->email = $validator['email'];
                 $warehousemanager->password =  Hash::make($password);
@@ -95,6 +97,7 @@ class WarehouseController extends Controller
         'notes'=>'string',
         'area'=>'string',
         'phone'=>'numeric|min:4',
+        'national_id'=>'max:11',
         'name'=>'min:5|max:255',
         'phone_number'=> 'max:10',
         'manager_address'=>'string',
@@ -135,6 +138,33 @@ class WarehouseController extends Controller
       $WarehouseManager = Warehouse_Manager::where('warehouse_id', $request->warehouse_id)->delete();
 
         return response()->json(['msg'=>'Warehouse has been deleted'], 200) ;
+    }
+
+    public function GetWarehouses(){
+
+      $warehouses  = Warehouse::all();
+      if($warehouses){
+        return response()->json($warehouses); 
+      }
+
+      return response()->json(['message'=>'No warehouses found'], 400);
+    }
+
+    public function GetWarehouseManager(Request $request){
+
+      $validator = Validator::make($request->all() ,[
+        'warehouse_id' => 'required'
+      ]);
+      if ($validator->fails())
+    {
+        return response()->json($validator->errors()->toJson(),400);
+    }
+
+    $whmanager = Warehouse_Manager::where('warehouse_id' , $request->warehouse_id)->first();
+    if($whmanager){
+      return response()->json($whmanager); 
+    }
+    return response()->json(['message'=>'Warehouse manager not found'], 400);
     }
    
 }

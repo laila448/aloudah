@@ -15,6 +15,7 @@ class Customer extends Authenticatable implements JWTSubject
 
     protected $fillable = [
       'name',
+      'national_id',
       'email',
       'phone_number',
       'gender',

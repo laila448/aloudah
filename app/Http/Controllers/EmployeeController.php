@@ -8,6 +8,7 @@ use App\Models\Driver;
 use App\Models\Employee;
 use App\Models\Permission;
 use App\Models\Rating;
+use App\Models\Warehouse_Manager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -34,6 +35,7 @@ class EmployeeController extends Controller
     public function AddEmployee(Request $request){
 
         $validator =Validator::make($request->all(),[
+            'national_id' => 'required|max:11',
             'name'=>'required|min:5|max:255|unique:employees',
             'email'=>'string|email|unique:employees',
             'phone_number'=> 'required|max:10',
@@ -57,6 +59,7 @@ class EmployeeController extends Controller
         if($request->rank == 'driver')
         {
             $driver=Driver::create([
+                'national_id'=>$request->national_id,
                 'name'=>$request->name,
                 'phone_number'=> $request->phone_number,
                 'gender'=>$request->gender,
@@ -103,6 +106,7 @@ class EmployeeController extends Controller
     public function UpdateEmployee(Request $request){
 
         $validator =Validator::make($request->all(),[
+            'national_id'=>'max:11',
             'name'=>'min:5|max:255|unique:employees',
             'email'=>'string|email|unique:employees',
             'phone_number'=> 'max:10',
@@ -139,6 +143,7 @@ class EmployeeController extends Controller
     public function UpdateDriver(Request $request){
 
         $validator =Validator::make($request->all(),[
+            'national_id'=>'max:11',
             'name'=>'min:5|max:255|unique:drivers',
             'phone_number'=> 'max:10',
             'gender'=>'in:male,female',
@@ -223,8 +228,9 @@ class EmployeeController extends Controller
         $employee = Employee::where('id' , $request->employee_id)->first();
         if($employee){
 
-        if ($request->rank == 'branch manager'){
+        if ($request->rank == 'Branch_manager'){
             $manager = Branch_Manager::create([
+                'national_id'=>$employee->national_id,
                 'name' => $employee->name,
                 'email' => $employee->email,
                 'password' => $employee->password,
@@ -242,6 +248,26 @@ class EmployeeController extends Controller
             $deletemp = $employee->delete();
 
             return response()->json(['message'=>'Employee has been promoted to manager'], 200);  
+        }
+        elseif($request->rank == 'warehouse_manager') {
+            $whmanager = Warehouse_Manager::create([
+                'national_id'=>$employee->national_id,
+                'name' => $employee->name,
+                'email' => $employee->email,
+                'password' => $employee->password,
+                'phone_number' => $employee->phone_number,
+                'warehouse_id' => $request->branch_id,
+                'gender' => $employee->gender,
+                'mother_name' => $employee->mother_name,
+                'date_of_birth' => $employee->birth_date,
+                'manager_address' =>$employee->address,
+                'salary' => $employee->salary,
+                'rank' => $request->rank,
+                'employment_date' => now()->format('Y-m-d'),
+
+            ]);
+            $deletemp = $employee->delete();
+            return response()->json(['message'=>'Employee has been promoted to warehouse manager'], 200); 
         }
         else{
             $updateemp = $employee->update([
@@ -335,6 +361,47 @@ class EmployeeController extends Controller
     }
 
          return response()->json(['message'=>'Employee not found'], 400);  
+   }
+
+
+   public function GetEmployee(Request $request){
+
+    $validator = Validator::make($request->all() , [
+        'employee_id' => 'required',
+    ]);
+
+    if ($validator->fails())
+    {
+        return response()->json($validator->errors()->toJson(),400);
+    }
+
+    $employee = Employee::where('id' , $request->employee_id)->first();
+
+    if($employee){
+        return response()->json($employee); 
+    }
+
+    return response()->json(['message'=>'Employee not found'], 400);  
+
+   }
+
+   public function GetBranchEmployees(Request $request){
+
+    $validator = Validator::make($request->all() , [
+        'branch_id' => 'required'
+    ]);
+
+    if ($validator->fails())
+    {
+        return response()->json($validator->errors()->toJson(),400);
+    }
+
+    $employees = Employee::where('branch_id' , $request->branch_id)->get();
+    if($employees){
+        return response()->json($employees); 
+    }
+
+    return response()->json(['message'=>'No employees found'], 400);  
    }
 
 

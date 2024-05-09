@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('branch_managers', function (Blueprint $table) {
             $table->id();
+            $table->string('national_id');
             $table->string('name')->unique();
              $table->string('email')->unique();
              $table->timestamp('email_verified_at')->nullable();

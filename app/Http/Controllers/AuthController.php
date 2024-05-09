@@ -88,4 +88,26 @@ class AuthController extends Controller
         }
         return response()->json(['error' => 'Unauthorized'], 401);
     }
+
+    public function Logout(){
+
+        if(Auth::guard('admin')->check()){
+            Auth::guard('admin')->logout();
+        }
+        elseif(Auth::guard('employee')->check()){
+            Auth::guard('employee')->logout();
+        }
+        elseif(Auth::guard('branch_manager')->check()){
+            Auth::guard('branch_manager')->logout();
+        }
+        elseif(Auth::guard('customer')->check()){
+            Auth::guard('customer')->logout();
+        }
+        elseif(Auth::guard('warehouse_manager')->check()){
+            Auth::guard('warehouse_manager')->logout();
+        }
+
+        return response()->json(['message'=>'Loged out successfully']);
+
+    }
 }

@@ -29,6 +29,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post( 'register' , [AuthController::class , 'Register']);
 Route::post( 'login' , [AuthController::class , 'Login']);
+Route::post('logout' , [AuthController::class , 'Logout']);
 
 
 
@@ -105,8 +106,11 @@ Route::group(['middleware' => 'Employee',
          Route::get('GetArchiveData' , [TripController::class , 'GetArchiveData']);         
          Route::post('GetTripInformation' , [TripController::class , 'GetTripInformation']);    
          Route::get('getemployees' , [EmployeeController::class , 'GetEmployees']);
-        
-
+         Route::post('promoteemployee' , [EmployeeController::class , 'PromoteEmployee']);
+         Route::post('getemployee' , [EmployeeController::class , 'GetEmployee']);
+         Route::post('getbranchemployees' , [EmployeeController::class , 'GetBranchEmployees']);
+         Route::get('getwarehouses'  ,[WarehouseController::class , 'GetWarehouses']);
+         Route::post('getwarehousemanager' , [WarehouseController::class , 'GetWarehouseManager']);
      
      
      });
