@@ -19,6 +19,18 @@ use Illuminate\Support\Str;
 class EmployeeController extends Controller
 {
 
+    public function GetEmployees(Request $request){
+
+        $emps=Employee::pluck('name');
+        return response()->json($emps);
+
+
+
+
+    }
+
+
+
     public function AddEmployee(Request $request){
 
         $validator =Validator::make($request->all(),[

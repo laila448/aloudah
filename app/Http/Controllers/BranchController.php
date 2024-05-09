@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\PasswordMail;
 use App\Models\Branch;
 use App\Models\Branch_Manager;
+use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -17,8 +18,9 @@ class BranchController extends Controller
 
      public function GetAllBranches()
       {
-        $branches=Branch::pluck('desk');
-        return response()->json($branches);
+      //  json(['Archived trips' => $archivedRecords]);
+        $branches=Branch::select('address','desk')->get();
+        return response()->json(['address  ' =>$branches]);
 
       }
 
@@ -37,7 +39,7 @@ class BranchController extends Controller
              'date_of_birth'=>'required|date_format:Y-m-d',
              'manager_address'=>'required',
             'salary'=>'required',
-            'rank'=>'required',
+            'rank'=> ['required',Rule::in(['Branch_manager'])  ],
           
         ]);
       

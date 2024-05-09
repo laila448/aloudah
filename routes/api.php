@@ -100,6 +100,12 @@ Route::group(['middleware' => 'Employee',
          Route::get('gettrucks' , [TruckController::class , 'GetTrucks']);       
          Route::post('truckrecord' , [TruckController::class , 'GetTruckRecord']);       
          Route::post('truckinformation' , [TruckController::class , 'GetTruckInformation']);       
+         Route::get('gettrips' , [TripController::class , 'GetAllTrips']);    
+         Route::get('getallactivetrips' , [TripController::class , 'GetActiveTrips']);
+         Route::get('GetArchiveData' , [TripController::class , 'GetArchiveData']);         
+         Route::post('GetTripInformation' , [TripController::class , 'GetTripInformation']);    
+         Route::get('getemployees' , [EmployeeController::class , 'GetEmployees']);
+        
 
      
      

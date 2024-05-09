@@ -8,6 +8,7 @@ use App\Models\Warehouse_Manager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -55,7 +56,8 @@ class WarehouseController extends Controller
         'date_of_birth'=>'required|date_format:Y-m-d',
         'manager_address'=>'required',
        'salary'=>'required',
-       'rank'=>'required',
+       'rank'=> ['required',Rule::in(['warehouse_manager'])  ],
+
   ]);
              $password = Str::random(8);
                 $warehousemanager = new Warehouse_Manager();

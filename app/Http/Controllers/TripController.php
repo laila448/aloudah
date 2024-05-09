@@ -149,6 +149,31 @@ class TripController extends Controller
  
    }
 
+   public function GetTripInformation(Request $request)
+   {
+    
+  $validator =Validator::make($request->all(),[
+    'trip_number'=>'required',
+       ]);
+
+
+    $tripnum = $request->input('trip_number');
+
+    $trip = Trip::where('number', $tripnum)->first();
+
+    
+    if (!$trip) {
+        return response()->json(['message' => 'Trip not found'], 404);
+    }
+
+
+     return response()->json(['trip  information:'=>$trip]) ;
+   //  return response()->json(['truck information' => $truck]);
+  }
+
+
+
+
    public function GetArchiveData(Request $request)
    {
 
