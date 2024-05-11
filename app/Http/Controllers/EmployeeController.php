@@ -97,7 +97,7 @@ class EmployeeController extends Controller
             ]);
                 }
         return response()->json([
-            'message'=>'Employee addedd successfully',
+            'message'=>'Employee added successfully',
         ],201);
     }
        
@@ -167,7 +167,7 @@ class EmployeeController extends Controller
             $updated_driver = $driver->update( $validator->validated());
 
             return response()->json([
-                'message'=>'Driver updated successfully',
+                'message'=>'Driver updated successfully'
             ],200); 
         }
     }

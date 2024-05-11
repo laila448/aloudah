@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\BranchManagerController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\TripController;
 use App\Http\Controllers\TruckController;
@@ -14,7 +15,7 @@ use App\Models\Truck;
 use App\Models\Warehouse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
+use PHPOpenSourceSaver\JWTAuth\Claims\Custom;
 
 /*
 |--------------------------------------------------------------------------
@@ -74,6 +75,10 @@ Route::group(['middleware' => 'Employee',
         Route::get('getbranches' , [BranchController::class , 'GetBranches']);  
         Route::get('gettrips' , [TripController::class , 'GetAllTrips']);    
         Route::get('getallactivetrips' , [TripController::class , 'GetActiveTrips']);
+        Route::post('addcustomer' , [CustomerController::class , 'AddCustomer']);
+        Route::post('updatecustomer'  ,[CustomerController::class , 'UpdateCustomer']);
+        Route::post('deletecustomer' , [CustomerController::class , 'DeleteCustomer']);
+        Route::post('getcustomer' , [CustomerController::class , 'GetCustomer']);
 
         ////////////////emp adm BM////////////////////////////
         Route::get('gettrucks' , [TruckController::class , 'GetTrucks']);       
@@ -111,6 +116,8 @@ Route::group(['middleware' => 'Employee',
          Route::post('getbranchemployees' , [EmployeeController::class , 'GetBranchEmployees']);
          Route::get('getwarehouses'  ,[WarehouseController::class , 'GetWarehouses']);
          Route::post('getwarehousemanager' , [WarehouseController::class , 'GetWarehouseManager']);
+         Route::post('getcustomer' , [CustomerController::class , 'GetCustomer']);
+         Route::get('getcustomers', [CustomerController::class , 'GetCustomers']);
      
      
      });
