@@ -19,7 +19,7 @@ class BranchController extends Controller
      public function GetAllBranches()
       {
       //  json(['Archived trips' => $archivedRecords]);
-        $branches=Branch::select('id','address','desk')->get();
+        $branches=Branch::select('id','address','desk')->paginate(3);
         return response()->json(['address  ' =>$branches]);
 
       }
