@@ -19,8 +19,8 @@ class BranchController extends Controller
      public function GetAllBranches()
       {
       //  json(['Archived trips' => $archivedRecords]);
-        $branches=Branch::select('id','address','desk')->get();
-        return response()->json(['address  ' =>$branches]);
+        $branches=Branch::select('id','address','desk')->paginate(5);
+        return response()->json(['address' =>$branches]);
 
       }
 
@@ -30,17 +30,6 @@ class BranchController extends Controller
           'desk'=>'required|min:3',
             'address'=>'required',
             'phone'=>'required|min:4|max:15',
-            'national_id'=>'required|max:11',
-             'manager_name'=>'required',
-             'email'=>'required',
-             //'password'=>'required',
-             'phone_number'=>'required ',
-             'gender'=>'required',   
-             'mother_name'=>'required',
-             'date_of_birth'=>'required|date_format:Y-m-d',
-             'manager_address'=>'required',
-            'salary'=>'required',
-            'rank'=> ['required',Rule::in(['Branch_manager'])  ],
           
         ]);
       
@@ -54,15 +43,37 @@ class BranchController extends Controller
         $branch->save();
       
 
+                return response()->json([
+                    'message'=>'branch added successfully',  
+                ],201);
+   
+    }
+    public function AddBranchManager (Request $request)
+    {
+        $validator =  $request->validate([
+            'branch_id'=>'required',
+            'national_id'=>'required|max:11',
+             'manager_name'=>'required',
+             'email'=>'required',
+             'phone_number'=>'required ',
+             'gender'=>'required',   
+             'mother_name'=>'required',
+             'date_of_birth'=>'required|date_format:Y-m-d',
+             'manager_address'=>'required',
+            'salary'=>'required',
+            'rank'=> ['required',Rule::in(['Branch_manager'])  ],
+          
+        ]);
+      
+
         $password = Str::random(8);
         $branchmanager = new Branch_Manager();
                 $branchmanager->national_id = $validator['national_id'];
                 $branchmanager->name = $validator['manager_name'];
                 $branchmanager->email = $validator['email'];
                 $branchmanager->password = Hash::make($password); 
-               // $branchmanager->password = Hash::make($validator['password']); 
                 $branchmanager->phone_number = $validator['phone_number'];
-               $branchmanager->branch_id = $branch->id;
+               $branchmanager->branch_id = $validator['branch_id'];
                 $branchmanager->gender = $validator['gender'];
                 $branchmanager->mother_name = $validator['mother_name']; 
                 $branchmanager->date_of_birth = $validator['date_of_birth'];
@@ -77,7 +88,7 @@ class BranchController extends Controller
                   Mail::to($request->email)->send(new PasswordMail($request->manager_name , $password));
                 }
                 return response()->json([
-                    'message'=>'branch added successfully',  
+                    'message'=>'branch manager added successfully',  
                 ],201);
    
     }
@@ -145,7 +156,7 @@ class BranchController extends Controller
     public function GetBranches()
     {
 
-        $branches = Branch::pluck('desk');
+        $branches = Branch::select('id','address','desk')->paginate(5);
         if ($branches->isEmpty()) {
             return response()->json(['message' => 'No branches found']);
         }

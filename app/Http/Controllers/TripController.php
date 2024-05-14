@@ -13,7 +13,7 @@ class TripController extends Controller
 {
     public function GetAllTrips()
     {
-      $trips=Trip::all();
+      $trips=Trip::paginate(10);
       return response()->json($trips);
 
     }
@@ -118,7 +118,7 @@ class TripController extends Controller
        
         $trips = Trip::with('driver:id,name', 'branch:id,address,desk', 'truck:id,number')
         ->where('status', 'active')
-        ->get();
+        ->paginate(3);
 
         
         if ($trips->isEmpty()) {
@@ -149,17 +149,11 @@ class TripController extends Controller
  
    }
 
-   public function GetTripInformation(Request $request)
+   public function GetTripInformation( $trip_number)
    {
-    
-  $validator =Validator::make($request->all(),[
-    'trip_number'=>'required',
-       ]);
+ 
 
-
-    $tripnum = $request->input('trip_number');
-
-    $trip = Trip::where('number', $tripnum)->first();
+    $trip = Trip::where('number', $trip_number)->first();
 
     
     if (!$trip) {
@@ -178,7 +172,7 @@ class TripController extends Controller
    {
 
     $archivedRecords = Trip::with('driver:id,name', 'branch:id,address', 'truck:id,number')
-    ->where('archived', true)->get();
+    ->where('archived', true)->paginate(3);
     
     
     if ($archivedRecords->isEmpty())

@@ -74,22 +74,13 @@ class VacationController extends Controller
         return response()->json(['message'=>'Warehouse manager not found'], 400);  
     }
 
-    public function GetEmployeeVacation(Request $request){
+    public function GetEmployeeVacation( $id){
 
-        $validator = Validator::make($request->all() , [
-            'employee_id'=>'required'
-        ]);
-
-        if ($validator->fails())
-        {
-            return response()->json($validator->errors()->toJson(),400);
-        }
-
-        $employee = Employee::where('id' , $request->employee_id)->first();
+        $employee = Employee::where('id' , $id)->first();
 
         if($employee){
             $vacations = Vacation::where('user_type' , 'employee')
-                                ->where('user_id' , $request->employee_id)
+                                ->where('user_id' , $id)
                                 ->get();
             if(!$vacations){
                 return response()->json(['message'=>'No vacations found'], 400);  
@@ -101,22 +92,14 @@ class VacationController extends Controller
         return response()->json(['message'=>'Employee not found'], 400);  
     }
 
-    public function GetWhManagerVacation(Request $request){
+    public function GetWhManagerVacation( $id){
 
-        $validator = Validator::make($request->all() , [
-            'wmanager_id'=>'required'
-        ]);
-
-        if ($validator->fails())
-        {
-            return response()->json($validator->errors()->toJson(),400);
-        }
-
-        $wmanager = Warehouse::where('id' , $request->wmanager_id)->first();
+    
+        $wmanager = Warehouse::where('id' , $id)->first();
 
         if($wmanager){
             $vacations = Vacation::where('user_type' , 'warehouse_manager')
-                                ->where('user_id' , $request->wmanager_id)
+                                ->where('user_id' , $id)
                                 ->get();
             if(!$vacations){
                 return response()->json(['message'=>'No vacations found'], 400);  

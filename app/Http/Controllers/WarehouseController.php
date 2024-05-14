@@ -142,7 +142,7 @@ class WarehouseController extends Controller
 
     public function GetWarehouses(){
 
-      $warehouses  = Warehouse::all();
+      $warehouses  = Warehouse::paginate(10);
       if($warehouses){
         return response()->json($warehouses); 
       }
@@ -150,17 +150,10 @@ class WarehouseController extends Controller
       return response()->json(['message'=>'No warehouses found'], 400);
     }
 
-    public function GetWarehouseManager(Request $request){
+    public function GetWarehouseManager( $id){
 
-      $validator = Validator::make($request->all() ,[
-        'warehouse_id' => 'required'
-      ]);
-      if ($validator->fails())
-    {
-        return response()->json($validator->errors()->toJson(),400);
-    }
 
-    $whmanager = Warehouse_Manager::where('warehouse_id' , $request->warehouse_id)->first();
+    $whmanager = Warehouse_Manager::where('warehouse_id' , $id)->first();
     if($whmanager){
       return response()->json($whmanager); 
     }

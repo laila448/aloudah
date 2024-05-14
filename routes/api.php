@@ -94,6 +94,7 @@ Route::group(['middleware' => 'Employee',
  Route::group(['middleware' => 'Admin',
               'prefix' => 'admin'], function() {
          Route::post('addbranch' , [BranchController::class , 'AddBranch']);
+         Route::post('addbranchmanager' , [BranchController::class , 'AddBranchManager']);
          Route::post('addwarehouse' , [WarehouseController::class , 'addwarehouse']);
          Route::post('addwarehousemanager' , [WarehouseController::class , 'AddWarehouseManager']);
          Route::post('updatebranch', [BranchController::class , 'UpdateBranch'] );         
@@ -101,21 +102,21 @@ Route::group(['middleware' => 'Employee',
          Route::post('deleteBranch', [BranchController::class , 'deleteBranch'] );
          Route::post('deleteWarehouse', [WarehouseController::class , 'deleteWarehouse'] );
          Route::get('getbranches', [BranchController::class , 'GetAllBranches'] );
-         Route::post('getemployeevacation' , [VacationController::class , 'GetEmployeeVacation']);
-         Route::post('getwmanagervacation' , [VacationController::class , 'GetWhManagerVacation']);
+         Route::get('getemployeevacation/{id}' , [VacationController::class , 'GetEmployeeVacation']);
+         Route::get('getwmanagervacation/{id}' , [VacationController::class , 'GetWhManagerVacation']);
          Route::get('gettrucks' , [TruckController::class , 'GetTrucks']);       
-         Route::post('truckrecord' , [TruckController::class , 'GetTruckRecord']);       
-         Route::post('truckinformation' , [TruckController::class , 'GetTruckInformation']);       
+         Route::get('truckrecord/{desk}' , [TruckController::class , 'GetTruckRecord']);       
+         Route::get('truckinformation/{truck_number}' , [TruckController::class , 'GetTruckInformation']);       
          Route::get('gettrips' , [TripController::class , 'GetAllTrips']);    
          Route::get('getallactivetrips' , [TripController::class , 'GetActiveTrips']);
          Route::get('GetArchiveData' , [TripController::class , 'GetArchiveData']);         
-         Route::post('GetTripInformation' , [TripController::class , 'GetTripInformation']);    
+         Route::get('GetTripInformation/{trip_number}' , [TripController::class , 'GetTripInformation']);    
          Route::get('getemployees' , [EmployeeController::class , 'GetEmployees']);
          Route::post('promoteemployee' , [EmployeeController::class , 'PromoteEmployee']);
-         Route::post('getemployee' , [EmployeeController::class , 'GetEmployee']);
-         Route::post('getbranchemployees' , [EmployeeController::class , 'GetBranchEmployees']);
+         Route::get('getemployee/{id}' , [EmployeeController::class , 'GetEmployee']);
+         Route::get('getbranchemployees/{id}' , [EmployeeController::class , 'GetBranchEmployees']);
          Route::get('getwarehouses'  ,[WarehouseController::class , 'GetWarehouses']);
-         Route::post('getwarehousemanager' , [WarehouseController::class , 'GetWarehouseManager']);
+         Route::get('getwarehousemanager/{id}' , [WarehouseController::class , 'GetWarehouseManager']);
          Route::post('getcustomer' , [CustomerController::class , 'GetCustomer']);
          Route::get('getcustomers', [CustomerController::class , 'GetCustomers']);
      

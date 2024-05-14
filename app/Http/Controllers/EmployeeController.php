@@ -22,7 +22,7 @@ class EmployeeController extends Controller
 
     public function GetEmployees(Request $request){
 
-        $emps=Employee::pluck('name');
+        $emps=Employee::paginate(10);
         return response()->json($emps);
 
 
@@ -364,18 +364,10 @@ class EmployeeController extends Controller
    }
 
 
-   public function GetEmployee(Request $request){
+   public function GetEmployee( $id){
 
-    $validator = Validator::make($request->all() , [
-        'employee_id' => 'required',
-    ]);
 
-    if ($validator->fails())
-    {
-        return response()->json($validator->errors()->toJson(),400);
-    }
-
-    $employee = Employee::where('id' , $request->employee_id)->first();
+    $employee = Employee::where('id' , $id)->first();
 
     if($employee){
         return response()->json($employee); 
@@ -385,18 +377,11 @@ class EmployeeController extends Controller
 
    }
 
-   public function GetBranchEmployees(Request $request){
+   public function GetBranchEmployees( $id){
 
-    $validator = Validator::make($request->all() , [
-        'branch_id' => 'required'
-    ]);
+   
 
-    if ($validator->fails())
-    {
-        return response()->json($validator->errors()->toJson(),400);
-    }
-
-    $employees = Employee::where('branch_id' , $request->branch_id)->get();
+    $employees = Employee::where('branch_id' , $id)->get();
     if($employees){
         return response()->json($employees); 
     }

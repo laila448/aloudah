@@ -94,20 +94,10 @@ class TruckController extends Controller
 
     
 
-      public function  GetTruckInformation(Request $request)
+      public function  GetTruckInformation( $truck_number)
     {
-        $validator =Validator::make($request->all(),[
-            'truck_number'=>'required',
-        ]);
-
-        if ($validator->fails())
-        {
-            return response()->json($validator->errors()->toJson(),400);
-        }
-
-        $truckNumber = $request->input('truck_number');
-
-        $truck = Truck::where('number', $truckNumber)->first();
+     
+        $truck = Truck::where('number', $truck_number)->first();
 
 
       if (!$truck) {
@@ -136,22 +126,13 @@ class TruckController extends Controller
 
     public function  GetTrucks ()
     {
-      $trucks=Truck::all();
+      $trucks=Truck::pagiate(10);
       return response()->json(['truck information' => $trucks]);
     }
 
-    public function GetTruckRecord(Request $request)
+    public function GetTruckRecord($desk)
     {
-        $validator =Validator::make($request->all(),[
-            'desk'=>'required',
-        ]);
-
-        if ($validator->fails())
-        {
-            return response()->json($validator->errors()->toJson(),400);
-        }
-
-        $desk = $request->input('desk');
+  
         $branch = Branch::where('desk', $desk)->first();
     
         if (!$branch) {
