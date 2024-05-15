@@ -18,15 +18,15 @@ return new class extends Migration
             // $table->unsignedBigInteger('trip_id');
             // $table->foreign('trip_id')->references('id')->on('trips')->onDelete('cascade');
             $table->string('number');
-            $table->string('status');
-            $table->string('general_total');
-            $table->double('discount');
-            $table->string('net_total');
-            $table->string('misc_paid');
-            $table->string('against_shipping');
-            $table->string('adapter');
-            $table->string('advance');
-            $table->string('collection');
+            $table->string('status')->default('open');
+            $table->string('general_total')->nullable();
+            $table->double('discount')->nullable();
+            $table->string('net_total')->nullable();
+            $table->string('misc_paid')->nullable();
+            $table->string('against_shipping')->nullable();
+            $table->string('adapter')->nullable();
+            $table->string('advance')->nullable();
+            $table->string('collection')->nullable();
             $table->timestamps(); 
         });
     }

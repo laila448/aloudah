@@ -11,6 +11,7 @@ class Shipping extends Model
     protected $fillable = [
       'source_id',
       'destination_id',
+      'manifest_id',
       'number',
        'sender',
      'receiver',
@@ -18,7 +19,7 @@ class Shipping extends Model
      'receiver_number',
      'source',   
      'quantity',
-     'type',
+     'price_id',
       'weight',
      'size',
      'content',
@@ -40,5 +41,11 @@ class Shipping extends Model
    }
    public function branchDest(){
     return $this->belongsTo(Branch::class , 'destination_id');
+ }
+
+
+ public function price()
+ {
+     return $this->belongsTo(Price::class);
  }
 }

@@ -6,11 +6,13 @@ use App\Http\Controllers\BranchController;
 use App\Http\Controllers\BranchManagerController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\ShippingController;
 use App\Http\Controllers\TripController;
 use App\Http\Controllers\TruckController;
 use App\Http\Controllers\VacationController;
 use App\Http\Controllers\WarehouseController;
 use App\Models\Employee;
+use App\Models\Shipping;
 use App\Models\Truck;
 use App\Models\Warehouse;
 use Illuminate\Http\Request;
@@ -53,11 +55,16 @@ Route::group(['middleware' => 'BranchManager',
        Route::get('gettrucks' , [TruckController::class , 'GetTrucks']);      
        Route::post('addvacationforemployee' , [VacationController::class , 'AddVacationForEmployee']);
        Route::post('addvacationforwmanager' , [VacationController::class , 'AddVacationForWhManager']);
-       Route::post('getemployeevacation' , [VacationController::class , 'GetEmployeeVacation']);
-       Route::post('getwmanagervacation' , [VacationController::class , 'GetWhManagerVacation']);
-       Route::post('truckrecord' , [TruckController::class , 'GetTruckRecord']);       
-       Route::post('truckinformation' , [TruckController::class , 'GetTruckInformation']);       
+       Route::get('getemployeevacation/{id}' , [VacationController::class , 'GetEmployeeVacation']);
+       Route::get('getwmanagervacation/{id}' , [VacationController::class , 'GetWhManagerVacation']);      
        Route::post('editpermissions' , [EmployeeController::class , 'EditPermissions']);
+       Route::get('truckrecord/{desk}' , [TruckController::class , 'GetTruckRecord']);       
+       Route::get('truckinformation/{truck_number}' , [TruckController::class , 'GetTruckInformation']);   
+       Route::get('getcustomers', [CustomerController::class , 'GetCustomers']);
+       Route::post('shippingprices', [ShippingController::class , 'DetermineShippingPrices']);
+       Route::post('editshippingprices', [ShippingController::class , 'EditShippingPrices']);
+       Route::get('priceslist', [ShippingController::class , 'GetPricesList']);
+
 
 
               });
@@ -79,11 +86,10 @@ Route::group(['middleware' => 'Employee',
         Route::post('updatecustomer'  ,[CustomerController::class , 'UpdateCustomer']);
         Route::post('deletecustomer' , [CustomerController::class , 'DeleteCustomer']);
         Route::post('getcustomer' , [CustomerController::class , 'GetCustomer']);
-
-        ////////////////emp adm BM////////////////////////////
         Route::get('gettrucks' , [TruckController::class , 'GetTrucks']);       
-     Route::post('truckinformation' , [TruckController::class , 'GetTruckInformation']);       
-     Route::post('truckrecord' , [TruckController::class , 'GetTruckRecord']);       
+        Route::post('truckinformation' , [TruckController::class , 'GetTruckInformation']);       
+        Route::post('truckrecord' , [TruckController::class , 'GetTruckRecord']);       
+        Route::get('priceslist', [ShippingController::class , 'GetPricesList']);
 
       
       });

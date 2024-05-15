@@ -19,14 +19,15 @@ return new class extends Migration
             $table->foreign('source_id')->references('id')->on('branches')->onDelete('cascade');
             $table->unsignedBigInteger('destination_id');
             $table->foreign('destination_id')->references('id')->on('branches')->onDelete('cascade');
+            $table->unsignedBigInteger('manifest_id')->nullable();
+            $table->foreign('manifest_id')->references('id')->on('manifests')->onDelete('cascade');
             $table->string('sender');
             $table->string('receiver');
             $table->string('sender_number');
             $table->string('receiver_number');
             $table->bigInteger('number');
-            //  $table->string('destination');
-            // $table->integer('quantity');
-            $table->string('type');
+            $table->unsignedBigInteger('price_id');
+            $table->foreign('price_id')->references('id')->on('prices')->onDelete('cascade');
             $table->double('weight');
             $table->string('size');
             $table->string('content');

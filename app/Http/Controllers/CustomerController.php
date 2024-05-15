@@ -95,7 +95,7 @@ class CustomerController extends Controller
 
     public function GetCustomers(){
 
-        $customers = Customer::all();
+        $customers = Customer::paginate(10);
         if($customers->isEmpty()){
             return response()->json(['message'=>'No customers found'] , 400);
            

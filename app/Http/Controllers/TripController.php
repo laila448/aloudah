@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Branch;
+use App\Models\Manifest;
+use App\Models\Price;
+use App\Models\Shipingsss;
 use App\Models\Shipping;
 use App\Models\Trip;
 use Illuminate\Http\Request;
@@ -22,36 +26,42 @@ class TripController extends Controller
     public function AddTrip(Request $request)
     {
 
-        $validator =Validator::make($request->all(),[
+        $validator =  $request->validate([
             'branch_id'=>'required',
             'destination_id'=>'required',
             'truck_id'=>'required',
             'driver_id'=>'required',
-            'manifest_id'=> 'required',
-            'trip_number'=>'required|string',
-        //    'source'=>'required|string',
-          
-           
+          //  'trip_number'=>'required|string',
+    
         ]);
-        if ($validator->fails())
-        {
-            return response()->json($validator->errors()->toJson(),400);
-        }
+        $branch = Branch::findOrFail($validator['branch_id']);
+        $tripCount = Trip::where('branch_id',$branch->id)->count();
+        // $tripNumber = strtoupper(substr($branch->desk, 0, 2)) . '_' . $tripCount + 1;
+         $tripNumber = strtoupper(substr($branch->desk, 0, 2)) . '_' . $branch->id . '_' . $tripCount;
+      
+         $trip = new Trip();
+        $trip->branch_id = $validator['branch_id'];
+        $trip->destination_id = $validator['destination_id'];
+        $trip->truck_id = $validator['truck_id'];
+        $trip->driver_id = $validator['driver_id'];
+        $trip->number = $tripNumber;
+        $trip->date =now()->format('Y-m-d');
+        $trip-> created_by= Auth::guard('employee')->user()->name;
+          $trip->save();
+        
+       
 
-        $employee = Auth::guard('employee')->user()->name;
-            $trip=Trip::create([
-                'branch_id'=>$request->branch_id,
-                'destination_id'=>$request->destination_id,
-                'truck_id'=>$request->truck_id,
-                'driver_id'=>$request->driver_id,
-                'manifest_id'=>$request->manifest_id,
-                'number'=>$request->trip_number,
-                'source'=> $request->source,
-                'date'=>now()->format('Y-m-d'),
-                'created_by'=>$employee,
 
-           ]);
-           return response()->json(['message'=>'trip addedd successfully', ],200);
+    
+
+       $manifest = new Manifest();
+       $manifest->number = $tripNumber;
+      $manifest->trip_id =$trip->id;
+         $manifest->save();
+
+
+
+           return response()->json(['message'=>'trip  and manifest addedd successfully', ],200);
     
     }
 
@@ -190,13 +200,14 @@ class TripController extends Controller
     $validator =Validator::make($request->all(),[
     'source_id'=>'required',
     'destination_id' => 'required',
+   // 'manifest_id'=>'',
     'number'=>'required',
     'sender'=>'required',
     'receiver'=> 'required',
     'sender_number'=> 'required|max:15',
     'receiver_number'=> 'required|max:15',
     'num_of_packages'=>'required',
-    'package_type'=>'required',
+    'type_id'=>'required',
     'weight'=>'required',
     'size'=>'required',
      'content'=>'required',
@@ -217,24 +228,28 @@ class TripController extends Controller
         $errors = $validator->errors();
    }
 
-  // $employee = Auth::guard('employee')->user()->name;
+   $price = Price::findOrFail($request->type_id);
+
+   $shippingCost = $price->cost * $request->weight;
+
 
     $trip=Shipping::create([
         'source_id'=>$request->source_id,
         'destination_id'=>$request->destination_id,
+      //  'manifest_id'=>$request->manifest_id,
         'number'=>$request->number,
         'sender'=>$request->sender,
         'receiver'=>$request->receiver,
         'sender_number'=>$request->sender_number,
         'receiver_number'=>$request->receiver_number,
         'num_of_packages'=> $request->num_of_packages,
-        'type'=>$request->package_type,
+        'price_id'=>$request->type_id,
         'weight'=>$request->weight,
         'size'=>$request->size,
         'content'=>$request->content,
         'marks'=>$request->marks,
         'notes'=>$request->notes,
-        'shipping_cost'=>$request->shipping_cost,
+        'shipping_cost'=>$shippingCost,
         'against_shipping'=>$request->against_shipping,
         'adapter'=>$request->adapter,
         'advance'=>$request->advance,
