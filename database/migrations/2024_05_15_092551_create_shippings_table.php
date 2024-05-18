@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('receiver');
             $table->string('sender_number');
             $table->string('receiver_number');
-            $table->bigInteger('number');
+            $table->bigInteger('number')->nullable();
             $table->unsignedBigInteger('price_id');
             $table->foreign('price_id')->references('id')->on('prices')->onDelete('cascade');
             $table->double('weight');

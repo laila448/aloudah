@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Price;
 use App\Models\Shipping;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class ShippingController extends Controller
@@ -79,6 +80,22 @@ public function GetPricesList()
 {
     $list=Price::paginate(10);
     return response()->json(['Price List :' =>$list]);
+
+
+}
+public function GetAllRceipts($destination_id)
+{
+    $branch_id= Auth::guard('employee')->user()->branch_id;
+    
+    $receipts=Shipping::where ([
+        ['source_id', '=', $branch_id],
+        ['destination_id', '=', $destination_id],
+                       ])->paginate(10);
+    
+    //    where('destination_id' , $destination_id)->get();
+    
+    return response()->json(['All Rceipts :' =>$receipts]);
+
 
 
 }

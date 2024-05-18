@@ -90,8 +90,8 @@ Route::group(['middleware' => 'Employee',
         Route::post('truckinformation' , [TruckController::class , 'GetTruckInformation']);       
         Route::post('truckrecord' , [TruckController::class , 'GetTruckRecord']);       
         Route::get('priceslist', [ShippingController::class , 'GetPricesList']);
+        Route::get('allreceipts/{destination_id}', [ShippingController::class , 'GetAllRceipts']);//الايصالات
 
-      
       });
               
 

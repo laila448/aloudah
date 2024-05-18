@@ -36,7 +36,6 @@ class TripController extends Controller
         ]);
         $branch = Branch::findOrFail($validator['branch_id']);
         $tripCount = Trip::where('branch_id',$branch->id)->count();
-        // $tripNumber = strtoupper(substr($branch->desk, 0, 2)) . '_' . $tripCount + 1;
          $tripNumber = strtoupper(substr($branch->desk, 0, 2)) . '_' . $branch->id . '_' . $tripCount;
       
          $trip = new Trip();
@@ -195,13 +194,18 @@ class TripController extends Controller
 
 
   }
+
+
+
+
+
     public function AddTripInvoice(Request $request) 
   { 
     $validator =Validator::make($request->all(),[
     'source_id'=>'required',
     'destination_id' => 'required',
    // 'manifest_id'=>'',
-    'number'=>'required',
+   //'number'=>'required',
     'sender'=>'required',
     'receiver'=> 'required',
     'sender_number'=> 'required|max:15',
@@ -228,16 +232,17 @@ class TripController extends Controller
         $errors = $validator->errors();
    }
 
+
    $price = Price::findOrFail($request->type_id);
 
    $shippingCost = $price->cost * $request->weight;
 
 
-    $trip=Shipping::create([
+    $shipping=Shipping::create([
         'source_id'=>$request->source_id,
         'destination_id'=>$request->destination_id,
       //  'manifest_id'=>$request->manifest_id,
-        'number'=>$request->number,
+       // 'number'=>$request->number,
         'sender'=>$request->sender,
         'receiver'=>$request->receiver,
         'sender_number'=>$request->sender_number,
@@ -261,6 +266,9 @@ class TripController extends Controller
       
 
    ]);
+
+   $shipping->number = $shipping->id;
+   $shipping->save();
    return response()->json(['message'=>' Addedd Successfully', ],200);
 
 }
