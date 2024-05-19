@@ -23,6 +23,7 @@ class Driver extends Model
        'birth_place',
        'mobile',
         'address',
+        'certificate_type',
        // 'national_number',
        // 'vacations',
         'salary',

@@ -14,7 +14,7 @@ class Manifest extends Model
        'status',
        'general_total',
         'discount',
-       'net_total',
+       'net_total', 
        'misc_paid',
        'against_shipping',
        'adapter',
@@ -23,8 +23,12 @@ class Manifest extends Model
          ];
          public function trip(){
              return $this->belongsTo(trip::class, 'trip_id');
-         }
-         public function shipping(){
-            return $this->hasMany(shipping::class, 'manifest_id');
-        }
+          }
+        //  public function shipping(){
+        //     return $this->hasMany(shipping::class, 'manifest_number');
+        // }
+        public function shippings()
+    {
+        return $this->hasMany(Shipping::class, 'manifest_number', 'number');
+    }
 }

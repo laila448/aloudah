@@ -9,13 +9,14 @@ class Shipping extends Model
 {
     use HasFactory;
     protected $fillable = [
-      'source_id',
+      'source_id', 
       'destination_id',
       'manifest_id',
       'number',
        'sender',
      'receiver',
      'sender_number',
+    'manifest_number',
      'receiver_number',
      'source',   
      'quantity',

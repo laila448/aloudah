@@ -6,11 +6,13 @@ use App\Http\Controllers\BranchController;
 use App\Http\Controllers\BranchManagerController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\compliantController;
 use App\Http\Controllers\ShippingController;
 use App\Http\Controllers\TripController;
 use App\Http\Controllers\TruckController;
 use App\Http\Controllers\VacationController;
 use App\Http\Controllers\WarehouseController;
+use App\Models\Complaint;
 use App\Models\Employee;
 use App\Models\Shipping;
 use App\Models\Truck;
@@ -74,7 +76,7 @@ Route::group(['middleware' => 'BranchManager',
 Route::group(['middleware' => 'Employee',
               'prefix' => 'employee'], function() {
         Route::post('addtrip' , [TripController::class , 'AddTrip']);
-        Route::post('addtripinvoice' , [TripController::class , 'AddTripInvoice']);
+        Route::post('addinvoice' , [ShippingController::class , 'AddInvoice']);
         Route::post('edittrip' , [TripController::class , 'EditTrip']);
         Route::post('canceltrip' , [TripController::class , 'CancelTrip']);
         Route::post('archiveData' , [TripController::class , 'ArchiveData']);
@@ -87,10 +89,15 @@ Route::group(['middleware' => 'Employee',
         Route::post('deletecustomer' , [CustomerController::class , 'DeleteCustomer']);
         Route::post('getcustomer' , [CustomerController::class , 'GetCustomer']);
         Route::get('gettrucks' , [TruckController::class , 'GetTrucks']);       
-        Route::post('truckinformation' , [TruckController::class , 'GetTruckInformation']);       
-        Route::post('truckrecord' , [TruckController::class , 'GetTruckRecord']);       
+        Route::get('truckrecord/{desk}' , [TruckController::class , 'GetTruckRecord']);       
+        Route::get('truckinformation/{truck_number}' , [TruckController::class , 'GetTruckInformation']);            
         Route::get('priceslist', [ShippingController::class , 'GetPricesList']);
         Route::get('allreceipts/{destination_id}', [ShippingController::class , 'GetAllRceipts']);//الايصالات
+        Route::post('addcompliant', [compliantController::class , 'AddCompliantEmp']);
+        Route::get('GetTripInformation/{trip_number}' , [TripController::class , 'GetTripInformation']);    
+        Route::get('getManifest/{manifest_number}' , [ShippingController::class , 'GetManifestWithInvoices']);    
+        Route::post('updatemanifest', [ShippingController::class , 'UpdateManifest']);
+
 
       });
               
@@ -133,7 +140,7 @@ Route::group(['middleware' => 'Employee',
 
      Route::group(['middleware' => 'Customer',
      'prefix' => 'customer'], function() {
-
+          Route::post('addcompliant', [compliantController::class , 'AddCompliant']);
      });   
 
 Route::group(['middleware' => 'WarehouseManager',

@@ -147,6 +147,7 @@ class EmployeeController extends Controller
             'name'=>'min:5|max:255|unique:drivers',
             'phone_number'=> 'max:10',
             'gender'=>'in:male,female',
+            'certificate_type'=>'string',
             'branch_id'=>'numeric',
             'mother_name'=>'string',
             'birth_date'=>'date_format:Y-m-d',
