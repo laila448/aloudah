@@ -7,6 +7,7 @@ use App\Http\Controllers\BranchManagerController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\compliantController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ShippingController;
 use App\Http\Controllers\TripController;
 use App\Http\Controllers\TruckController;
@@ -97,6 +98,12 @@ Route::group(['middleware' => 'Employee',
         Route::get('GetTripInformation/{trip_number}' , [TripController::class , 'GetTripInformation']);    
         Route::get('getManifest/{manifest_number}' , [ShippingController::class , 'GetManifestWithInvoices']);    
         Route::post('updatemanifest', [ShippingController::class , 'UpdateManifest']);
+        Route::post('createtripreport', [ReportController::class , 'CreateTripReport']);
+        Route::post('createtruckreport', [ReportController::class , 'CreateTruckReport']);
+        Route::post('createempreport', [ReportController::class , 'CreateEmpReport']);
+        Route::get('reports/{reportId}/download', [ReportController::class, 'downloadTruckReport']);
+        Route::get('tripreports/{reportId}/download', [ReportController::class, 'downloadTripReport']);
+
 
 
       });

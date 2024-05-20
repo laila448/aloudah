@@ -10,8 +10,9 @@ class Report extends Model
     use HasFactory;
       
     protected $fillable = [
-      'type',
-      'date',
-    ];
+      'file_path',
+      'start_date',
+      'end_date',
+  ];
 
 }

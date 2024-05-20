@@ -15,8 +15,9 @@ return new class extends Migration
     {
         Schema::create('reports', function (Blueprint $table) {
             $table->id();
-            $table->string('type');
-            $table->date('date');
+            $table->string('file_path');
+            $table->date('start_date');
+            $table->date('end_date');
             $table->timestamps();
         });
     }

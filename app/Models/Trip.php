@@ -55,6 +55,15 @@ class Trip extends Model
           {
               return $this->belongsTo(Branch::class);
           }
+          public function source()
+          {
+              return $this->belongsTo(Branch::class, 'branch_id');
+          }
+      
+          public function destination()
+          {
+              return $this->belongsTo(Branch::class, 'destination_id');
+          }
           
 
 }
