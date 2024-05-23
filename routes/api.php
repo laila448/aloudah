@@ -103,6 +103,9 @@ Route::group(['middleware' => 'Employee',
         Route::post('createempreport', [ReportController::class , 'CreateEmpReport']);
         Route::get('reports/{reportId}/download', [ReportController::class, 'downloadTruckReport']);
         Route::get('tripreports/{reportId}/download', [ReportController::class, 'downloadTripReport']);
+        Route::get('alltrucksreports', [ReportController::class, 'getTruckReports']);
+        Route::get('alltripsreports', [ReportController::class, 'getTripReports']);
+        
 
 
 

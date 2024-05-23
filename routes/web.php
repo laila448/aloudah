@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\WebControllers\AdminController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,5 +15,9 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('index');
 });
+
+//Route::get('/{page}', 'Admin@index');
+Route::get('/{page}', [AdminController::class , 'index']);
+

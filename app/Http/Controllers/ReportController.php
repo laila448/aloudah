@@ -150,4 +150,24 @@ public function CreateTruckReport(Request $request){
     return response()->download(storage_path('app/' . $filePath), $fileName);
 }
 
+
+
+
+public function getTruckReports(Request $request)
+{
+    $reports = Report::where('file_path', 'like', '%truck%')
+        ->orderByDesc('created_at')
+        ->get();
+
+    return response()->json(['reports' => $reports]);
+}
+
+public function getTripReports(Request $request)
+{
+    $reports = Report::where('file_path', 'like', '%trip%')
+        ->orderByDesc('created_at')
+        ->get();
+
+    return response()->json(['reports' => $reports]);
+}
 }
