@@ -97,10 +97,14 @@ class CustomerController extends Controller
 
         $customers = Customer::paginate(10);
         if($customers->isEmpty()){
-            return response()->json(['message'=>'No customers found'] , 400);
+            return response()->json([
+                'success' => false ,
+                'message'=>'No customers found'] , 404);
            
         }
-        return response()->json($customers);
+        return response()->json([
+            'success' => true ,
+            'data' => $customers] , 200);
     }
 
     public function GetCustomer(Request $request){
@@ -110,13 +114,21 @@ class CustomerController extends Controller
         ]);
         if ($validator->fails())
         {
-            return response()->json($validator->errors()->toJson(),400);
+            return response()->json([
+             'success' => false,
+             'message' => $validator->errors()->toJson()
+            ],400);
         }
 
         $customer = Customer::where('id' , $request->customer_id)->first();
         if($customer){
-            return response()->json([$customer]);
+            return response()->json([
+                'success' => true ,
+                'data' => $customer
+            ] , 200);
         }
-        return response()->json(['message'=>'Customer not found'], 400);
+        return response()->json([
+            'success' => false ,
+            'message'=>'Customer not found'], 404);
     }
 }

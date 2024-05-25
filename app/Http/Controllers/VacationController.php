@@ -83,13 +83,22 @@ class VacationController extends Controller
                                 ->where('user_id' , $id)
                                 ->get();
             if(!$vacations){
-                return response()->json(['message'=>'No vacations found'], 400);  
+                return response()->json([
+                    'success' => false ,
+                    'message'=>'No vacations found'
+                ], 404);  
             }
 
-            return response()->json(['Vacations'=> $vacations], 200);  
+            return response()->json([
+                'success' => true ,
+                'data'=> $vacations
+            ], 200);  
         }
 
-        return response()->json(['message'=>'Employee not found'], 400);  
+        return response()->json([
+            'success' => false ,
+            'message'=>'Employee not found'
+        ], 404);  
     }
 
     public function GetWhManagerVacation( $id){
@@ -102,12 +111,21 @@ class VacationController extends Controller
                                 ->where('user_id' , $id)
                                 ->get();
             if(!$vacations){
-                return response()->json(['message'=>'No vacations found'], 400);  
+                return response()->json([
+                    'success' => false ,
+                    'message'=>'No vacations found'
+                ], 404);  
             }
 
-            return response()->json(['Vacations'=> $vacations], 200);  
+            return response()->json([
+                'success' => true ,
+                'data' => $vacations
+            ], 200);  
         }
 
-        return response()->json(['message'=>'Warehouse manager not found'], 400);  
+        return response()->json([
+            'success' => false ,
+            'message'=>'Warehouse manager not found'
+        ], 404);  
     }
 }

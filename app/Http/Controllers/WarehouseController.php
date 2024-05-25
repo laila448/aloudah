@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\PasswordMail;
 use App\Models\Warehouse;
 use App\Models\Warehouse_Manager;
+use Dotenv\Parser\Value;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -18,14 +19,20 @@ class WarehouseController extends Controller
     public function addwarehouse(Request $request)
     {
 
-      $validator =  $request->validate([                  
-                      'warehouse_address'=>'required',
-                      'branch_id'=>'required ',
-                      'warehouse_name'=>'required',
-                      'area'=>'required ',
-                      'notes'=>'required ',
-                   
-                ]);
+      $validator =  Validator::make($request->all(), [               
+                    'warehouse_address'=>'required',
+                    'branch_id'=>'required ',
+                    'warehouse_name'=>'required',
+                    'area'=>'required ',
+                    'notes'=>'required ',
+                  ]);
+
+      if ($validator->fails()){
+             return response()->json([
+             'success' => false,
+             'message' => $validator->errors()->toJson()
+            ],400);
+        }
               
                 $warehouse = new Warehouse();
                 $warehouse->address = $validator['warehouse_address']; 
@@ -39,6 +46,7 @@ class WarehouseController extends Controller
                
 
       return response()->json([
+        'success' => true ,
         'message'=>'warehouse added successfully',  
     ],201);
 
@@ -46,7 +54,7 @@ class WarehouseController extends Controller
     public function AddWarehouseManager(Request $request)
     {
 
-      $validator =  $request->validate([                  
+      $validator = Validator::make($request->all(),[                  
         'warehouse_id'=>'required',
         'national_id'=>'required|max:11',
         'manager_name'=>'required',
@@ -60,7 +68,14 @@ class WarehouseController extends Controller
        'rank'=> ['required',Rule::in(['warehouse_manager'])  ],
 
   ]);
-             $password = Str::random(8);
+
+  if ($validator->fails()){
+            return response()->json([
+            'success' => false,
+            'message' => $validator->errors()->toJson()
+            ],400);
+        }
+                $password = Str::random(8);
                 $warehousemanager = new Warehouse_Manager();
                 $warehousemanager->warehouse_id = $validator['warehouse_id'];
                 $warehousemanager->national_id = $validator['national_id'];
@@ -71,10 +86,10 @@ class WarehouseController extends Controller
                 $warehousemanager->gender = $validator['gender'];
                 $warehousemanager->mother_name = $validator['mother_name'];
                 $warehousemanager->date_of_birth = $validator['date_of_birth'];
-                 $warehousemanager->manager_address = $validator['manager_address'];
-                 $warehousemanager->salary = $validator['salary'];
-                 $warehousemanager->rank = $validator['rank'];
-                  $warehousemanager->employment_date = now()->format('Y-m-d');
+                $warehousemanager->manager_address = $validator['manager_address'];
+                $warehousemanager->salary = $validator['salary'];
+                $warehousemanager->rank = $validator['rank'];
+                $warehousemanager->employment_date = now()->format('Y-m-d');
                 $warehousemanager->save();
         
                 if($warehousemanager){
@@ -82,6 +97,7 @@ class WarehouseController extends Controller
                 }
                 
       return response()->json([
+        'success' => true ,
         'message'=>'warehouseManager added successfully',  
     ],201);
 
@@ -108,10 +124,12 @@ class WarehouseController extends Controller
         'rank'=>'string',
         
     ]);
-    if ($validator->fails())
-    {
-        return response()->json($validator->errors()->toJson(),400);
-    }
+    if ($validator->fails()){
+      return response()->json([
+      'success' => false,
+      'message' => $validator->errors()->toJson()
+      ],400);
+      }
 
       $warehouse = Warehouse::find($request->warehouse_id);
       $updatedbranch= $warehouse->update($request->all());
@@ -120,7 +138,10 @@ class WarehouseController extends Controller
       $w_Manager = Warehouse_Manager::where('warehouse_id', $request->warehouse_id)->first();
       $updatedmanager= $w_Manager->update($request->all());
 
-      return response()->json(['message' => 'warehouse updated successfully']);
+      return response()->json([
+        'success' => true ,
+        'message' => 'warehouse updated successfully' 
+      ], 200);
     }
 
     public function deleteWarehouse(Request $request)
@@ -129,25 +150,34 @@ class WarehouseController extends Controller
         'warehouse_id'=>'required|numeric',
     ]);
 
-    if ($validator->fails())
-    {
-        return response()->json($validator->errors()->toJson(),400);
-    }
+    if ($validator->fails()){
+      return response()->json([
+      'success' => false,
+      'message' => $validator->errors()->toJson()
+      ],400);
+      }
 
-        $Warehouse = Warehouse::find($request->warehouse_id)->delete();
+      $Warehouse = Warehouse::find($request->warehouse_id)->delete();
       $WarehouseManager = Warehouse_Manager::where('warehouse_id', $request->warehouse_id)->delete();
 
-        return response()->json(['msg'=>'Warehouse has been deleted'], 200) ;
+        return response()->json([
+          'success' => true ,
+          'msg'=>'Warehouse has been deleted'], 200) ;
     }
 
     public function GetWarehouses(){
 
       $warehouses  = Warehouse::paginate(10);
       if($warehouses){
-        return response()->json($warehouses); 
+        return response()->json([
+          'success' => true ,
+          'data' => $warehouses
+        ] , 200); 
       }
 
-      return response()->json(['message'=>'No warehouses found'], 400);
+      return response()->json([
+        'success' => false ,
+        'message'=>'No warehouses found'], 404);
     }
 
     public function GetWarehouseManager( $id){
@@ -155,9 +185,14 @@ class WarehouseController extends Controller
 
     $whmanager = Warehouse_Manager::where('warehouse_id' , $id)->first();
     if($whmanager){
-      return response()->json($whmanager); 
+      return response()->json([
+        'success' => true ,
+        'data' => $whmanager
+      ] , 200); 
     }
-    return response()->json(['message'=>'Warehouse manager not found'], 400);
+    return response()->json([
+      'success' => false ,
+      'message'=>'Warehouse manager not found'], 404);
     }
    
 }

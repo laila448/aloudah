@@ -18,7 +18,17 @@ class TripController extends Controller
     public function GetAllTrips()
     {
       $trips=Trip::paginate(10);
-      return response()->json($trips);
+      if($trips){
+        return response()->json([
+          'success' => true ,
+          'data' => $trips
+        ] , 200);
+
+      }
+      return response()->json([
+        'success' => false ,
+        'message' => 'no trips found'
+      ] , 404);
 
     }
 
@@ -127,14 +137,19 @@ class TripController extends Controller
        
         $trips = Trip::with('driver:id,name', 'branch:id,address,desk', 'truck:id,number')
         ->where('status', 'active')
-        ->paginate(3);
+        ->paginate(10);
 
         
         if ($trips->isEmpty()) {
-            return response()->json(['message' => 'No active trips found']);
+            return response()->json([
+              'success' => false ,
+              'message' => 'No active trips found'
+            ] , 404);
         }
 
-        return response()->json(['trips' => $trips]);
+        return response()->json([
+          'success' => true ,
+          'data' => $trips]);
     }
 
     public function ArchiveData(Request $request)
@@ -166,12 +181,17 @@ class TripController extends Controller
 
     
     if (!$trip) {
-        return response()->json(['message' => 'Trip not found'], 404);
+        return response()->json([
+          'success' => false ,
+          'message' => 'Trip not found'
+        ], 404);
     }
 
+     return response()->json([
+      'success' => true ,
+      'data' => $trip 
+      ] , 200) ;
 
-     return response()->json(['trip  information:'=>$trip]) ;
-   //  return response()->json(['truck information' => $truck]);
   }
 
 
@@ -181,16 +201,21 @@ class TripController extends Controller
    {
 
     $archivedRecords = Trip::with('driver:id,name', 'branch:id,address', 'truck:id,number')
-    ->where('archived', true)->paginate(3);
+    ->where('archived', true)->paginate(10);
     
     
     if ($archivedRecords->isEmpty())
      {
        
-        return response()->json(['message' => 'No archive trips found']);
+        return response()->json([
+          'success' => false ,
+          'message' => 'No archive trips found'
+        ] , 404);
      }
 
-    return response()->json(['Archived trips' => $archivedRecords]);
+    return response()->json([
+      'success' => true ,
+      'data' => $archivedRecords]);
 
 
   }

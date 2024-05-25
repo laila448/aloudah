@@ -23,11 +23,16 @@ class EmployeeController extends Controller
     public function GetEmployees(Request $request){
 
         $emps=Employee::paginate(10);
-        return response()->json($emps);
-
-
-
-
+        if($emps){
+            return response()->json([
+                'success' => true ,
+                'data' => $emps
+            ] ,200);
+        }
+        return response()->json([
+            'success' => false ,
+            'message' => 'no employees found'
+            ] , 404);
     }
 
 
@@ -220,10 +225,12 @@ class EmployeeController extends Controller
             'branch_id' => 'required' ,
             'employee_id' => 'required'
         ]);
-        if ($validator->fails())
-        {
-            return response()->json($validator->errors()->toJson(),400);
-        }
+        if ($validator->fails()){
+            return response()->json([
+            'success' => false,
+            'message' => $validator->errors()->toJson()
+            ],400);
+            }
 
 
         $employee = Employee::where('id' , $request->employee_id)->first();
@@ -248,7 +255,9 @@ class EmployeeController extends Controller
 
             $deletemp = $employee->delete();
 
-            return response()->json(['message'=>'Employee has been promoted to manager'], 200);  
+            return response()->json([
+                'success' => true ,
+                'message'=>'Employee has been promoted to manager'], 200);  
         }
         elseif($request->rank == 'warehouse_manager') {
             $whmanager = Warehouse_Manager::create([
@@ -268,7 +277,9 @@ class EmployeeController extends Controller
 
             ]);
             $deletemp = $employee->delete();
-            return response()->json(['message'=>'Employee has been promoted to warehouse manager'], 200); 
+            return response()->json([
+                'success' => true ,
+                'message'=>'Employee has been promoted to warehouse manager'], 200); 
         }
         else{
             $updateemp = $employee->update([
@@ -276,11 +287,15 @@ class EmployeeController extends Controller
                 'branch_id' => $request->branch_id ,
             ]);
 
-            return response()->json(['message'=>'Employee has been promoted'], 200);  
+            return response()->json([
+                'success' => true ,
+                'message'=>'Employee has been promoted'], 200);  
         }
     }
      
-    return response()->json(['message'=>'Employee not found'], 400);  
+    return response()->json([
+        'success' => false ,
+        'message'=>'Employee not found'], 404);  
     }
 
 
@@ -371,10 +386,15 @@ class EmployeeController extends Controller
     $employee = Employee::where('id' , $id)->first();
 
     if($employee){
-        return response()->json($employee); 
+        return response()->json([
+            'success' => true ,
+            'data' => $employee 
+        ], 200); 
     }
 
-    return response()->json(['message'=>'Employee not found'], 400);  
+    return response()->json([
+        'success' => false ,
+        'message'=>'Employee not found'], 404);  
 
    }
 
@@ -384,10 +404,15 @@ class EmployeeController extends Controller
 
     $employees = Employee::where('branch_id' , $id)->get();
     if($employees){
-        return response()->json($employees); 
+        return response()->json([
+            'success' => true ,
+            'data' => $employees
+        ] , 200); 
     }
 
-    return response()->json(['message'=>'No employees found'], 400);  
+    return response()->json([
+        'success' => false ,
+        'message'=>'No employees found'], 404);  
    }
 
 
