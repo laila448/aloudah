@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Branch;
 use App\Models\Manifest;
+use App\Models\Permission;
+use App\Models\Employee;
 use App\Models\Price;
 use App\Models\Shipingsss;
 use App\Models\Shipping;
@@ -35,7 +37,6 @@ class TripController extends Controller
 
     public function AddTrip(Request $request)
     {
-
         $validator =  $request->validate([
             'branch_id'=>'required',
             'destination_id'=>'required',
@@ -48,6 +49,16 @@ class TripController extends Controller
         $tripCount = Trip::where('branch_id',$branch->id)->count();
          $tripNumber = strtoupper(substr($branch->desk, 0, 2)) . '_' . $branch->id . '_' . $tripCount;
       
+
+         $loggedInEmployee = Auth::guard('employee')->user();
+
+         // Check if the logged-in employee has the "add_trip" permission
+         $hasAddTripPermission = Permission::where([
+             ['employee_id', $loggedInEmployee->id],
+             ['add_trip', 1]
+         ])->exists();
+     
+         if ($hasAddTripPermission) {  
          $trip = new Trip();
         $trip->branch_id = $validator['branch_id'];
         $trip->destination_id = $validator['destination_id'];
@@ -59,20 +70,17 @@ class TripController extends Controller
           $trip->save();
         
        
-
-
-    
-
        $manifest = new Manifest();
        $manifest->number = $tripNumber;
       $manifest->trip_id =$trip->id;
          $manifest->save();
 
-
-
            return response()->json(['message'=>'trip  and manifest addedd successfully', ],200);
-    
     }
+    else
+    return response()->json(['error' => 'You do not have permission to add a trip'], 403);
+  }
+  
 
     public function EditTrip(Request $request)
     {
@@ -98,8 +106,17 @@ class TripController extends Controller
       }
 
     //   $arrival_date=$request->arrival_date;
+    $loggedInEmployee = Auth::guard('employee')->user();
+
+    // Check if the logged-in employee has the "add_trip" permission
+    $hasAddTripPermission = Permission::where([
+        ['employee_id', $loggedInEmployee->id],
+        ['edit_trip', 1]
+    ])->exists();
+
+    if ($hasAddTripPermission) {  
   
-        $trip = Trip::find($request->trip_id);
+    $trip = Trip::find($request->trip_id);
         $updatedtrip= $trip->update(array_merge($request->all() ,[
         'edited_by' => $user->name,
         'editing_date' => now()->format('Y-m-d')
@@ -110,8 +127,10 @@ class TripController extends Controller
   
         return response()->json(['message' => 'trip edited successfully']);
   
-  
-    }
+     } else
+        return response()->json(['error' => 'You do not have permission to edit a trip'], 403);
+      }
+    
 
     public function CancelTrip(Request $request)
     {
@@ -125,12 +144,22 @@ class TripController extends Controller
         {
             return response()->json($validator->errors()->toJson(),400);
         }
+        $loggedInEmployee = Auth::guard('employee')->user();
+
+        // Check if the logged-in employee has the "add_trip" permission
+        $hasAddTripPermission = Permission::where([
+            ['employee_id', $loggedInEmployee->id],
+            ['edit_trip', 1]
+        ])->exists();
     
+        if ($hasAddTripPermission) {  
             $trip = Trip::find($request->trip_id)->delete();
     
             return response()->json(['msg'=>'trip has been canceled'], 200) ;
         
-    }
+          } else
+          return response()->json(['error' => 'You do not have permission to delete a trip'], 403);
+        }
 
     public function GetActiveTrips()
     {

@@ -33,4 +33,16 @@ class Permission extends Model
         'delete_misc',
 
     ];
+
+
+    public function hasPermission($permission)
+{
+    $permissions = $this->permissions;
+    return $permissions->contains($permission);
+}
+
+public function permissions()
+{
+    return $this->hasMany(Permission::class);
+}
 }

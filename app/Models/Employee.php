@@ -45,7 +45,7 @@ class Employee extends Authenticatable implements JWTSubject
          public function rating(){
           return $this->hasMany(rating::class, 'employee_id');
        }
-
+     
        public function getJWTIdentifier()
        {
            return $this->getKey();

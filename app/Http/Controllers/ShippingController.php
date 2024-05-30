@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Manifest;
+use App\Models\Permission;
 use App\Models\Price;
 use App\Models\Shipping;
 use Illuminate\Http\Request;
@@ -227,6 +228,14 @@ public function UpdateManifest(Request $request)
         {
             $errors = $validator->errors();
        }
+       $loggedInEmployee = Auth::guard('employee')->user();
+
+       // Check if the logged-in employee has the "add_trip" permission
+       $hasAddTripPermission = Permission::where([
+           ['employee_id', $loggedInEmployee->id],
+           ['edit_manifest', 1]
+       ])->exists();
+       if ($hasAddTripPermission) { 
        $manifest = Manifest::find($request->manifest_id);
       $updatedmanifest= $manifest->update(array_merge($request->all() 
     ));
@@ -238,8 +247,9 @@ public function UpdateManifest(Request $request)
         $manifest->net_total = $manifest->general_total * (1 - ($request->discount / 100));
         $manifest->save();
     }
+}
 
-    
-    return response()->json(['message'=>' updated Successfully', ],200);
+else
+return response()->json(['error' => 'You do not have permission to edit a manifest'], 403);
 }
 }

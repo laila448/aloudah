@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Permission;
 use App\Models\Report;
 use App\Models\Trip;
 use App\Models\Truck;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -53,7 +55,15 @@ class ReportController extends Controller
     
             Storage::disk('local')->put($filePath, json_encode($tripReport));
     
-            
+            $loggedInEmployee = Auth::guard('employee')->user();
+
+        // Check if the logged-in employee has the "add_trip" permission
+        $hasAddTripPermission = Permission::where([
+            ['employee_id', $loggedInEmployee->id],
+            ['add_report', 1]
+        ])->exists();
+    
+        if ($hasAddTripPermission) {
             $report = Report::create([
                 'file_path' => $filePath,
                 'start_date' => $request->start_date,
@@ -61,7 +71,9 @@ class ReportController extends Controller
             ]);
     
             return response()->json(['file_path' => $filePath]);
-    }
+        } else
+        return response()->json(['error' => 'You do not have permission to create a trip report'], 403);
+      }
 }
    
 
@@ -114,6 +126,14 @@ public function CreateTruckReport(Request $request){
                 $filePath = 'reports/' . $fileName;
                 Storage::disk('local')->put($filePath, json_encode($truckReport));
                 
+                $loggedInEmployee = Auth::guard('employee')->user();
+
+                $hasAddTripPermission = Permission::where([
+                    ['employee_id', $loggedInEmployee->id],
+                    ['edit_trip', 1]
+                ])->exists();
+            
+                if ($hasAddTripPermission) {
                 $report = Report::create([
                     'file_path' => $filePath,
                     'start_date' => $request->start_date,
@@ -121,7 +141,9 @@ public function CreateTruckReport(Request $request){
                 ]);
         
                 return response()->json(['file_path' => $filePath]);
-      }
+            } else
+            return response()->json(['error' => 'You do not have permission to create a truck report'], 403);
+          }
   }
 
   public function downloadTripReport($reportId)
