@@ -51,6 +51,14 @@ return [
             'provider' => 'admins',
         ],
 
+        'admin_web' => [
+            'driver' => 'session',
+            'provider' => 'admins_web',
+        ],
+        'emp_web' => [
+            'driver' => 'session',
+            'provider' => 'emps_web',
+        ],
         'employee' => [
             'driver' => 'jwt',
             'provider' => 'employees',
@@ -106,6 +114,14 @@ return [
         'admins' => [
             'driver' => 'eloquent',
             'model' => App\Models\Admin::class,
+        ],
+        'admins_web'=> [
+            'driver' => 'eloquent',
+            'model' => App\Models\Admin::class,
+        ],
+        'emps_web'=> [
+            'driver' => 'eloquent',
+            'model' => App\Models\Employee::class,
         ],
         'employees' => [
             'driver' => 'eloquent',

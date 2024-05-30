@@ -70,5 +70,6 @@ class Kernel extends HttpKernel
         'Customer' => \App\Http\Middleware\CustomerMiddleware::class,
         'Employee' => \App\Http\Middleware\EmployeeMiddleware::class,
         'WarehouseManager' => \App\Http\Middleware\WarehouseManagerMiddleware::class,
+        'check.emp_web' => \App\Http\Middleware\emplyeeMiddleware::class,
     ];
 }
