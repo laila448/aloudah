@@ -101,7 +101,10 @@ class TruckController extends Controller
 
 
       if (!$truck) {
-          return response()->json(['message' => 'Truck not found'], 404);
+          return response()->json([
+            'success' => false ,
+            'message' => 'Truck not found'
+        ], 404);
       }
 
       $trips = DB::table('trips')
@@ -118,16 +121,26 @@ class TruckController extends Controller
       $truck->trips = $trips;
       $truck->drivers = $drivers;
 
-      return response()->json(['truck information' => $truck]);
-
-  
+      return response()->json([
+        'success' => true ,
+        'data' => $truck
+        ], 200);
 
     }
 
     public function  GetTrucks ()
     {
       $trucks=Truck::pagiate(10);
-      return response()->json(['truck information' => $trucks]);
+      if($trucks){
+        return response()->json([
+            'success' => true ,
+            'data' => $trucks
+        ] , 200);
+      }
+      return response()->json([
+        'success' => false ,
+        'message' => 'no trucks found' 
+        ] , 404);
     }
 
     public function GetTruckRecord($desk)
@@ -137,12 +150,16 @@ class TruckController extends Controller
     
         if (!$branch) {
             return response()->json([
+                'success' => false ,
                 'message' => 'Branch not found',
             ], 404);
         }
     
         $trucks = $branch->trucks;
     
-        return response()->json($trucks);
+        return response()->json([
+            'success' => true ,
+            'data' => $trucks
+        ] , 200);
     }
 }
