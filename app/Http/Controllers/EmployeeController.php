@@ -415,6 +415,57 @@ class EmployeeController extends Controller
         'message'=>'No employees found'], 404);  
    }
 
+   public function GetDrivers(){
+
+    $drivers = Driver::all();
+    if($drivers){
+        return response()->json([
+            'success' => true ,
+            'data' => $drivers
+        ] , 200);
+    }
+    return response()->json([
+        'success' => false ,
+        'message' => 'No drivers found'
+    ], 404);
+   }
+
+   public function GetBranchDrivers($id){
+    
+    $drivers = Driver::where('branch_id' , $id)->paginate(10);
+    if($drivers){
+        return response()->json([
+            'success' => true,
+            'data' => $drivers
+        ],200);
+    }
+    return response()->json([
+        'success' => false,
+        'message' => 'No drivers found'
+    ], 404);
+   }
+
+   public function GetDriversForMyBranch(){
+        $drivers = null;
+    if(Auth::guard('branch_manager')->check()){
+        $user = Auth::guard('branch_manager')->user();
+        $drivers = Driver::where('branch_id' , $user->branch_id)->paginate(10);
+    }elseif(Auth::guard('employee')->check()){
+        $user = Auth::guard('employee')->user();
+        $drivers = Driver::where('branch_id' , $user->branch_id)->paginate(10);
+    }
+    if($drivers == null){
+        return response()->json([
+            'success' => false,
+            'message' => 'No drivers found'
+        ] , 404);
+    }
+    return response()->json([
+        'success' => true ,
+        'data' => $drivers
+    ], 200);
+
+}
 
 
 

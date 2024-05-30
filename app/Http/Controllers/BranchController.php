@@ -52,9 +52,9 @@ class BranchController extends Controller
         }
 
         $branch = new Branch();
-      $branch->desk = $validator['desk'];
-        $branch->address = $validator['address'];
-        $branch->phone = $validator['phone'];
+      $branch->desk = $request->desk;
+        $branch->address = $request->address;
+        $branch->phone = $request->phone;
         $branch->opening_date = now()->format('Y-m-d');
         $branch->created_by = Auth::guard('admin')->user()->name;
         $branch->save();
@@ -93,18 +93,18 @@ class BranchController extends Controller
 
         $password = Str::random(8);
         $branchmanager = new Branch_Manager();
-                $branchmanager->national_id = $validator['national_id'];
-                $branchmanager->name = $validator['manager_name'];
-                $branchmanager->email = $validator['email'];
+                $branchmanager->national_id = $request->national_id;
+                $branchmanager->name = $request->manager_name;
+                $branchmanager->email = $request->email;
                 $branchmanager->password = Hash::make($password); 
-                $branchmanager->phone_number = $validator['phone_number'];
-                $branchmanager->branch_id = $validator['branch_id'];
-                $branchmanager->gender = $validator['gender'];
-                $branchmanager->mother_name = $validator['mother_name']; 
-                $branchmanager->date_of_birth = $validator['date_of_birth'];
-                $branchmanager->manager_address = $validator['manager_address'];
-                $branchmanager->salary = $validator['salary'];
-                $branchmanager->rank = $validator['rank'];
+                $branchmanager->phone_number = $request->phone_number;
+                $branchmanager->branch_id = $request->branch_id;
+                $branchmanager->gender = $request->gender;
+                $branchmanager->mother_name = $request->mother_name; 
+                $branchmanager->date_of_birth = $request->date_of_birth;
+                $branchmanager->manager_address = $request->manager_address;
+                $branchmanager->salary = $request->salary;
+                $branchmanager->rank = $request->rank;
                 $branchmanager->employment_date = now()->format('Y-m-d');
                 $branchmanager->save();
 

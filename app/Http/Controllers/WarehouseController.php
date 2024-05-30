@@ -35,11 +35,11 @@ class WarehouseController extends Controller
         }
               
                 $warehouse = new Warehouse();
-                $warehouse->address = $validator['warehouse_address']; 
-                $warehouse->branch_id = $validator['branch_id'];
-                $warehouse->warehouse_name = $validator['warehouse_name'];  
-                $warehouse->area = $validator['area']; 
-                $warehouse->notes = $validator['notes']; 
+                $warehouse->address = $request->warehouse_address; 
+                $warehouse->branch_id = $request->branch_id;
+                $warehouse->warehouse_name = $request->warehouse_name;  
+                $warehouse->area = $request->area; 
+                $warehouse->notes = $request->notes; 
                 $warehouse->save();
 
             
@@ -77,18 +77,18 @@ class WarehouseController extends Controller
         }
                 $password = Str::random(8);
                 $warehousemanager = new Warehouse_Manager();
-                $warehousemanager->warehouse_id = $validator['warehouse_id'];
-                $warehousemanager->national_id = $validator['national_id'];
-                $warehousemanager->name = $validator['manager_name'];
-                $warehousemanager->email = $validator['email'];
+                $warehousemanager->warehouse_id = $request->warehouse_id;
+                $warehousemanager->national_id = $request->national_id;
+                $warehousemanager->name = $request->manager_name;
+                $warehousemanager->email = $request->email;
                 $warehousemanager->password =  Hash::make($password);
-                $warehousemanager->phone_number = $validator['phone_number'];
-                $warehousemanager->gender = $validator['gender'];
-                $warehousemanager->mother_name = $validator['mother_name'];
-                $warehousemanager->date_of_birth = $validator['date_of_birth'];
-                $warehousemanager->manager_address = $validator['manager_address'];
-                $warehousemanager->salary = $validator['salary'];
-                $warehousemanager->rank = $validator['rank'];
+                $warehousemanager->phone_number = $request->phone_number;
+                $warehousemanager->gender = $request->gender;
+                $warehousemanager->mother_name = $request->mother_name;
+                $warehousemanager->date_of_birth = $request->date_of_birth;
+                $warehousemanager->manager_address = $request->manager_address;
+                $warehousemanager->salary = $request->salary;
+                $warehousemanager->rank = $request->rank;
                 $warehousemanager->employment_date = now()->format('Y-m-d');
                 $warehousemanager->save();
         
