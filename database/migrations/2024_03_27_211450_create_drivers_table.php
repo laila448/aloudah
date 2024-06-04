@@ -1,5 +1,4 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,31 +14,27 @@ return new class extends Migration
     {
         Schema::create('drivers', function (Blueprint $table) {
             $table->id();
-            $table->string('national_id');
+            $table->string('national_id')->unique();
             $table->string('name')->unique();
-           //  $table->string('email')->unique();
-            // $table->timestamp('email_verified_at')->nullable();
-             //$table->string('password');
-             $table->unsignedBigInteger('branch_id');
-             $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
+            $table->unsignedBigInteger('branch_id');
+            $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
             $table->string('phone_number')->unique();
             $table->string('mother_name');
-            $table->string('gender');
+            $table->enum('gender', ['male', 'female']);
             $table->date('birth_date');
             $table->string('birth_place');
-            $table->string('mobile');
+            $table->string('mobile')->unique();
             $table->string('address');
-           // $table->integer('national_number')->unique();
-           // $table->integer('vacations');
-           $table->string('rank');
+            $table->string('rank');
             $table->integer('salary');
-           // $table->integer('rewards');
             $table->date('employment_date');
             $table->date('resignation_date')->nullable();
             $table->string('manager_name');
+            $table->string('certificate')->unique();
+            $table->string('email')->unique();
+            $table->string('password');
             $table->softDeletes();
             $table->timestamps();
-
         });
     }
 
