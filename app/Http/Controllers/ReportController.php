@@ -72,7 +72,7 @@ class ReportController extends Controller
     
             return response()->json(['file_path' => $filePath]);
         } else
-        return response()->json(['error' => 'You do not have permission to create a trip report'], 403);
+        return response()->json(['message' => 'You do not have permission to create a trip report'], 403);
       }
 }
    
@@ -142,7 +142,7 @@ public function CreateTruckReport(Request $request){
         
                 return response()->json(['file_path' => $filePath]);
             } else
-            return response()->json(['error' => 'You do not have permission to create a truck report'], 403);
+            return response()->json(['message' => 'You do not have permission to create a truck report'], 403);
           }
   }
 

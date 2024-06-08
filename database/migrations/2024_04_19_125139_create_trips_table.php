@@ -21,15 +21,14 @@ return new class extends Migration
             $table->foreign('driver_id')->references('id')->on('drivers')->onDelete('cascade');
             $table->unsignedBigInteger('branch_id');
             $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
-             $table->unsignedBigInteger('manifest_id');
-             $table->foreign('manifest_id')->references('id')->on('manifests')->onDelete('cascade');
+            $table->unsignedBigInteger('manifest_id')->nullable(); // Make manifest_id nullable
+            $table->foreign('manifest_id')->references('id')->on('manifests')->onDelete('cascade');
             $table->string('number')->unique();
             $table->date('date');
             $table->string('status')->default('active');
             $table->date('arrival_date')->nullable();
             $table->string('created_by');
             $table->string('edited_by')->nullable();
-            // $table->text('notes');
             $table->timestamps();
         });
     }
