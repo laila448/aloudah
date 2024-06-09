@@ -6,7 +6,7 @@
 				<div class="breadcrumb-header justify-content-between">
 					<div class="my-auto">
 						<div class="d-flex">
-							<h4 class="content-title mb-0 my-auto">قائمة الشاحنات :</h4><span class="text-muted mt-1 tx-13 mr-2 mb-0"> </span>
+							<h4 class="content-title mb-0 my-auto"> Drivers List :</h4><span class="text-muted mt-1 tx-13 mr-2 mb-0"> </span>
 						</div>
 					</div>
 					<div class="d-flex my-xl-auto right-content">
@@ -74,7 +74,7 @@
 						<div class="card">
 							<div class="card-header pb-0">
 								<div class="d-flex justify-content-between">
-									<h4 class="card-title mg-b-0">الشاحنات </h4>
+									<h4 class="card-title mg-b-0">Drivers  </h4>
 									<i class="mdi mdi-dots-horizontal text-gray"></i>
 								</div>
 							</div>
@@ -84,10 +84,14 @@
 										<thead>
 											<tr>
 												<th>ID</th>
-                                                <th>الرقم</th>
-												<th>الخط</th>
-												<th>تاريخ_الإضافة</th>
-                                                <th>العمليات</th>
+                                                <th>Name</th>
+												<th>Phone</th>
+                                                <th>Address</th>
+												<th>Branch</th>
+                                                <th>Salary</th>
+												<th>Manager</th>
+                                                <th>Employment_date</th>
+												<th>Opreation</th>
 
 											</tr>
 										</thead>
@@ -95,21 +99,28 @@
                                         @php
                                         $count = 1;
                                          @endphp
-											 @foreach ($trucks as $truck)
+											 @foreach ($drivers as $driver)
                                                 <tr>
                                                   <th scope="row">{{ $count++ }}</th>
-                                                  <td>{{ $truck->number }}</td>
-                                                  <td>{{ $truck->line }}</td>
-                                                  <td>{{ $truck->adding_data }}</td>
+                                                  <td>{{ $driver->name }}</td>
+                                                  <td>{{ $driver->phone_number }}</td>
+                                                  <td>{{ $driver->address }}</td>
+                                                  <td>{{ $driver->branch->desk }}</td>
+                                                  <td>{{ $driver->salary }}</td>
+                                                  <td>{{ $driver->manager_name }}</td>
+                                                  <td>{{ $driver->employment_date }}</td>
+                                                 
                                                   <td>
                                     
                                             <a class="modal-effect btn btn-sm btn-info" data-effect="effect-scale"
-                                                data-id="{{ $truck->id }}" data-number="{{ $truck->number }}"
-                                                data-line="{{ $truck->line }}" data-toggle="modal"
+                                                data-id="{{ $driver->id }}" data-name="{{ $driver->name }}"
+                                                data-phone_number="{{ $driver->phone_number }}"  data-address="{{ $driver->address }}"
+                                                 data-salary="{{ $driver->salary }}"
+                                                 data-toggle="modal"
                                                 href="#exampleModal2" title="تعديل"><i class="las la-pen"></i></a>
                                        
                                             <a class="modal-effect btn btn-sm btn-danger" data-effect="effect-scale"
-                                                data-id="{{ $truck->id }}" data-number="{{ $truck->number }}"
+                                                data-id="{{ $driver->id }}" data-name="{{ $driver->name }}"
                                                 data-toggle="modal" href="#modaldemo9" title="حذف"><i
                                                     class="las la-trash"></i></a>
                                       
@@ -123,10 +134,7 @@
 								</div><!-- bd -->
                                 
 							</div><!-- bd -->
-                            <div class="col-xl-3">
-                                    <a class="modal-effect btn btn-outline-primary btn-block"
-                                     data-effect="effect-scale" data-toggle="modal" href="#modaldemo1">اضافة</a>
-                                    </div>
+                           
 						</div><!-- bd -->
 					</div>
 					<!--/div-->
@@ -136,24 +144,32 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">تعديل </h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Edit </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
 
-                    <form action="{{ route('edittruck') }}" method="post" autocomplete="off">
+                    <form action="{{ route('editdriver') }}" method="post" autocomplete="off">
                        
                         {{ csrf_field() }}
                         <div class="form-group">
                             <input type="hidden" name="id" id="id" value="">
-                            <label for="recipient-name" class="col-form-label">الرقم :</label>
-                            <input class="form-control" name="number" id="number" type="integer">
+                            <label for="recipient-name" class="col-form-label">name :</label>
+                            <input class="form-control" name="name" id="name" type="string">
                         </div>
                         <div class="form-group">
-                            <label for="message-text" class="col-form-label">الخط:</label>
-                            <input class="form-control" id="line" name="line" type="string">
+                            <label for="message-text" class="col-form-label">phone:</label>
+                            <input class="form-control" id="phone_number" name="phone_number" type="integer">
+                        </div>
+                        <div class="form-group">
+                            <label for="message-text" class="col-form-label">salary:</label>
+                            <input class="form-control" id="salary" name="salary" type="integer">
+                        </div>
+                        <div class="form-group">
+                            <label for="message-text" class="col-form-label">Address:</label>
+                            <input class="form-control" id="address" name="address" type="string">
                         </div>
                 </div>
                 <div class="modal-footer">
@@ -165,67 +181,79 @@
         </div>
     </div>
 
-    <!-- delete -->
-    <div class="modal" id="modaldemo9">
+<!-- delete -->
+<div class="modal" id="modaldemo9">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content modal-content-demo">
                 <div class="modal-header">
-                    <h6 class="modal-title">حذف </h6><button aria-label="Close" class="close" data-dismiss="modal"
+                    <h6 class="modal-title">delete </h6><button aria-label="Close" class="close" data-dismiss="modal"
                         type="button"><span aria-hidden="true">&times;</span></button>
                 </div>
-                <form action="{{ route('deletetruck') }}" method="post">
+                <form action="{{ route('deletedriver') }}" method="post">
                   
                     {{ csrf_field() }}
                     <div class="modal-body">
-                        <p>هل انت متاكد من عملية الحذف ؟</p><br>
                         <input type="hidden" name="id" id="id" value="">
-                        <input class="form-control" name="number" id="number" type="integer" readonly>
+                        <input class="form-control" name="name" id="name" type="string" readonly>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">الغاء</button>
-                        <button type="submit" class="btn btn-danger">تاكيد</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">cancel</button>
+                        <button type="submit" class="btn btn-danger">delete</button>
                     </div>
                 </div>
             </form>
         </div>
     </div>
-					<!-- Basic modal -->
-		<div class="modal" id="modaldemo1">
+    
+	<!-- Basic modal -->
+    <div class="modal" id="modaldemo1">
 			<div class="modal-dialog" role="document">
 				<div class="modal-content modal-content-demo">
 					<div class="modal-header">
-						<h6 class="modal-title">إضافة شاحنة</h6><button aria-label="Close" class="close" data-dismiss="modal" type="button"><span aria-hidden="true">&times;</span></button>
+						<h6 class="modal-title"> Add :</h6><button aria-label="Close" class="close" data-dismiss="modal" type="button"><span aria-hidden="true">&times;</span></button>
 					</div>
 					<div class="modal-body">
-                    <form action="{{ route('addtruck') }}" method="post">
+                    <form action="{{ route('addbranch') }}" method="post">
                         {{ csrf_field() }}
 
                         <div class="form-group">
-                            <label for="exampleInputEmail1"> رقم الشاحنة</label>
-                            <input type="integer" class="form-control" id="number" name="number">
+                            <label for="exampleInputEmail1"> Name</label>
+                            <input type="integer" class="form-control" id="name" name="name">
                         </div>
 
                         <div class="form-group">
-                            <label for="exampleFormControlTextarea1">الخط</label>
-                            <input type="string" class="form-control" id="line" name="line" >
+                            <label for="exampleFormControlTextarea1">Phone</label>
+                            <input type="string" class="form-control" id="phone" name="phone" >
+                        </div>
+						<div class="form-group">
+                            <label for="exampleFormControlTextarea1">National_id</label>
+                            <input type="string" class="form-control" id="national_id" name="national_id" >
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleFormControlTextarea1">mother_name</label>
+                            <input type="string" class="form-control" id="mother_name" name="mother_name" >
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleFormControlTextarea1">gender</label>
+                            <input type="string" class="form-control" id="gender" name="gender" >
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleFormControlTextarea1">National_id</label>
+                            <input type="string" class="form-control" id="national_id" name="national_id" >
                         </div>
 
 					</div>
 					<div class="modal-footer">
-                    <button type="submit" class="btn btn-success">تاكيد</button>
-                    <button class="btn ripple btn-secondary" data-dismiss="modal" type="button">اغلاق</button>
+                    <button type="submit" class="btn btn-success">Add</button>
+                    <button class="btn ripple btn-secondary" data-dismiss="modal" type="button">Cancel</button>
 					</div>
                     </form>
 				</div>
- 
+
                 
 			</div>
 		</div>
 		<!-- End Basic modal -->
-
-
-    
-
 				<!-- /row -->
 			</div>
 			<!-- Container closed -->
@@ -259,12 +287,16 @@
     $('#exampleModal2').on('show.bs.modal', function(event) {
         var button = $(event.relatedTarget)
         var id = button.data('id')
-        var number = button.data('number')
-        var line = button.data('line')
+        var name = button.data('name')
+        var phone_number = button.data('phone_number')
+        var address = button.data('address')
+        var salary = button.data('salary')
         var modal = $(this)
         modal.find('.modal-body #id').val(id);
-        modal.find('.modal-body #number').val(number);
-        modal.find('.modal-body #line').val(line);
+        modal.find('.modal-body #name').val(name);
+        modal.find('.modal-body #phone_number').val(phone_number);
+        modal.find('.modal-body #address').val(address);
+        modal.find('.modal-body #salary').val(salary);
     })
 
 </script>
@@ -273,10 +305,10 @@
     $('#modaldemo9').on('show.bs.modal', function(event) {
         var button = $(event.relatedTarget)
         var id = button.data('id')
-        var number = button.data('number')
+        var name = button.data('name')
         var modal = $(this)
         modal.find('.modal-body #id').val(id);
-        modal.find('.modal-body #number').val(number);
+        modal.find('.modal-body #name').val(name);
     })
 
 </script>

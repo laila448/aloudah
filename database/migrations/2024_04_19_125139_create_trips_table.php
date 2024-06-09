@@ -20,8 +20,7 @@ return new class extends Migration
             $table->unsignedBigInteger('driver_id');
             $table->foreign('driver_id')->references('id')->on('drivers')->onDelete('cascade');
             $table->unsignedBigInteger('branch_id');
-            $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
-             $table->unsignedBigInteger('manifest_id');
+           
              $table->foreign('manifest_id')->references('id')->on('manifests')->onDelete('cascade');
             $table->string('number')->unique();
             $table->date('date');

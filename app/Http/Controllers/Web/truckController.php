@@ -69,8 +69,8 @@ public function EditTruck(Request $request)
 
         ]);
 
-        $sections = Truck::find($id);
-        $sections->update([
+        $truck = Truck::find($id);
+        $truck->update([
             'number' => $request->number,
             'line' => $request->line,
         ]);

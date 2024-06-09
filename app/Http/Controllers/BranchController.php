@@ -34,6 +34,28 @@ class BranchController extends Controller
 
       }
 
+
+     public function getBranchlatlng( $id)
+     {
+       
+
+      $branch = Branch::select('branch_lat', 'branch_lng')->where('id', $id)->first();
+
+    
+      if (!$branch) {
+          return response()->json([
+            'success' => false ,
+            'message' => 'Branch not found'
+          ], 404);
+      }
+  
+       return response()->json([
+        'success' => true ,
+        'data' => $branch 
+        ] , 200) ;
+  
+
+     }
     public function AddBranch (Request $request)
     {
         $validator =  Validator::make($request->all(),[

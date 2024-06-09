@@ -14,7 +14,6 @@ class Trip extends Model
                    'employee_id',
                    'branch_id',
                    'destination_id',
-                   'manifest_id',
                   'number',
                   'date',
                   'status',
@@ -37,22 +36,14 @@ class Trip extends Model
         {
          return $this->belongsTo(Driver::class, 'driver_id');
         }
-        //   public function driver()
-        //   {
-        //       return $this->belongsTo(Driver::class);
-        //   }
-          
-        //   public function truck()
-        //   {
-        //       return $this->belongsTo(Truck::class);
-        //   }
+      
           public function manifest()
           {
               return $this->belongsTo(Manifest::class);
           }
 
           public function branch()
-          {
+          { 
               return $this->belongsTo(Branch::class);
           }
           public function source()

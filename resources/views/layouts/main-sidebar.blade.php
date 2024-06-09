@@ -26,10 +26,11 @@
 					</li>
 					<li class="side-item side-item-category"></li>
 					<li class="slide">
-						<a class="side-menu__item" data-toggle="slide" href="{{ url('/' . $page='#') }}"><svg xmlns="http://www.w3.org/2000/svg" class="side-menu__icon" viewBox="0 0 24 24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M19 5H5v14h14V5zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z" opacity=".3"/><path d="M3 5v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2zm2 0h14v14H5V5zm2 5h2v7H7zm4-3h2v10h-2zm4 6h2v4h-2z"/></svg><span class="side-menu__label">الموظفين</span><i class="angle fe fe-chevron-down"></i></a>
+						<a class="side-menu__item" data-toggle="slide" href="{{ url('/' . $page='#') }}"><svg xmlns="http://www.w3.org/2000/svg" class="side-menu__icon" viewBox="0 0 24 24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M19 5H5v14h14V5zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z" opacity=".3"/><path d="M3 5v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2zm2 0h14v14H5V5zm2 5h2v7H7zm4-3h2v10h-2zm4 6h2v4h-2z"/></svg><span class="side-menu__label">الأفرع</span><i class="angle fe fe-chevron-down"></i></a>
 						<ul class="slide-menu">
-							<li><a class="slide-item" href="{{ url('/' . $page='chart-morris') }}"> Employee</a></li>
-							
+							<li><a class="slide-item" href="{{ url('/employee/' . $page='getallbranches') }}"> قائمة الأفرع</a></li>
+							<li><a class="slide-item" href="{{ url('/employee/' . $page='getallmanagers') }}"> قائمة مدراء الأفرع</a></li>
+
 						</ul>
 					</li>
 					<li class="slide">
@@ -41,33 +42,28 @@
 					
 						<a class="side-menu__item" data-toggle="slide" href="{{ url('/' . $page='#') }}"><svg xmlns="http://www.w3.org/2000/svg" class="side-menu__icon" viewBox="0 0 24 24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M4 12c0 4.08 3.06 7.44 7 7.93V4.07C7.05 4.56 4 7.92 4 12z" opacity=".3"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93s3.05-7.44 7-7.93v15.86zm2-15.86c1.03.13 2 .45 2.87.93H13v-.93zM13 7h5.24c.25.31.48.65.68 1H13V7zm0 3h6.74c.08.33.15.66.19 1H13v-1zm0 9.93V19h2.87c-.87.48-1.84.8-2.87.93zM18.24 17H13v-1h5.92c-.2.35-.43.69-.68 1zm1.5-3H13v-1h6.93c-.04.34-.11.67-.19 1z"/></svg><span class="side-menu__label">الرحلات</span><i class="angle fe fe-chevron-down"></i></a>
 						<ul class="slide-menu">
-							<li><a class="slide-item" href="{{ url('/employee/' . $page='tripslist') }}">قائمة الرحلات</a></li>
+							<li><a class="slide-item" href="{{ url('/employee/' . $page='tripslist') }}"> قائمة الرحلات الفعالة</a></li>
+							<li><a class="slide-item" href="{{ url('/employee/' . $page='temporarytrips') }}">قائمة الرحلات المؤقتة</a></li>
+							<li><a class="slide-item" href="{{ url('/employee/' . $page='closedtrips') }}">قائمة الرحلات المغلقة</a></li>
+							<li><a class="slide-item" href="{{ url('/employee/' . $page='archivedtrips') }}">قائمة الرحلات المؤرشفة</a></li>
+
+							
+						</ul>
+					</li>
+					<li class="slide">
+						<a class="side-menu__item" data-toggle="slide" href="{{ url('/' . $page='#') }}"><svg xmlns="http://www.w3.org/2000/svg" class="side-menu__icon" viewBox="0 0 24 24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M6.26 9L12 13.47 17.74 9 12 4.53z" opacity=".3"/><path d="M19.37 12.8l-7.38 5.74-7.37-5.73L3 14.07l9 7 9-7zM12 2L3 9l1.63 1.27L12 16l7.36-5.73L21 9l-9-7zm0 11.47L6.26 9 12 4.53 17.74 9 12 13.47z"/></svg><span class="side-menu__label">  مانفيست</span><i class="angle fe fe-chevron-down"></i></a>
+						<ul class="slide-menu">
+							<li><a class="slide-item" href="{{ url('/employee/' . $page='manifests') }}">مانفيست  </a></li>
+							
 							
 						</ul>
 					</li>
 					<li class="slide">
 						<a class="side-menu__item" data-toggle="slide" href="{{ url('/' . $page='#') }}"><svg xmlns="http://www.w3.org/2000/svg" class="side-menu__icon" viewBox="0 0 24 24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M6.26 9L12 13.47 17.74 9 12 4.53z" opacity=".3"/><path d="M19.37 12.8l-7.38 5.74-7.37-5.73L3 14.07l9 7 9-7zM12 2L3 9l1.63 1.27L12 16l7.36-5.73L21 9l-9-7zm0 11.47L6.26 9 12 4.53 17.74 9 12 13.47z"/></svg><span class="side-menu__label">السائقين</span><i class="angle fe fe-chevron-down"></i></a>
 						<ul class="slide-menu">
-							<li><a class="slide-item" href="{{ url('/' . $page='alerts') }}">Alerts</a></li>
-							<li><a class="slide-item" href="{{ url('/' . $page='avatar') }}">Avatar</a></li>
-							<li><a class="slide-item" href="{{ url('/' . $page='breadcrumbs') }}">Breadcrumbs</a></li>
-							<li><a class="slide-item" href="{{ url('/' . $page='buttons') }}">Buttons</a></li>
-							<li><a class="slide-item" href="{{ url('/' . $page='badge') }}">Badge</a></li>
-							<li><a class="slide-item" href="{{ url('/' . $page='dropdown') }}">Dropdown</a></li>
-							<li><a class="slide-item" href="{{ url('/' . $page='thumbnails') }}">Thumbnails</a></li>
-							<li><a class="slide-item" href="{{ url('/' . $page='list-group') }}">List Group</a></li>
-							<li><a class="slide-item" href="{{ url('/' . $page='navigation') }}">Navigation</a></li>
-							<li><a class="slide-item" href="{{ url('/' . $page='images') }}">Images</a></li>
-							<li><a class="slide-item" href="{{ url('/' . $page='pagination') }}">Pagination</a></li>
-							<li><a class="slide-item" href="{{ url('/' . $page='popover') }}">Popover</a></li>
-							<li><a class="slide-item" href="{{ url('/' . $page='progress') }}">Progress</a></li>
-							<li><a class="slide-item" href="{{ url('/' . $page='spinners') }}">Spinners</a></li>
-							<li><a class="slide-item" href="{{ url('/' . $page='media-object') }}">Media Object</a></li>
-							<li><a class="slide-item" href="{{ url('/' . $page='typography') }}">Typography</a></li>
-							<li><a class="slide-item" href="{{ url('/' . $page='tooltip') }}">Tooltip</a></li>
-							<li><a class="slide-item" href="{{ url('/' . $page='toast') }}">Toast</a></li>
-							<li><a class="slide-item" href="{{ url('/' . $page='tags') }}">Tags</a></li>
-							<li><a class="slide-item" href="{{ url('/' . $page='tabs') }}">Tabs</a></li>
+							<li><a class="slide-item" href="{{ url('/employee/' . $page='getdrivers') }}">قائمة السائقين </a></li>
+							
+							
 						</ul>
 					</li>
 					<li class="slide">

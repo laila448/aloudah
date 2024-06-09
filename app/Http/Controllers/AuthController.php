@@ -86,6 +86,13 @@ class AuthController extends Controller
             'user' => $user
         ]);
         }
+        else if ($token = Auth::guard('driver')->attempt($credentials)) {
+            $user = Auth::guard('driver')->user();
+        return response()->json([
+            'token' => $token,
+            'user' => $user
+        ]);
+    }
         return response()->json(['error' => 'Unauthorized'], 401);
     }
 

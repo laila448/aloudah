@@ -77,7 +77,7 @@
 						<div class="card">
 							<div class="card-header pb-0">
 								<div class="d-flex justify-content-between">
-									<h4 class="card-title mg-b-0">قائمة الرحلات</h4>
+									<h4 class="card-title mg-b-0">Manifest </h4>
 									<i class="mdi mdi-dots-horizontal text-gray"></i>
 								</div>
 								<p class="tx-12 tx-gray-500 mb-2"> <a href=""></a></p>
@@ -87,37 +87,29 @@
 									<table class="table text-md-nowrap" id="example1">
 										<thead>
 											<tr>
-												<th class="wd-15p border-bottom-0">Trip_Number </th>
-												<th class="wd-15p border-bottom-0">Truck</th>
-												<th class="wd-20p border-bottom-0">Driver</th>
-												<th class="wd-15p border-bottom-0">Source </th>
-												<th class="wd-10p border-bottom-0">Destination</th>
-												<th class="wd-25p border-bottom-0">Status</th>
-												<th class="wd-25p border-bottom-0">Date</th>
+												<th class="wd-15p border-bottom-0">Manifest_Number </th>
+												<th class="wd-15p border-bottom-0">Status</th>
+												<th class="wd-20p border-bottom-0">Date</th>
 												<th class="wd-25p border-bottom-0">Operation</th>
 											
 											</tr>
 										</thead>   
 										<tbody>
 											
-											 @foreach ($trips as $trip)
+											 @foreach ($manifests as $manifest)
                                                 <tr>     
-                                                  <td>{{ $trip->number }}</td>
-                                                  <td>{{ $trip->truck->number }}</td>
-                                                  <td>{{ $trip->driver->name }}</td>
-												  <td>{{  $trip->branch->address }}</td>
-                                                  <td>{{ $trip->destination->address }}</td>
-                                                  <td>{{ $trip->status }}</td>
-												  <td>{{ $trip->date }}</td>
+                                                  <td>{{ $manifest->number }}</td>
+                                                  <td>{{ $manifest->status }}</td>
+                                                  <td>{{ $manifest->trip->date }}</td>
 												  <td>
                                     
 									<a class="modal-effect btn btn-sm btn-info" data-effect="effect-scale"
-										data-id="{{ $trip->id }}" data-number="{{ $trip->number }}"
-										data-status="{{ $trip->status }}" data-toggle="modal"
-										href="#exampleModal2" title="تعديل"><i class="las la-pen"></i></a>
+										data-id="{{ $manifest->id }}" data-number="{{ $manifest->number }}"
+										data-status="{{ $manifest->status }}" data-toggle="modal"
+										href="#exampleModal2" title="Show"><i class="las la-pen"></i></a>
 							   
 									<a class="modal-effect btn btn-sm btn-danger" data-effect="effect-scale"
-										data-id="{{ $trip->id }}" data-number="{{ $trip->number }}"
+										data-id="{{ $manifest->id }}" data-number="{{ $manifest->number }}"
 										data-toggle="modal" href="#modaldemo9" title="حذف"><i
 											class="las la-trash"></i></a>
 							  
@@ -137,40 +129,39 @@
 				
 					</div>
 					<!--/div-->
- <!-- edit -->
- <div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+ 
+<!-- edit -->
+<div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">تعديل </h5>
+                    <h5 class="modal-title" id="exampleModalLabel">View Manifest Information : </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
 
-                    <form action="{{ route('edittrip') }}" method="post" autocomplete="off">
+                    <form action="{{ route('manifestinformation') }}" method="post" autocomplete="off">
                        
                         {{ csrf_field() }}
                         <div class="form-group">
                             <input type="hidden" name="id" id="id" value="">
-                            <label for="recipient-name" class="col-form-label"> trip number:</label>
-                            <input class="form-control" name="number" id="number" type="integer">
+                            <label for="recipient-name" class="col-form-label"> Manifest Number:</label>
+                            <input class="form-control" name="number" id="number" type="integer" readonly>
                         </div>
-                        <div class="form-group">
-                            <label for="message-text" class="col-form-label">trip status:</label>
-                            <input class="form-control" id="status" name="status" type="string">
-                        </div>
+                        
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">تاكيد</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">اغلاق</button>
+                    <button type="submit" class="btn btn-primary">View</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                 </div>
                 </form>
             </div>
         </div>
     </div>
+    
 	<!-- delete -->
     <div class="modal" id="modaldemo9">
         <div class="modal-dialog modal-dialog-centered" role="document">

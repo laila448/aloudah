@@ -50,6 +50,10 @@ return [
             'driver' => 'jwt',
             'provider' => 'admins',
         ],
+        'driver' => [
+            'driver' => 'jwt',
+            'provider' => 'drivers',
+        ],
 
         'admin_web' => [
             'driver' => 'session',
@@ -114,6 +118,10 @@ return [
         'admins' => [
             'driver' => 'eloquent',
             'model' => App\Models\Admin::class,
+        ],
+        'drivers' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Driver::class,
         ],
         'admins_web'=> [
             'driver' => 'eloquent',

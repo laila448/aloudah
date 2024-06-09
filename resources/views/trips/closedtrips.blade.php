@@ -111,16 +111,9 @@
 												  <td>{{ $trip->date }}</td>
 												  <td>
                                     
-									<a class="modal-effect btn btn-sm btn-info" data-effect="effect-scale"
-										data-id="{{ $trip->id }}" data-number="{{ $trip->number }}"
-										data-status="{{ $trip->status }}" data-toggle="modal"
-										href="#exampleModal2" title="تعديل"><i class="las la-pen"></i></a>
-							   
-									<a class="modal-effect btn btn-sm btn-danger" data-effect="effect-scale"
-										data-id="{{ $trip->id }}" data-number="{{ $trip->number }}"
-										data-toggle="modal" href="#modaldemo9" title="حذف"><i
-											class="las la-trash"></i></a>
-							  
+									<a class="modal-effect btn btn-sm btn-warning" data-effect="effect-scale"
+										data-id="{{ $trip->id }}" data-number="{{ $trip->number }}" data-archived="{{ $trip->archived }}"
+										 data-toggle="modal" href="#exampleModal2" title="Archive"><i class="las la-pen"></i></a>
 										   </td>
 											</tr>
 											@endforeach
@@ -143,58 +136,32 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">تعديل </h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Archive :  </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
 
-                    <form action="{{ route('edittrip') }}" method="post" autocomplete="off">
+                    <form action="{{ route('archivetrip') }}" method="post" autocomplete="off">
                        
                         {{ csrf_field() }}
                         <div class="form-group">
                             <input type="hidden" name="id" id="id" value="">
                             <label for="recipient-name" class="col-form-label"> trip number:</label>
-                            <input class="form-control" name="number" id="number" type="integer">
+                            <input class="form-control" name="number" id="number" type="string">
                         </div>
-                        <div class="form-group">
-                            <label for="message-text" class="col-form-label">trip status:</label>
-                            <input class="form-control" id="status" name="status" type="string">
-                        </div>
+                       
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">تاكيد</button>
+                    <button type="submit" class="btn btn-warning">تاكيد</button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">اغلاق</button>
                 </div>
                 </form>
             </div>
         </div>
     </div>
-	<!-- delete -->
-    <div class="modal" id="modaldemo9">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content modal-content-demo">
-                <div class="modal-header">
-                    <h6 class="modal-title">حذف </h6><button aria-label="Close" class="close" data-dismiss="modal"
-                        type="button"><span aria-hidden="true">&times;</span></button>
-                </div>
-                <form action="{{ route('deletetrip') }}" method="post">
-                  
-                    {{ csrf_field() }}
-                    <div class="modal-body">
-                        <p>هل انت متاكد من عملية الحذف ؟</p><br>
-                        <input type="hidden" name="id" id="id" value="">
-                        <input class="form-control" name="number" id="number" type="integer" readonly>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">الغاء</button>
-                        <button type="submit" class="btn btn-danger">تاكيد</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
+
 
 					
 				<!-- /row -->
@@ -228,25 +195,15 @@
         var button = $(event.relatedTarget)
         var id = button.data('id')
         var number = button.data('number')
-        var status = button.data('status')
+
         var modal = $(this)
         modal.find('.modal-body #id').val(id);
         modal.find('.modal-body #number').val(number);
-        modal.find('.modal-body #status').val(status);
+
     })
 
 </script>
-<script>
-    $('#modaldemo9').on('show.bs.modal', function(event) {
-        var button = $(event.relatedTarget)
-        var id = button.data('id')
-        var number = button.data('number')
-        var modal = $(this)
-        modal.find('.modal-body #id').val(id);
-        modal.find('.modal-body #number').val(number);
-    })
-
-</script>
+<
 
 
 @endsection

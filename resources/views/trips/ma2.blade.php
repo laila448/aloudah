@@ -13,7 +13,7 @@
 				<div class="breadcrumb-header justify-content-between">
 					<div class="my-auto">
 						<div class="d-flex">
-							<h4 class="content-title mb-0 my-auto">الرحلات </h4><span class="text-muted mt-1 tx-13 mr-2 mb-0"></span>
+							<h4 class="content-title mb-0 my-auto">Manifest: </h4><span class="text-muted mt-1 tx-13 mr-2 mb-0"></span>
 						</div>
 					</div>
 					<div class="d-flex my-xl-auto right-content">
@@ -77,7 +77,7 @@
 						<div class="card">
 							<div class="card-header pb-0">
 								<div class="d-flex justify-content-between">
-									<h4 class="card-title mg-b-0">قائمة الرحلات</h4>
+									<h4 class="card-title mg-b-0"> </h4>
 									<i class="mdi mdi-dots-horizontal text-gray"></i>
 								</div>
 								<p class="tx-12 tx-gray-500 mb-2"> <a href=""></a></p>
@@ -87,41 +87,39 @@
 									<table class="table text-md-nowrap" id="example1">
 										<thead>
 											<tr>
-												<th class="wd-15p border-bottom-0">Trip_Number </th>
-												<th class="wd-15p border-bottom-0">Truck</th>
-												<th class="wd-20p border-bottom-0">Driver</th>
-												<th class="wd-15p border-bottom-0">Source </th>
-												<th class="wd-10p border-bottom-0">Destination</th>
-												<th class="wd-25p border-bottom-0">Status</th>
-												<th class="wd-25p border-bottom-0">Date</th>
-												<th class="wd-25p border-bottom-0">Operation</th>
-											
+                                            <th class="wd-15p border-bottom-0">ID </th>
+												<th class="wd-15p border-bottom-0">Sender </th>
+                                                <th class="wd-15p border-bottom-0">Reciver </th>
+                                                <th class="wd-15p border-bottom-0">Sender-number </th>
+                                                <th class="wd-15p border-bottom-0">Reciver-number </th>
+                                                <th class="wd-15p border-bottom-0"> content</th>
+                                                <th class="wd-15p border-bottom-0"> Weight</th>
+                                                <th class="wd-15p border-bottom-0"> Shipping_cost</th>
+                                                <th class="wd-15p border-bottom-0"> against_shipping</th>
+                                                <th class="wd-15p border-bottom-0"> adapter</th>
+                                                <th class="wd-15p border-bottom-0"> discount</th>
+                                                <th class="wd-15p border-bottom-0"> collection</th>
 											</tr>
 										</thead>   
 										<tbody>
 											
-											 @foreach ($trips as $trip)
+											 @foreach ($shippings as $shipping)
                                                 <tr>     
-                                                  <td>{{ $trip->number }}</td>
-                                                  <td>{{ $trip->truck->number }}</td>
-                                                  <td>{{ $trip->driver->name }}</td>
-												  <td>{{  $trip->branch->address }}</td>
-                                                  <td>{{ $trip->destination->address }}</td>
-                                                  <td>{{ $trip->status }}</td>
-												  <td>{{ $trip->date }}</td>
-												  <td>
-                                    
-									<a class="modal-effect btn btn-sm btn-info" data-effect="effect-scale"
-										data-id="{{ $trip->id }}" data-number="{{ $trip->number }}"
-										data-status="{{ $trip->status }}" data-toggle="modal"
-										href="#exampleModal2" title="تعديل"><i class="las la-pen"></i></a>
-							   
-									<a class="modal-effect btn btn-sm btn-danger" data-effect="effect-scale"
-										data-id="{{ $trip->id }}" data-number="{{ $trip->number }}"
-										data-toggle="modal" href="#modaldemo9" title="حذف"><i
-											class="las la-trash"></i></a>
-							  
-										   </td>
+                                                <td>{{ $shipping->number }}</td>
+                                                  <td>{{ $shipping->sender }}</td>
+                                                  <td>{{ $shipping->receiver }}</td>
+                                                  <td>{{ $shipping->sender_number }}</td>
+                                                  <td>{{ $shipping->receiver_number }}</td>
+                                                  <td>{{ $shipping->content }}</td>
+                                                  <td>{{ $shipping->weight }}</td>
+                                                  <td>{{ $shipping->shipping_cost }}</td>
+                                                  <td>{{ $shipping->against_shipping }}</td>
+                                                  <td>{{ $shipping->adapter }}</td>
+                                                  <td>{{ $shipping->discount }}</td>
+                                                  <td>{{ $shipping->collection }}</td>
+                                                 
+  
+
 											</tr>
 											@endforeach
 
@@ -137,63 +135,7 @@
 				
 					</div>
 					<!--/div-->
- <!-- edit -->
- <div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">تعديل </h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-
-                    <form action="{{ route('edittrip') }}" method="post" autocomplete="off">
-                       
-                        {{ csrf_field() }}
-                        <div class="form-group">
-                            <input type="hidden" name="id" id="id" value="">
-                            <label for="recipient-name" class="col-form-label"> trip number:</label>
-                            <input class="form-control" name="number" id="number" type="integer">
-                        </div>
-                        <div class="form-group">
-                            <label for="message-text" class="col-form-label">trip status:</label>
-                            <input class="form-control" id="status" name="status" type="string">
-                        </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">تاكيد</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">اغلاق</button>
-                </div>
-                </form>
-            </div>
-        </div>
-    </div>
-	<!-- delete -->
-    <div class="modal" id="modaldemo9">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content modal-content-demo">
-                <div class="modal-header">
-                    <h6 class="modal-title">حذف </h6><button aria-label="Close" class="close" data-dismiss="modal"
-                        type="button"><span aria-hidden="true">&times;</span></button>
-                </div>
-                <form action="{{ route('deletetrip') }}" method="post">
-                  
-                    {{ csrf_field() }}
-                    <div class="modal-body">
-                        <p>هل انت متاكد من عملية الحذف ؟</p><br>
-                        <input type="hidden" name="id" id="id" value="">
-                        <input class="form-control" name="number" id="number" type="integer" readonly>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">الغاء</button>
-                        <button type="submit" class="btn btn-danger">تاكيد</button>
-                    </div>
-                </div>
-            </form>
-        </div>
+ 
     </div>
 
 					
@@ -223,30 +165,6 @@
 <script src="{{URL::asset('assets/plugins/datatable/js/responsive.bootstrap4.min.js')}}"></script>
 <!--Internal  Datatable js -->
 <script src="{{URL::asset('assets/js/table-data.js')}}"></script>
-<script>
-    $('#exampleModal2').on('show.bs.modal', function(event) {
-        var button = $(event.relatedTarget)
-        var id = button.data('id')
-        var number = button.data('number')
-        var status = button.data('status')
-        var modal = $(this)
-        modal.find('.modal-body #id').val(id);
-        modal.find('.modal-body #number').val(number);
-        modal.find('.modal-body #status').val(status);
-    })
-
-</script>
-<script>
-    $('#modaldemo9').on('show.bs.modal', function(event) {
-        var button = $(event.relatedTarget)
-        var id = button.data('id')
-        var number = button.data('number')
-        var modal = $(this)
-        modal.find('.modal-body #id').val(id);
-        modal.find('.modal-body #number').val(number);
-    })
-
-</script>
 
 
 @endsection

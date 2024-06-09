@@ -7,12 +7,14 @@ use App\Http\Controllers\BranchManagerController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\compliantController;
+use App\Http\Controllers\DriverController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ShippingController;
 use App\Http\Controllers\TripController;
 use App\Http\Controllers\TruckController;
 use App\Http\Controllers\VacationController;
 use App\Http\Controllers\WarehouseController;
+use App\Models\Branch;
 use App\Models\Complaint;
 use App\Models\Employee;
 use App\Models\Shipping;
@@ -105,7 +107,8 @@ Route::group(['middleware' => 'Employee',
         Route::get('tripreports/{reportId}/download', [ReportController::class, 'downloadTripReport']);
         Route::get('alltrucksreports', [ReportController::class, 'getTruckReports']);
         Route::get('alltripsreports', [ReportController::class, 'getTripReports']);
-        
+        Route::get('getbranchlatlng/{id}', [BranchController::class, 'getBranchlatlng']);
+        Route::get('getdrivertrips/{id}', [DriverController::class, 'GetDriverTrips']);
 
 
 
@@ -151,6 +154,15 @@ Route::group(['middleware' => 'Employee',
      Route::group(['middleware' => 'Customer',
      'prefix' => 'customer'], function() {
           Route::post('addcompliant', [compliantController::class , 'AddCompliant']);
+     });   
+
+     Route::group(['middleware' => 'Driver',
+     'prefix' => 'driver'], function() {
+          Route::get('getprofile', [DriverController::class , 'GetProfile']);
+          Route::get('getbranchlatlng/{id}', [BranchController::class, 'getBranchlatlng']);
+          Route::get('getmytrips', [DriverController::class, 'GetMyTrips']);
+  
+
      });   
 
 Route::group(['middleware' => 'WarehouseManager',

@@ -31,4 +31,10 @@ class Manifest extends Model
     {
         return $this->hasMany(Shipping::class, 'manifest_number', 'number');
     }
+    public function branch()
+    {
+        return $this->hasManyThrough(Branch::class, Trip::class, 'id', 'id');
+    }
+
+
 }
