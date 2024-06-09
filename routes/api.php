@@ -23,6 +23,7 @@ use App\Models\Warehouse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use PHPOpenSourceSaver\JWTAuth\Claims\Custom;
+use App\Http\Controllers\DriverController;
 
 /*
 |--------------------------------------------------------------------------
@@ -69,6 +70,8 @@ Route::group(['middleware' => 'BranchManager',
        Route::post('shippingprices', [ShippingController::class , 'DetermineShippingPrices']);
        Route::post('editshippingprices', [ShippingController::class , 'EditShippingPrices']);
        Route::get('priceslist', [ShippingController::class , 'GetPricesList']);
+       Route::post('addDriver', [EmployeeController::class, 'addDriver']);
+       Route::get('branchdrivers' , [EmployeeController::class , 'GetDriversForMyBranch']);
 
 
 
