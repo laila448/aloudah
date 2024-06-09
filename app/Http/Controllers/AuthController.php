@@ -4,7 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Admin;
 use App\Models\Branch_Manager;
+use App\Models\Customer;
+use App\Models\Driver;
+use App\Models\Employee;
 use App\Models\User;
+use App\Models\Warehouse_Manager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -19,6 +23,7 @@ class AuthController extends Controller
             'phone_number'=> 'required|max:10',
             'gender'=>'required|in:male,female',
             'password'=>'required|min:8',
+            'device_token' => 'required'
         ]);
         if ($validator->fails())
         {
@@ -42,8 +47,9 @@ class AuthController extends Controller
     public function Login(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|min:6|max:255',
+            'name' => 'required|min:4|max:255',
             'password' => 'required|min:8',
+            'device_token' => 'required'
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 422);
@@ -53,44 +59,56 @@ class AuthController extends Controller
 
         if ($token = Auth::guard('admin')->attempt($credentials)) {
             $user = Auth::guard('admin')->user();
+            $admin = Admin::where('id' , $user->id)->update([
+                'device_token' => $request->device_token
+            ]);
         return response()->json([
             'token' => $token,
-            'user' => $user
         ]);
         }
        else if ($token = Auth::guard('branch_manager')->attempt($credentials)) {
             $user = Auth::guard('branch_manager')->user();
+            $bm = Branch_Manager::where('id' , $user->id)->update([
+                'device_token' => $request->device_token
+            ]);
         return response()->json([
             'token' => $token,
-            'user' => $user
         ]);
         }
         else if ($token = Auth::guard('employee')->attempt($credentials)) {
             $user = Auth::guard('employee')->user();
+            $emp = Employee::where('id' , $user->id)->update([
+                'device_token' => $request->device_token
+            ]);
         return response()->json([
             'token' => $token,
-            'user' => $user
         ]);
         }
         else if ($token = Auth::guard('customer')->attempt($credentials)) {
             $user = Auth::guard('customer')->user();
+            $cust = Customer::where('id' , $user->id)->update([
+                'device_token' => $request->device_token
+            ]);
         return response()->json([
             'token' => $token,
-            'user' => $user
         ]);
         }
         else if ($token = Auth::guard('warehouse_manager')->attempt($credentials)) {
             $user = Auth::guard('warehouse_manager')->user();
+            $wm = Warehouse_Manager::where('id' , $user->id)->update([
+                'device_token' => $request->device_token
+            ]);
         return response()->json([
             'token' => $token,
-            'user' => $user
         ]);
         }
         else if ($token = Auth::guard('driver')->attempt($credentials)) {
             $user = Auth::guard('driver')->user();
+            $driver = Driver::where('id' , $user->id)->update([
+                'device_token' => $request->device_token
+            ]);
         return response()->json([
             'token' => $token,
-            'user' => $user
         ]);
     }
         return response()->json(['error' => 'Unauthorized'], 401);
@@ -112,6 +130,9 @@ class AuthController extends Controller
         }
         elseif(Auth::guard('warehouse_manager')->check()){
             Auth::guard('warehouse_manager')->logout();
+        }
+        elseif(Auth::guard('driver')->check()){
+            Auth::guard('driver')->logout();
         }
 
         return response()->json(['message'=>'Loged out successfully']);

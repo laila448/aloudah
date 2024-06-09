@@ -21,6 +21,7 @@ return new class extends Migration
              $table->string('password');
             $table->integer('phone_number')->unique();
             $table->string('gender');
+            $table->text('device_token')->nullable();
             $table->timestamps();
         });
     }

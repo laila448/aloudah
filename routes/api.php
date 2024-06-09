@@ -23,7 +23,6 @@ use App\Models\Warehouse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use PHPOpenSourceSaver\JWTAuth\Claims\Custom;
-use App\Http\Controllers\DriverController;
 
 /*
 |--------------------------------------------------------------------------
