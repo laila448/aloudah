@@ -17,6 +17,7 @@ class AuthController extends Controller
 {
     public function Register (Request $request)
     {
+        try{
         $validator =Validator::make($request->all(),[
             'name'=>'required|min:6|max:255|unique:admins',
             'email'=>'required|string|email|unique:admins',
@@ -25,9 +26,13 @@ class AuthController extends Controller
             'password'=>'required|min:8',
             'device_token' => 'required'
         ]);
-        if ($validator->fails())
-        {
-            return response()->json($validator->errors()->toJson(),400);
+        if ($validator->fails()) {
+            $errors = $validator->errors()->all();
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed. Please check the following errors:',
+                'errors' => $errors
+            ], 400);
         }
     
         $admin=Admin::create(array_merge(
@@ -42,17 +47,30 @@ class AuthController extends Controller
             'token'=>$token,
             'admin'=>$admin,
         ],201);
+        
+    }catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to register.',
+            'error' => $e->getMessage()
+        ], 500);
+    }
     }
 
     public function Login(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|min:4|max:255',
+            'name' => 'required|max:255',
             'password' => 'required|min:8',
             'device_token' => 'required'
         ]);
         if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 422);
+            $errors = $validator->errors()->all();
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed. Please check the following errors:',
+                'errors' => $errors
+            ], 400);
         }
 
        $credentials = $request->only(['name', 'password']);

@@ -8,21 +8,14 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\compliantController;
 use App\Http\Controllers\DriverController;
+use App\Http\Controllers\GoodsController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ShippingController;
 use App\Http\Controllers\TripController;
 use App\Http\Controllers\TruckController;
 use App\Http\Controllers\VacationController;
 use App\Http\Controllers\WarehouseController;
-use App\Models\Branch;
-use App\Models\Complaint;
-use App\Models\Employee;
-use App\Models\Shipping;
-use App\Models\Truck;
-use App\Models\Warehouse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use PHPOpenSourceSaver\JWTAuth\Claims\Custom;
 
 /*
 |--------------------------------------------------------------------------
@@ -169,6 +162,10 @@ Route::group(['middleware' => 'Employee',
 
 Route::group(['middleware' => 'WarehouseManager',
      'prefix' => 'warehousemanager'], function() {
-
+          Route::post('addgood' , [GoodsController::class , 'AddGood']);
+          Route::post('deletegood' , [GoodsController::class , 'deleteGood']);
+          Route::post('receivingood' , [GoodsController::class , 'receivingGood']);
+          Route::get('getallgoods' , [GoodsController::class , 'getAllGoods']);
+          Route::post('getgood' , [GoodsController::class , 'getGood']);
      });  
 

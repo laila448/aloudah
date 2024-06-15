@@ -410,6 +410,8 @@ public function AddInvoice(Request $request)
         $price = Price::findOrFail($request->type_id);
         $shippingCost = $price->cost * $request->weight;
 
+        $barcode = 'SHIP-' . uniqid();
+
         $shipping = Shipping::create([
             'source_id' => $request->source_id,
             'destination_id' => $request->destination_id,
@@ -433,6 +435,7 @@ public function AddInvoice(Request $request)
             'prepaid' => $request->prepaid,
             'discount' => $request->discount,
             'collection' => $request->collection,
+            'barcode' => $barcode,
         ]);
 
         $shipping->number = $shipping->id;
