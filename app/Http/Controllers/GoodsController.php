@@ -172,7 +172,10 @@ class GoodsController extends Controller
     public function getAllGoods(){
 
         try{
-        $goods = Good::paginate(10);
+        $user = Auth::guard('warehouse_manager')->user(); 
+        $goods = Good::where('warehouse_id' , $user->warehouse_id)
+                       ->where('received' , false)
+                       ->paginate(10);
         if(!$goods){
             return response()->json([
                 'success' => false,
@@ -228,6 +231,62 @@ class GoodsController extends Controller
             ], 500);
         }
 
+    }
+
+    public function inventory(Request $request){
+
+        $validator = Validator::make($request->all() ,[
+            'barcodes' => 'required|array',
+             'barcodes.*' => 'string'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->toJson()
+            ], 400);
+        }
+
+        try{
+            $user = Auth::guard('warehouse_manager')->user(); 
+            $existingGoods = Good::where('warehouse_id' , $user->warehouse_id)
+                           ->where('received' , false)
+                           ->pluck('barcode')
+                           ->toArray();
+            $notFound = [];
+            $found = [];
+           
+           foreach($existingGoods as $good){
+            if(in_array($good,$request->barcodes)){
+                   $found[] = $good;
+                }
+                else{
+                  $notFound[] = $good;
+                }
+            }
+            if(empty($notFound)){
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Inventory process completed successfully.',
+                ], 200); 
+            }
+
+            $notFoundGoods = Good::whereIn('barcode' , $notFound)->get();
+            return response()->json([
+                'success' => false,
+                'message' => 'Some goods are missing .',
+                'data' => $notFoundGoods
+            ], 400);
+
+
+
+        }catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Inventory failed.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
 

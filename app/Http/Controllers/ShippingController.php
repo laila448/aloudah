@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
-use Namshi\JOSE\Signer\OpenSSL\RSA;
+use Illuminate\Support\Str;
 
 class ShippingController extends Controller
 {
@@ -410,7 +410,7 @@ public function AddInvoice(Request $request)
         $price = Price::findOrFail($request->type_id);
         $shippingCost = $price->cost * $request->weight;
 
-        $barcode = 'SHIP-' . uniqid();
+        $barcode = 'SHIP-' . uniqid() . Str::random(6);
 
         $shipping = Shipping::create([
             'source_id' => $request->source_id,

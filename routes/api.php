@@ -167,5 +167,6 @@ Route::group(['middleware' => 'WarehouseManager',
           Route::post('receivingood' , [GoodsController::class , 'receivingGood']);
           Route::get('getallgoods' , [GoodsController::class , 'getAllGoods']);
           Route::post('getgood' , [GoodsController::class , 'getGood']);
+          Route::post('inventory' , [GoodsController::class , 'inventory']);
      });  
 
