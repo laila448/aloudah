@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Web\BranchController;
+use App\Http\Controllers\Web\CustomerController;
 use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\DriverController;
 use App\Http\Controllers\Web\tripController;
@@ -38,7 +39,8 @@ Route::post('/logout',[App\Http\Controllers\Auth\AdminLoginController::class, 'l
  Route::get('/index', [App\Http\Controllers\AdminController::class, 'index'])->name('index');
 
  
- Route::prefix('employee')->middleware('check.emp_web')->group(function () {
+ Route::group(['middleware' => 'EmployeeAuthMiddleware',
+ 'prefix' => 'employee'], function() { 
 Route::get('/truckslist' , [truckController::class , 'GetTrucks']);
 Route::post('/addtruck' , [truckController::class , 'AddTruck'])->name('addtruck');
 Route::post('/deletetruck' , [truckController::class , 'DeleteTruck'])->name('deletetruck');
@@ -68,6 +70,13 @@ Route::post('/deletebranchmanager' , [BranchController::class , 'DeleteBranchMan
 Route::get('/getdrivers' , [DriverController::class , 'GetDrivers'])->name('getdrivers');
 Route::post('/deletedriver' , [DriverController::class , 'DeleteDriver'])->name('deletedriver');
 Route::post('/editdriver' , [DriverController::class , 'EditDriver'])->name('editdriver');
+
+
+Route::get('/getcustomers' , [CustomerController::class , 'GetCustomers'])->name('getcustomers');
+Route::post('/addcustomer' , [CustomerController::class , 'AddCustomer'])->name('addcustomer');
+Route::post('/editcustomer' , [CustomerController::class , 'EditCustomer'])->name('editcustomer');
+Route::post('/deletecustomer' , [CustomerController::class , 'DeleteCustomer'])->name('deletecustomer');
+
 
 
 });

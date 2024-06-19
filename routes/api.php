@@ -173,3 +173,5 @@ Route::group(['middleware' => 'WarehouseManager',
           Route::post('inventory' , [GoodsController::class , 'inventory']);
      });  
 
+
+

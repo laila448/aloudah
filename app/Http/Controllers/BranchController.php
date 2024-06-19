@@ -40,7 +40,7 @@ class BranchController extends Controller
 
      public function getBranchlatlng( $id)
      {
-       try{
+      
       $branch = Branch::select('branch_lat', 'branch_lng')->where('id', $id)->first();
 
       if (!$branch) {
@@ -49,26 +49,23 @@ class BranchController extends Controller
             'message' => 'Branch not found'
           ], 404);
       }
+      
        return response()->json([
         'success' => true ,
         'data' => $branch ,
         'message' => 'Branch location retrieved successfully.'
         ] , 200) ;
-       }catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Failed to retrieve branch location.',
-            'error' => $e->getMessage()
-        ], 500);
+  
+       
     }
 
-     }
-    //public function AddBranch (Request $request)
-    //{
-    //    $validator =  Validator::make($request->all(),[
-    //     'desk'=>'required|min:3',
-    //      'address'=>'required',
-    //       'phone'=>'required|min:4|max:15',
+    // public function AddBranch (Request $request)
+    // {
+    //     $validator =  Validator::make($request->all(),[
+    //       'desk'=>'required|min:3',
+    //         'address'=>'required',
+    //         'phone'=>'required|min:4|max:15',
+
           
     //     ]);
       
@@ -124,6 +121,10 @@ class BranchController extends Controller
 //         'message' => 'Branch added successfully'
 //     ], 200);
 // }
+
+
+
+
 public function AddBranch(Request $request)
 {
     try {
