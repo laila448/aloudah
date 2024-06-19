@@ -46,6 +46,47 @@ class CustomerController extends Controller
 
     //     return response()->json(['message' => 'Customer added successfully'], 201);
     // }
+    //!Here
+
+    public function GetCustomersByName(Request $request)
+    {
+        try {
+            // Validate the request data
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $validator->errors()->toJson()
+                ], 400);
+            }
+
+            // Find the customers by name prefix
+            $customers = Customer::where('name', 'like', $request->name . '%')->get();
+
+            if ($customers->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No customers found'
+                ], 404);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Customers retrieved successfully',
+                'data' => $customers
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while retrieving the customers',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
     public function AddCustomer(Request $request)
     {
         try {

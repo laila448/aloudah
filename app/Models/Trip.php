@@ -27,15 +27,15 @@ class Trip extends Model
         protected $hidden = ['created_at','updated_at'];
 
 
-       public function truck()
-         {
-        return $this->belongsTo(Truck::class, 'truck_id');
-         }
-
-       public function driver()
+        public function truck()
         {
-         return $this->belongsTo(Driver::class, 'driver_id');
+            return $this->belongsTo(Truck::class);
         }
+
+        public function driver()
+    {
+        return $this->belongsTo(Driver::class);
+    }
       
           public function manifest()
           {

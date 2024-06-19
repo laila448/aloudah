@@ -33,7 +33,9 @@ class Driver extends Authenticatable implements JWTSubject
         'resignation_date',
         'manager_name',
         'certificate',
-        'device_token'
+        'device_token',
+        'current_lat',
+        'current_lng',
           ]; 
           protected $hidden = ['created_at','updated_at'];
           

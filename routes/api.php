@@ -23,6 +23,7 @@ use App\Models\Warehouse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use PHPOpenSourceSaver\JWTAuth\Claims\Custom;
+use App\Http\Controllers\DestinationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -111,7 +112,14 @@ Route::group(['middleware' => 'Employee',
         Route::get('alltripsreports', [ReportController::class, 'getTripReports']);
         Route::get('getbranchlatlng/{id}', [BranchController::class, 'getBranchlatlng']);
         Route::get('getdrivertrips/{id}', [DriverController::class, 'GetDriverTrips']);
+        Route::get('getcustomers', [CustomerController::class , 'GetCustomers']);
 
+        Route::post('get-location', [DriverController::class, 'getLocation']);
+        Route::get('drivers', [DriverController::class, 'GetAllDrivers']);
+        Route::get('destinations', [DestinationController::class, 'getAllDestinations']);
+        Route::get('branches/{id}', [BranchController::class, 'GetBranchById']);
+        Route::get('profile', [EmployeeController::class, 'GetProfile']);
+        Route::post('customerByName', [CustomerController::class, 'GetCustomersByName']);
 
 
       });
@@ -163,7 +171,7 @@ Route::group(['middleware' => 'Employee',
           Route::get('getprofile', [DriverController::class , 'GetProfile']);
           Route::get('getbranchlatlng/{id}', [BranchController::class, 'getBranchlatlng']);
           Route::get('getmytrips', [DriverController::class, 'GetMyTrips']);
-  
+          Route::post('update-location', [DriverController::class, 'updateLocation']);
 
      });   
 
