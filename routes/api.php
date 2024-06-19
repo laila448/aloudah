@@ -140,6 +140,9 @@ Route::group(['middleware' => 'Employee',
          Route::get('getwarehousemanager/{id}' , [WarehouseController::class , 'GetWarehouseManager']);
          Route::post('getcustomer' , [CustomerController::class , 'GetCustomer']);
          Route::get('getcustomers', [CustomerController::class , 'GetCustomers']);
+         Route::post('shippingprices', [ShippingController::class , 'DetermineShippingPrices']);
+         Route::post('editshippingprices', [ShippingController::class , 'EditShippingPrices']);
+         Route::get('priceslist', [ShippingController::class , 'GetPricesList']);
      
      
      });
