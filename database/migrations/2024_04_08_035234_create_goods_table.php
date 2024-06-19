@@ -18,12 +18,23 @@ return new class extends Migration
             $table->unsignedBigInteger('warehouse_id');
             $table->foreign('warehouse_id')->references('id')->on('warehouses')->onDelete('cascade');
             $table->string('type');
-            $table->integer('quantity');
+            $table->integer('quantity')->default(1);
             $table->double('weight');
-            $table->integer('price');
+            $table->string('size');
+            $table->string('content');
+            $table->string('marks');
+           // $table->integer('price');
+            $table->string('truck');
+            $table->string('driver');
+            //$table->string('desk');
+            $table->string('destination');
+            $table->date('ship_date');
             $table->date('date');
             $table->string('sender');
             $table->string('receiver');
+            $table->string('barcode');
+            $table->boolean('received')->default(0);
+            $table->softDeletes();
             $table->timestamps();
         });
     }

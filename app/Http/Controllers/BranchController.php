@@ -37,82 +37,33 @@ class BranchController extends Controller
           ], 500);
       }
   }
-//!Mark:making this 
-public function GetBranchById($id)
-{
-    try {
-        $branch = Branch::select('id', 'opening_date', 'desk', 'address', 'phone')
-            ->where('id', $id)
-            ->first();
 
-        if (!$branch) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Branch not found'
-            ], 404);
-        }
 
-        // Load trips and drivers separately
-        $trips = Trip::where('branch_id', $branch->id)->with('driver')->get();
+     public function getBranchlatlng( $id)
+     {
+       try{
+      $branch = Branch::select('branch_lat', 'branch_lng')->where('id', $id)->first();
 
-        $branchData = [
-            'opening_date' => $branch->opening_date,
-            'desk' => $branch->desk,
-            'address' => $branch->address,
-            'phone' => $branch->phone,
-            'trips' => $trips->map(function($trip) {
-                return [
-                    'date' => $trip->date,
-                    'number' => $trip->number,
-                    'driver_name' => $trip->driver ? $trip->driver->name : null,
-                ];
-            })
-        ];
-
-        return response()->json([
-            'success' => true,
-            'data' => $branchData,
-            'message' => 'Branch retrieved successfully.'
-        ], 200);
-
-    } catch (\Exception $e) {
+      if (!$branch) {
+          return response()->json([
+            'success' => false ,
+            'message' => 'Branch not found'
+          ], 404);
+      }
+       return response()->json([
+        'success' => true ,
+        'data' => $branch ,
+        'message' => 'Branch location retrieved successfully.'
+        ] , 200) ;
+       }catch (\Exception $e) {
         return response()->json([
             'success' => false,
-            'message' => 'Failed to retrieve branch.',
+            'message' => 'Failed to retrieve branch location.',
             'error' => $e->getMessage()
         ], 500);
     }
-}
 
-  public function getBranchlatlng($id)
-  {
-      try {
-          $branch = Branch::select('branch_lat', 'branch_lng')->where('id', $id)->first();
-  
-          if (!$branch) {
-              return response()->json([
-                  'success' => false,
-                  'message' => 'Branch not found'
-              ], 404);
-          }
-  
-          return response()->json([
-              'success' => true,
-              'data' => [
-                  'branch_lat' => (float) $branch->branch_lat,
-                  'branch_lng' => (float) $branch->branch_lng
-              ],
-              'message' => 'Branch location retrieved successfully.'
-          ], 200);
-      } catch (\Exception $e) {
-          return response()->json([
-              'success' => false,
-              'message' => 'Failed to retrieve branch location.',
-              'error' => $e->getMessage()
-          ], 500);
-      }
-  }
-  
+     }
 public function AddBranch(Request $request)
 {
     try {
@@ -340,7 +291,51 @@ public function AddBranch(Request $request)
         }
     }
     
-
+    public function GetBranchById($id)
+    {
+        try {
+            $branch = Branch::select('id', 'opening_date', 'desk', 'address', 'phone')
+                ->where('id', $id)
+                ->first();
+    
+            if (!$branch) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Branch not found'
+                ], 404);
+            }
+    
+            // Load trips and drivers separately
+            $trips = Trip::where('branch_id', $branch->id)->with('driver')->get();
+    
+            $branchData = [
+                'opening_date' => $branch->opening_date,
+                'desk' => $branch->desk,
+                'address' => $branch->address,
+                'phone' => $branch->phone,
+                'trips' => $trips->map(function($trip) {
+                    return [
+                        'date' => $trip->date,
+                        'number' => $trip->number,
+                        'driver_name' => $trip->driver ? $trip->driver->name : null,
+                    ];
+                })
+            ];
+    
+            return response()->json([
+                'success' => true,
+                'data' => $branchData,
+                'message' => 'Branch retrieved successfully.'
+            ], 200);
+    
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve branch.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 
   
 }

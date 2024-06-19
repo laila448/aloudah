@@ -34,6 +34,7 @@ class Shipping extends Model
      'prepaid',
      'discount',
      'collection',
+     'barcode',
     ];
     protected $hidden = ['created_at','updated_at'];
 

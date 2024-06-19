@@ -171,17 +171,17 @@ class AuthController extends Controller
 
     public function Register(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|min:6|max:255|unique:admins',
-            'email' => 'required|string|email|unique:admins',
-            'phone_number' => 'required|max:10',
-            'gender' => 'required|in:male,female',
-            'password' => 'required|min:8',
+        $validator =Validator::make($request->all(),[
+            'name'=>'required|min:6|max:255|unique:admins',
+            'email'=>'required|string|email|unique:admins',
+            'phone_number'=> 'required|max:10',
+            'gender'=>'required|in:male,female',
+            'password'=>'required|min:8',
             'device_token' => 'required'
         ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
+        if ($validator->fails())
+        {
+            return response()->json($validator->errors()->toJson(),400);
         }
 
         $admin = Admin::create(array_merge(
@@ -192,22 +192,27 @@ class AuthController extends Controller
         $token = Auth::guard('admin')->attempt($credentials);
 
         return response()->json([
-            'message' => 'Registered successfully',
-            'token' => $token,
-            'admin' => $admin,
-        ], 201);
+            'message'=>'Registered successfully',
+            'token'=>$token,
+            'admin'=>$admin,
+        ],201);
     }
 
     public function Login(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|min:4|max:255',
+            'name' => 'required|max:255',
             'password' => 'required|min:8',
             'device_token' => 'required'
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 422);
+            $errors = $validator->errors()->all();
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed. Please check the following errors:',
+                'errors' => $errors
+            ], 400);
         }
 
         $credentials = $request->only(['name', 'password']);

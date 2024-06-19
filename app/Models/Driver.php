@@ -37,16 +37,12 @@ class Driver extends Authenticatable implements JWTSubject
         'current_lat',
         'current_lng',
           ]; 
-          protected $hidden = ['created_at','updated_at'];
+         
           
           public function branch(){
             return $this->belongsTo(branch::class, 'branch_id');
          }
-         public function trips(){
-            //  return $this->hasMany(trip::class, 'truck_id');
-            return $this->hasMany(trip::class, 'driver_id');
-         }
-
+        
          public function getJWTIdentifier()
          {
              return $this->getKey();
@@ -56,4 +52,22 @@ class Driver extends Authenticatable implements JWTSubject
          {
              return [];
          }
+
+       
+   
+
+    protected $hidden = [
+        'password', 'created_at', 'updated_at'
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function trips()
+    {
+        return $this->hasMany(Trip::class, 'driver_id');
+    }
+
 }
