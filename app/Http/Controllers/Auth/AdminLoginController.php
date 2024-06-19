@@ -36,6 +36,6 @@ class AdminLoginController extends Controller
     {
         Auth::guard('emp_web')->logout();
         $request->session()->invalidate();
-        return redirect('/login');
+        return redirect()->route('login');
     }
 } 

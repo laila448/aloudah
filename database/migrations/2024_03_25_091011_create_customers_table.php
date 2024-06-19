@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('national_id')->unique();
             $table->string('name');
 
-            $table->string('password');
+            $table->string('password')->nullable();
             $table->integer('phone_number')->unique();
             $table->string('gender');
             $table->integer('mobile')->unique();

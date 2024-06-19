@@ -7,7 +7,6 @@ use App\Http\Controllers\BranchManagerController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\compliantController;
-use App\Http\Controllers\DriverController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ShippingController;
 use App\Http\Controllers\TripController;
@@ -172,4 +171,6 @@ Route::group(['middleware' => 'WarehouseManager',
      'prefix' => 'warehousemanager'], function() {
 
      });  
+
+
 

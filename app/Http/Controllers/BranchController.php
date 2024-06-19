@@ -37,7 +37,6 @@ class BranchController extends Controller
       }
   }
 
-<<<<<<< HEAD
 
      public function getBranchlatlng( $id)
      {
@@ -60,20 +59,19 @@ class BranchController extends Controller
   
 
      }
-    public function AddBranch (Request $request)
-    {
-        $validator =  Validator::make($request->all(),[
-          'desk'=>'required|min:3',
-            'address'=>'required',
-            'phone'=>'required|min:4|max:15',
-=======
     // public function AddBranch (Request $request)
     // {
     //     $validator =  Validator::make($request->all(),[
     //       'desk'=>'required|min:3',
     //         'address'=>'required',
     //         'phone'=>'required|min:4|max:15',
->>>>>>> b8d37973ef91fa1b55801f44f3c24c3fdf7e92f1
+
+            // public function AddBranch (Request $request)
+    // {
+    //     $validator =  Validator::make($request->all(),[
+    //       'desk'=>'required|min:3',
+    //         'address'=>'required',
+    //         'phone'=>'required|min:4|max:15',
           
     //     ]);
       
@@ -129,6 +127,8 @@ class BranchController extends Controller
 //         'message' => 'Branch added successfully'
 //     ], 200);
 // }
+
+
 public function AddBranch(Request $request)
 {
     try {

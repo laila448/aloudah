@@ -71,6 +71,7 @@ class Kernel extends HttpKernel
         'Employee' => \App\Http\Middleware\EmployeeMiddleware::class,
         'Driver' => \App\Http\Middleware\DriverMiddleware::class,
         'WarehouseManager' => \App\Http\Middleware\WarehouseManagerMiddleware::class,
-        'check.emp_web' => \App\Http\Middleware\emplyeeMiddleware::class,
+        'employeeweb' => \App\Http\Middleware\emplyeeMiddleware::class,
+        'EmployeeAuthMiddleware' => \App\Http\Middleware\EmployeeAuthMiddleware::class,
     ];
 }
