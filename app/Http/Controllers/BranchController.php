@@ -40,25 +40,25 @@ class BranchController extends Controller
 
      public function getBranchlatlng( $id)
      {
-       
-
+      
       $branch = Branch::select('branch_lat', 'branch_lng')->where('id', $id)->first();
 
-    
       if (!$branch) {
           return response()->json([
             'success' => false ,
             'message' => 'Branch not found'
           ], 404);
       }
-  
+      
        return response()->json([
         'success' => true ,
-        'data' => $branch 
+        'data' => $branch ,
+        'message' => 'Branch location retrieved successfully.'
         ] , 200) ;
   
+       
+    }
 
-     }
     // public function AddBranch (Request $request)
     // {
     //     $validator =  Validator::make($request->all(),[
@@ -66,12 +66,6 @@ class BranchController extends Controller
     //         'address'=>'required',
     //         'phone'=>'required|min:4|max:15',
 
-            // public function AddBranch (Request $request)
-    // {
-    //     $validator =  Validator::make($request->all(),[
-    //       'desk'=>'required|min:3',
-    //         'address'=>'required',
-    //         'phone'=>'required|min:4|max:15',
           
     //     ]);
       
@@ -129,6 +123,8 @@ class BranchController extends Controller
 // }
 
 
+
+
 public function AddBranch(Request $request)
 {
     try {
@@ -136,6 +132,8 @@ public function AddBranch(Request $request)
             'desk' => 'required|min:3',
             'address' => 'required|string',
             'phone' => 'required|min:4|max:15',
+            'branch_lat' => 'required',
+            'branch_lng' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -149,6 +147,8 @@ public function AddBranch(Request $request)
       $branch->desk = $request->desk;
         $branch->address = $request->address;
         $branch->phone = $request->phone;
+        $branch->branch_lat = $request->branch_lat;
+        $branch->branch_lng = $request->branch_lng;
         $branch->opening_date = now()->format('Y-m-d');
         $branch->created_by = Auth::guard('admin')->user()->name;
 

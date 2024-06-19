@@ -29,14 +29,12 @@ return new class extends Migration
             $table->string('birth_place');
             $table->string('mobile');
             $table->string('address');
-          //  $table->integer('national_number')->unique();
-          //  $table->integer('vacations');
             $table->integer('salary');
             $table->string('rank');
-          //  $table->integer('rewards');
             $table->date('employment_date');
             $table->date('resignation_date')->nullable();
             $table->string('manager_name');
+            $table->text('device_token')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

@@ -26,6 +26,7 @@ return new class extends Migration
             $table->string('address_detail');
             $table->string('notes')->nullable();
             $table->string('added_by');
+            $table->text('device_token')->nullable();
 
             $table->timestamps();
         });

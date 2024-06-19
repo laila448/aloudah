@@ -30,6 +30,7 @@ return new class extends Migration
              $table->integer('salary');
              $table->string('rank')->nullable();
              $table->date('employment_date');
+             $table->text('device_token')->nullable();
              $table->softDeletes();
             $table->timestamps();
         });

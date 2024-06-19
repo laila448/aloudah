@@ -21,21 +21,18 @@ class Employee extends Authenticatable implements JWTSubject
       'phone_number',
       'gender',
       'password',
-        //'user_id',
         'branch_id',
       'mother_name',
        'birth_date',
        'birth_place',
        'mobile',
         'address',
-       // 'national_number',
-       // 'vacations',
         'salary',
         'rank',
-       // 'rewards',
         'employment_date',
         'resignation_date',
         'manager_name',
+        'device_token'
 
         
          ];

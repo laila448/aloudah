@@ -33,6 +33,7 @@ return new class extends Migration
             $table->string('certificate')->unique();
             $table->string('email')->unique();
             $table->string('password');
+            $table->text('device_token')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

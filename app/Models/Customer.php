@@ -26,6 +26,7 @@ class Customer extends Authenticatable implements JWTSubject
         'address_detail',
        'notes',
         'added_by',
+        'device_token'
         
          ];
          public function user(){

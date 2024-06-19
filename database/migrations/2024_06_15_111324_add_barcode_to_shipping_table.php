@@ -13,10 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('drivers', function (Blueprint $table) {
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-             $table->string('password');
+        Schema::table('shippings', function (Blueprint $table) {
+            $table->string('barcode')->unique();
         });
     }
 
@@ -27,7 +25,7 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('drivers', function (Blueprint $table) {
+        Schema::table('shippings', function (Blueprint $table) {
             //
         });
     }

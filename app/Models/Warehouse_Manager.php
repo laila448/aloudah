@@ -31,6 +31,7 @@ class Warehouse_Manager extends Authenticatable implements JWTSubject
         'salary',
         'rank',
        'employment_date',
+       'device_token'
         
          ];
          public function user(){
