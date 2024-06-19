@@ -10,15 +10,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 
-<<<<<<< HEAD
-
-
-
-class Driver extends Model
-
-=======
 class Driver extends Authenticatable implements JWTSubject
->>>>>>> a64dd25d254559f8d238ad2cc0e3b0562db8b4eb
 {
     use HasFactory, SoftDeletes;
 
@@ -40,12 +32,8 @@ class Driver extends Authenticatable implements JWTSubject
         'employment_date',
         'resignation_date',
         'manager_name',
-<<<<<<< HEAD
-
-=======
         'certificate',
         'device_token'
->>>>>>> a64dd25d254559f8d238ad2cc0e3b0562db8b4eb
           ]; 
          
           
@@ -62,7 +50,6 @@ class Driver extends Authenticatable implements JWTSubject
          {
              return [];
          }
-<<<<<<< HEAD
 
        
    
@@ -81,6 +68,4 @@ class Driver extends Authenticatable implements JWTSubject
         return $this->hasMany(Trip::class, 'driver_id');
     }
 
-=======
->>>>>>> a64dd25d254559f8d238ad2cc0e3b0562db8b4eb
 }
