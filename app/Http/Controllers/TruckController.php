@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Branch;
+use App\Models\Trip;
 use App\Models\Truck;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -11,29 +12,33 @@ use Illuminate\Support\Facades\Validator;
 
 class TruckController extends Controller
 {
-    // public function AddTruck(Request $request){
+    public function GetTruckTrips($id)
+    {
 
-    //     $validator =Validator::make($request->all(),[
-    //         'branch_id'=>'required',
-    //         'number'=>'required|min:4|max:20',
-    //         'line'=>'string|required',
-    //         'notes'=>'string',
-    //     ]);
-    //         $createdby = Auth::guard('branch_manager')->user()->name;
-    //         $truck=Truck::create([
-    //             'branch_id'=>$request->branch_id,
-    //             'number'=>$request->number,
-    //             'line'=> $request->line,
-    //             'notes'=>$request->notes,
-    //             'created_by'=>$createdby,
-    //             'adding_data'=>now()->format('Y-m-d'),
-                
-    //         ]);
+        try {
           
-    //         return response()->json([
-    //             'message'=>'Truck addedd successfully',
-    //         ],201);
-    //     }
+            
+            
+    
+           $trips=Trip::where('truck_id',$id)->paginate(10);
+    
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'trips : ',
+                'data' => $trips
+            ], 200);
+    
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while gettig the trips',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
     public function AddTruck(Request $request)
     {
         try {

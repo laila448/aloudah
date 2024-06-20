@@ -1064,5 +1064,36 @@ public function GetBranchEmployees($id)
 
 
 
+public function GetArchivedEmployee()
+{
+    
+    try {
+        $branchManager = Auth::guard('branch_manager')->user();
+        $branchId = $branchManager->branch_id;
+
+        $deletedEmployees = Employee::where('branch_id', $branchId)
+            ->onlyTrashed() // Use the onlyTrashed() scope
+            ->get();
+
+        if ($deletedEmployees->isEmpty()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'No deleted employees found for the branch'
+            ], 200);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $deletedEmployees
+        ], 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'An error occurred while fetching deleted employees',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
 }
 

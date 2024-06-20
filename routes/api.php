@@ -64,8 +64,16 @@ Route::group(['middleware' => 'BranchManager',
        Route::get('priceslist', [ShippingController::class , 'GetPricesList']);
        Route::post('addDriver', [EmployeeController::class, 'addDriver']);
        Route::get('branchdrivers' , [EmployeeController::class , 'GetDriversForMyBranch']);
-
-
+       Route::get('getallactivetrips' , [TripController::class , 'GetActiveTrips']);
+       Route::get('GetArchiveData' , [TripController::class , 'GetArchiveData']);         
+       Route::get('GetTripInformation/{trip_number}' , [TripController::class , 'GetTripInformation']); 
+       Route::get('truckrecord/{desk}' , [TruckController::class , 'GetTruckRecord']); 
+       Route::get('getdrivers' , [DriverController::class , 'GetDrivers']); 
+       Route::get('gettrucktrips/{id}' , [TruckController::class , 'GetTruckTrips']); 
+       Route::get('gettrips' , [TripController::class , 'GetAllTrips']);  
+       Route::get('getmanifest/{trip_number}' , [TripController::class , 'GetManifest']); 
+       Route::get('getmanifestshipping/{trip_number}' , [TripController::class , 'GetManifestShipping']); 
+       Route::get('gearchivedemployee' , [EmployeeController::class , 'GetArchivedEmployee']); 
 
               });
 

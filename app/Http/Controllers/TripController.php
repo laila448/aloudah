@@ -17,22 +17,8 @@ use Illuminate\Validation\Rule;
 
 class TripController extends Controller
 {
-    // public function GetAllTrips()
-    // {
-    //   $trips=Trip::paginate(10);
-    //   if($trips){
-    //     return response()->json([
-    //       'success' => true ,
-    //       'data' => $trips
-    //     ] , 200);
+    
 
-    //   }
-    //   return response()->json([
-    //     'success' => false ,
-    //     'message' => 'no trips found'
-    //   ] , 404);
-
-    // }
     public function GetAllTrips()
     {
         try {
@@ -60,8 +46,68 @@ class TripController extends Controller
             ], 500);
         }
     }
-    
+ 
+ 
+    public function GetManifest( $trip_number)
+{
 
+    try {
+        $tripDetails = Manifest::where('number', $trip_number)->get();
+
+        if ($tripDetails->isNotEmpty()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Manifest retrieved successfully',
+                'data' => $tripDetails
+            ], 200);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Trip not found'
+        ], 404);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'An error occurred while retrieving the Manifest',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+    
+}
+public function GetManifestShipping( $trip_number)
+{
+
+    try {
+        $tripDetails = Shipping::where('manifest_number', $trip_number)->paginate(10);
+
+        if ($tripDetails->isNotEmpty()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Manifest  Shipping retrieved successfully',
+                'data' => $tripDetails
+            ], 200);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'shipping not found'
+        ], 404);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'An error occurred while retrieving the shipping',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+    
+}
+
+
+
+    
 //     public function AddTrip(Request $request)
 //     {
 //         $validator =  $request->validate([

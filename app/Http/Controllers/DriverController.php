@@ -9,7 +9,32 @@ use Illuminate\Support\Facades\Auth;
 
 class DriverController extends Controller
 {
-    
+    public function GetDrivers()
+    {
+        try{
+            $id=Auth::guard('branch_manager')->user()->branch_id;
+
+            $driver = Driver::where('branch_id',$id)->paginate(10);
+            if (!$driver) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Driver not found'
+                ], 404);
+            }
+        
+            return response()->json([
+                'success' => true,
+                'data' => $driver ,
+                'message' => 'Drivers retrieved successfully.'
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve drivers .',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 
     public function GetDriverTrips($id)
     {

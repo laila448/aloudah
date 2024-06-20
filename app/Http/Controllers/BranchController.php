@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\PasswordMail;
 use App\Models\Branch;
 use App\Models\Branch_Manager;
+use App\Models\Employee;
 use Dotenv\Parser\Value;
 use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
@@ -403,44 +404,50 @@ public function AddBranch(Request $request)
     //       'msg'=>'Branch has been deleted'], 200) ;
     // }
     public function deleteBranch(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'branch_id' => 'required|numeric',
-        ]);
-    
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => $validator->errors()->toJson()
-            ], 400);
-        }
-    
-        try {
-            $branch = Branch::find($request->branch_id);
-    
-            if ($branch) {
-                $branch->delete();
-                    Branch_Manager::where('branch_id', $request->branch_id)->delete();
-    
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Branch has been deleted'
-                ], 200);
-            }
-    
-            return response()->json([
-                'success' => false,
-                'message' => 'Branch not found'
-            ], 404);
-    
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'An error occurred while deleting the branch',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+{
+    $validator = Validator::make($request->all(), [
+        'branch_id' => 'required|numeric',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json([
+            'success' => false,
+            'message' => $validator->errors()->toJson()
+        ], 400);
     }
+
+    try {
+        $branch = Branch::withTrashed()->find($request->branch_id);
+
+        if ($branch) {
+            // Delete all associated BranchManager records
+            Branch_Manager::where('branch_id', $request->branch_id)->delete();
+
+            // Delete all  Branch Employee records
+            Employee::where('branch_id', $request->branch_id)->delete();
+            // Delete the Branch record
+            $branch->delete();
+
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Branch has been deleted'
+            ], 200);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Branch not found'
+        ], 404);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'An error occurred while deleting the branch',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
     
 
     public function GetBranches()
