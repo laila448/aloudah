@@ -116,93 +116,7 @@ class ShippingController extends Controller
             ], 500);
         }
     }
-    
-    // public function AddInvoice(Request $request)
-    // {
-    //     try {
-    //         $validator = Validator::make($request->all(), [
-    //             'source_id' => 'required|numeric',
-    //             'destination_id' => 'required|numeric',
-    //             'manifest_number' => 'required|string',
-    //             'sender' => 'required|string',
-    //             'receiver' => 'required|string',
-    //             'sender_number' => 'required|max:15',
-    //             'receiver_number' => 'required|max:15',
-    //             'num_of_packages' => 'required|numeric',
-    //             'type_id' => 'required|numeric',
-    //             'weight' => 'required|numeric',
-    //             'size' => 'required|string',
-    //             'content' => 'required|string',
-    //             'marks' => 'required|string',
-    //             'notes' => 'string|nullable',
-    //             'shipping_cost' => 'numeric|nullable',
-    //             'against_shipping' => 'numeric|nullable',
-    //             'adapter' => 'numeric|nullable',
-    //             'advance' => 'numeric|nullable',
-    //             'miscellaneous' => 'numeric|nullable',
-    //             'prepaid' => 'numeric|nullable',
-    //             'discount' => 'numeric|nullable',
-    //             'collection' => 'numeric|nullable',
-    //         ]);
-
-    //         if ($validator->fails()) {
-    //             return response()->json([
-    //                 'success' => false,
-    //                 'message' => $validator->errors()->toJson()
-    //             ], 400);
-    //         }
-
-    //         $shippingCost = $this->calculateShippingCost($request->type_id, $request->weight);
-
-    //         $shipping = Shipping::create([
-    //             'source_id' => $request->source_id,
-    //             'destination_id' => $request->destination_id,
-    //             'manifest_number' => $request->manifest_number,
-    //             'sender' => $request->sender,
-    //             'receiver' => $request->receiver,
-    //             'sender_number' => $request->sender_number,
-    //             'receiver_number' => $request->receiver_number,
-    //             'num_of_packages' => $request->num_of_packages,
-    //             'price_id' => $request->type_id,
-    //             'weight' => $request->weight,
-    //             'size' => $request->size,
-    //             'content' => $request->content,
-    //             'marks' => $request->marks,
-    //             'notes' => $request->notes,
-    //             'shipping_cost' => $shippingCost,
-    //             'against_shipping' => $request->against_shipping,
-    //             'adapter' => $request->adapter,
-    //             'advance' => $request->advance,
-    //             'miscellaneous' => $request->miscellaneous,
-    //             'prepaid' => $request->prepaid,
-    //             'discount' => $request->discount,
-    //             'collection' => $request->collection,
-    //         ]);
-
-    //         $shipping->number = $shipping->id;
-    //         $shipping->save();
-
-    //         $manifest = Manifest::where('number', $request->manifest_number)->first();
-
-    //         if ($manifest) {
-    //             $manifest->general_total += $shippingCost;
-    //             $manifest->save();
-    //         }
-
-    //         return response()->json([
-    //             'success' => true,
-    //             'message' => 'Invoice added successfully',
-    //             'data' => $this->transformShipping($shipping)
-    //         ], 200);
-
-    //     } catch (\Exception $e) {
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'An error occurred while adding the invoice',
-    //             'error' => $e->getMessage()
-    //         ], 500);
-    //     }
-    // }
+   
 //!Mark:Changed here
 
     public function getManifestWithInvoices($manifestNumber)
@@ -433,8 +347,8 @@ class ShippingController extends Controller
             'prepaid' => $shipping->prepaid,
             'discount' => $shipping->discount,
             'collection' => $shipping->collection,
-            'created_at' => $shipping->created_at,
-            'updated_at' => $shipping->updated_at,
+            'barcode' => $shipping->barcode,
+
         ];
     }
 }

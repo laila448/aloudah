@@ -13,9 +13,22 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-
+use Kreait\Firebase\Factory;
+use Kreait\Firebase\Messaging\CloudMessage;
+use Kreait\Firebase\Messaging\Notification;
+use Exception;
+use Illuminate\Support\Facades\Log;
 class TripController extends Controller
 {
+
+    private $messaging;
+
+    public function __construct(Factory $firebase)
+    {
+        $serviceAccountPath = storage_path('app/firebase/firebase_credentials.json');
+        $this->messaging = $firebase->withServiceAccount($serviceAccountPath)->createMessaging();
+    }
+
     private $destinations = [
         ['id' => 1, 'name' => 'Damascus'],
         ['id' => 2, 'name' => 'Aleppo'],
@@ -64,45 +77,36 @@ class TripController extends Controller
     public function AddTrip(Request $request)
     {
         try {
-            // Validate the request data
             $validator = Validator::make($request->all(), [
                 'branch_id' => 'required|numeric',
                 'destination_id' => 'required|numeric',
                 'truck_id' => 'required|numeric',
                 'driver_id' => 'required|numeric',
             ]);
-
+    
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
                     'message' => $validator->errors()->toJson()
                 ], 400);
             }
-
-            // Find the branch
+    
             $branch = Branch::findOrFail($request->branch_id);
-
-            // Generate the trip number
             $tripCount = Trip::where('branch_id', $branch->id)->count();
             $tripNumber = strtoupper(substr($branch->desk, 0, 2)) . '_' . $branch->id . '_' . ($tripCount + 1);
-
-            // Get the logged-in employee
             $loggedInEmployee = Auth::guard('employee')->user();
-
-            // Check if the logged-in employee has the "add_trip" permission
             $hasAddTripPermission = Permission::where([
                 ['employee_id', $loggedInEmployee->id],
                 ['add_trip', 1]
             ])->exists();
-
+    
             if (!$hasAddTripPermission) {
                 return response()->json([
                     'success' => false,
                     'message' => 'You do not have permission to add a trip'
                 ], 403);
             }
-
-            // Create the trip without the manifest ID first
+    
             $trip = new Trip();
             $trip->branch_id = $request->branch_id;
             $trip->destination_id = $request->destination_id;
@@ -111,25 +115,27 @@ class TripController extends Controller
             $trip->number = $tripNumber;
             $trip->date = now()->format('Y-m-d');
             $trip->created_by = $loggedInEmployee->name;
-            $trip->manifest_id = null; // Ensure manifest_id is set to null initially
+            $trip->manifest_id = null;
             $trip->save();
-
-            // Create the manifest and associate it with the trip
+    
             $manifest = new Manifest();
             $manifest->number = $tripNumber;
             $manifest->trip_id = $trip->id;
             $manifest->save();
-
-            // Update the trip with the manifest ID
+    
             $trip->manifest_id = $manifest->id;
             $trip->save();
-
+    
+            // Send notification
+            $notificationStatus = $this->sendTripAddedNotification($loggedInEmployee, $trip);
+    
             return response()->json([
                 'success' => true,
                 'message' => 'Trip and manifest added successfully',
-                'data' => $trip
+                'data' => $trip,
+                'notification_status' => $notificationStatus
             ], 201);
-
+    
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -138,14 +144,36 @@ class TripController extends Controller
             ], 500);
         }
     }
-
+    
+    private function sendTripAddedNotification($employee, $trip)
+    {
+        $title = 'New Trip Added';
+        $body = "A new trip with number {$trip->number} has been added.";
+    
+        $deviceToken = $employee->device_token;
+    
+        if ($deviceToken) {
+            $message = CloudMessage::withTarget('token', $deviceToken)
+                ->withNotification(Notification::create($title, $body));
+    
+            try {
+                $this->messaging->send($message);
+                Log::info('Notification sent: Trip Added', ['employee_id' => $employee->id, 'trip_id' => $trip->id]);
+                return 'Notification sent successfully';
+            } catch (Exception $e) {
+                Log::error('Failed to send FCM message: ' . $e->getMessage(), ['employee_id' => $employee->id, 'trip_id' => $trip->id]);
+                return 'Failed to send notification';
+            }
+        } else {
+            Log::warning('Employee device token not found, notification not sent.', ['employee_id' => $employee->id]);
+            return 'Employee device token not found';
+        }
+    }
+    
     public function EditTrip(Request $request)
     {
         try {
-            // Get the logged-in employee
             $user = Auth::guard('employee')->user();
-
-            // Validate the request data
             $validator = Validator::make($request->all(), [
                 'trip_id' => 'required|numeric',
                 'branch_id' => 'numeric|nullable',
@@ -158,48 +186,49 @@ class TripController extends Controller
                 'arrival_date' => 'date|nullable',
                 'status' => ['required', Rule::in(['active', 'closed', 'temporary'])]
             ]);
-
+    
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
                     'message' => $validator->errors()->toJson()
                 ], 400);
             }
-
-            // Check if the logged-in employee has the "edit_trip" permission
+    
             $hasEditTripPermission = Permission::where([
                 ['employee_id', $user->id],
                 ['edit_trip', 1]
             ])->exists();
-
+    
             if (!$hasEditTripPermission) {
                 return response()->json([
                     'success' => false,
                     'message' => 'You do not have permission to edit a trip'
                 ], 403);
             }
-
-            // Find the trip by ID
+    
             $trip = Trip::find($request->trip_id);
-
+    
             if (!$trip) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Trip not found'
                 ], 404);
             }
-
-            // Update the trip details
+    
             $trip->update(array_merge($validator->validated(), [
                 'edited_by' => $user->name,
                 'editing_date' => now()->format('Y-m-d')
             ]));
-
+    
+            // Send notification
+            $notificationStatus = $this->sendTripEditedNotification($user, $trip);
+    
             return response()->json([
                 'success' => true,
-                'message' => 'Trip edited successfully'
+                'message' => 'Trip edited successfully',
+                'notification_status' => $notificationStatus
             ], 200);
-
+    
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -208,52 +237,79 @@ class TripController extends Controller
             ], 500);
         }
     }
-
+    
+    private function sendTripEditedNotification($employee, $trip)
+    {
+        $title = 'Trip Edited';
+        $body = "The trip with number {$trip->number} has been edited.";
+    
+        $deviceToken = $employee->device_token;
+    
+        if ($deviceToken) {
+            $message = CloudMessage::withTarget('token', $deviceToken)
+                ->withNotification(Notification::create($title, $body));
+    
+            try {
+                $this->messaging->send($message);
+                Log::info('Notification sent: Trip Edited', ['employee_id' => $employee->id, 'trip_id' => $trip->id]);
+                return 'Notification sent successfully';
+            } catch (Exception $e) {
+                Log::error('Failed to send FCM message: ' . $e->getMessage(), ['employee_id' => $employee->id, 'trip_id' => $trip->id]);
+                return 'Failed to send notification';
+            }
+        } else {
+            Log::warning('Employee device token not found, notification not sent.', ['employee_id' => $employee->id]);
+            return 'Employee device token not found';
+        }
+    }
+    
     public function CancelTrip(Request $request)
     {
         try {
             $validator = Validator::make($request->all(), [
                 'trip_id' => 'required|numeric',
             ]);
-
+    
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
                     'message' => $validator->errors()->toJson()
                 ], 400);
             }
-
+    
             $loggedInEmployee = Auth::guard('employee')->user();
-
-            // Check if the logged-in employee has the "edit_trip" permission
             $hasEditTripPermission = Permission::where([
                 ['employee_id', $loggedInEmployee->id],
                 ['edit_trip', 1]
             ])->exists();
-
+    
             if (!$hasEditTripPermission) {
                 return response()->json([
                     'success' => false,
                     'message' => 'You do not have permission to delete a trip'
                 ], 403);
             }
-
+    
             $trip = Trip::find($request->trip_id);
-
+    
             if (!$trip) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Trip not found'
                 ], 404);
             }
-
+    
             $trip->delete();
-
+    
+            // Send notification
+            $notificationStatus = $this->sendTripCanceledNotification($loggedInEmployee, $trip);
+    
             return response()->json([
                 'success' => true,
-                'message' => 'Trip has been canceled'
+                'message' => 'Trip has been canceled',
+                'notification_status' => $notificationStatus
             ], 200);
-
+    
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -262,7 +318,32 @@ class TripController extends Controller
             ], 500);
         }
     }
-
+    
+    private function sendTripCanceledNotification($employee, $trip)
+    {
+        $title = 'Trip Canceled';
+        $body = "The trip with number {$trip->number} has been canceled.";
+    
+        $deviceToken = $employee->device_token;
+    
+        if ($deviceToken) {
+            $message = CloudMessage::withTarget('token', $deviceToken)
+                ->withNotification(Notification::create($title, $body));
+    
+            try {
+                $this->messaging->send($message);
+                Log::info('Notification sent: Trip Canceled', ['employee_id' => $employee->id, 'trip_id' => $trip->id]);
+                return 'Notification sent successfully';
+            } catch (Exception $e) {
+                Log::error('Failed to send FCM message: ' . $e->getMessage(), ['employee_id' => $employee->id, 'trip_id' => $trip->id]);
+                return 'Failed to send notification';
+            }
+        } else {
+            Log::warning('Employee device token not found, notification not sent.', ['employee_id' => $employee->id]);
+            return 'Employee device token not found';
+        }
+    }
+    
     public function GetActiveTrips()
 {
     try {

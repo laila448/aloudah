@@ -8,32 +8,20 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-
+use Kreait\Firebase\Factory;
+use Kreait\Firebase\Messaging\CloudMessage;
+use Kreait\Firebase\Messaging\Notification;
+use Exception;
+use Illuminate\Support\Facades\Log;
 class TruckController extends Controller
 {
-    // public function AddTruck(Request $request){
+    private $messaging;
 
-    //     $validator =Validator::make($request->all(),[
-    //         'branch_id'=>'required',
-    //         'number'=>'required|min:4|max:20',
-    //         'line'=>'string|required',
-    //         'notes'=>'string',
-    //     ]);
-    //         $createdby = Auth::guard('branch_manager')->user()->name;
-    //         $truck=Truck::create([
-    //             'branch_id'=>$request->branch_id,
-    //             'number'=>$request->number,
-    //             'line'=> $request->line,
-    //             'notes'=>$request->notes,
-    //             'created_by'=>$createdby,
-    //             'adding_data'=>now()->format('Y-m-d'),
-                
-    //         ]);
-          
-    //         return response()->json([
-    //             'message'=>'Truck addedd successfully',
-    //         ],201);
-    //     }
+    public function __construct(Factory $firebase)
+    {
+        $serviceAccountPath = storage_path('app/firebase/firebase_credentials.json');
+        $this->messaging = $firebase->withServiceAccount($serviceAccountPath)->createMessaging();
+    }
     public function AddTruck(Request $request)
     {
         try {
@@ -51,21 +39,24 @@ class TruckController extends Controller
                 ], 400);
             }
     
-            $createdby = Auth::guard('branch_manager')->user()->name;
-    
+            $createdby = Auth::guard('branch_manager')->user();
             $truck = Truck::create([
                 'branch_id' => $request->branch_id,
                 'number' => $request->number,
                 'line' => $request->line,
                 'notes' => $request->notes,
-                'created_by' => $createdby,
+                'created_by' => $createdby->name,
                 'adding_data' => now()->format('Y-m-d'),
             ]);
+    
+            // Send notification
+            $notificationStatus = $this->sendTruckAddedNotification($createdby, $truck);
     
             return response()->json([
                 'success' => true,
                 'message' => 'Truck added successfully',
-                'data' => $truck
+                'data' => $truck,
+                'notification_status' => $notificationStatus
             ], 200);
     
         } catch (\Exception $e) {
@@ -77,43 +68,31 @@ class TruckController extends Controller
         }
     }
     
-
-    // public function UpdateTruck(Request $request){
-
-    //         $validator =Validator::make($request->all(),[
-    //             'truck_id'=>'required',
-    //             'number'=>'min:4|max:20',
-    //             'line'=>'string',
-    //             'notes'=>'string',
-    //         ]);
+    private function sendTruckAddedNotification($branchManager, $truck)
+    {
+        $title = 'New Truck Added';
+        $body = "A new truck with number {$truck->number} has been added.";
     
-    //         if ($validator->fails())
-    //         {
-    //             return response()->json($validator->errors()->toJson(),400);
-    //         }
-          
-          
-    //         $edit_by = Auth::guard('branch_manager')->user()->name;
-             
-    //         $truck = Truck::where('id' , $request->truck_id)->first();
+        $deviceToken = $branchManager->device_token;
     
-    //         if($truck){
+        if ($deviceToken) {
+            $message = CloudMessage::withTarget('token', $deviceToken)
+                ->withNotification(Notification::create($title, $body));
     
-    //             $updated_truck = $truck->update( array_merge(
-    //                 $validator->validated(),
-    //                 ['editing_by'=>$edit_by,
-    //                 'editing_date'=>now()->format('Y-m-d'),
-    //                 ]
-    //             ));
+            try {
+                $this->messaging->send($message);
+                Log::info('Notification sent: Truck Added', ['branch_manager_id' => $branchManager->id, 'truck_id' => $truck->id]);
+                return 'Notification sent successfully';
+            } catch (Exception $e) {
+                Log::error('Failed to send FCM message: ' . $e->getMessage(), ['branch_manager_id' => $branchManager->id, 'truck_id' => $truck->id]);
+                return 'Failed to send notification';
+            }
+        } else {
+            Log::warning('Branch Manager device token not found, notification not sent.', ['branch_manager_id' => $branchManager->id]);
+            return 'Branch Manager device token not found';
+        }
+    }
     
-    //         }
-          
-    //         return response()->json([
-    //             'message'=>'Truck updated successfully',
-    //         ],201);
-        
-           
-    // }
     public function UpdateTruck(Request $request)
     {
         try {
@@ -140,19 +119,22 @@ class TruckController extends Controller
                 ], 404);
             }
     
-            $edit_by = Auth::guard('branch_manager')->user()->name;
-    
+            $edit_by = Auth::guard('branch_manager')->user();
             $truck->update(array_merge(
                 $validator->validated(),
                 [
-                    'editing_by' => $edit_by,
+                    'editing_by' => $edit_by->name,
                     'editing_date' => now()->format('Y-m-d'),
                 ]
             ));
     
+            // Send notification
+            $notificationStatus = $this->sendTruckUpdatedNotification($edit_by, $truck);
+    
             return response()->json([
                 'success' => true,
-                'message' => 'Truck updated successfully'
+                'message' => 'Truck updated successfully',
+                'notification_status' => $notificationStatus
             ], 200);
     
         } catch (\Exception $e) {
@@ -164,26 +146,32 @@ class TruckController extends Controller
         }
     }
     
-    // public function DeleteTruck(Request $request){
+    private function sendTruckUpdatedNotification($branchManager, $truck)
+{
+    $title = 'Truck Updated';
+    $body = "The truck with number {$truck->number} has been updated.";
 
-    //     $validator =Validator::make($request->all(),[
-    //         'truck_id'=>'required',
-    //     ]);
+    $deviceToken = $branchManager->device_token;
 
-    //     if ($validator->fails())
-    //     {
-    //         return response()->json($validator->errors()->toJson(),400);
-    //     }
+    if ($deviceToken) {
+        $message = CloudMessage::withTarget('token', $deviceToken)
+            ->withNotification(Notification::create($title, $body));
 
+        try {
+            $this->messaging->send($message);
+            Log::info('Notification sent: Truck Updated', ['branch_manager_id' => $branchManager->id, 'truck_id' => $truck->id]);
+            return 'Notification sent successfully';
+        } catch (Exception $e) {
+            Log::error('Failed to send FCM message: ' . $e->getMessage(), ['branch_manager_id' => $branchManager->id, 'truck_id' => $truck->id]);
+            return 'Failed to send notification';
+        }
+    } else {
+        Log::warning('Branch Manager device token not found, notification not sent.', ['branch_manager_id' => $branchManager->id]);
+        return 'Branch Manager device token not found';
+    }
+}
 
-    //     $truck = Truck::find($request->truck_id)->delete();
-      
-    //     return response()->json([
-    //         'message'=>'Truck deleted successfully',
-    //     ],201);
-    // }
-
-    public function DeleteTruck(Request $request)
+public function DeleteTruck(Request $request)
 {
     try {
         $validator = Validator::make($request->all(), [
@@ -208,9 +196,15 @@ class TruckController extends Controller
 
         $truck->delete();
 
+        $deleted_by = Auth::guard('branch_manager')->user();
+
+        // Send notification
+        $notificationStatus = $this->sendTruckDeletedNotification($deleted_by, $truck);
+
         return response()->json([
             'success' => true,
-            'message' => 'Truck deleted successfully'
+            'message' => 'Truck deleted successfully',
+            'notification_status' => $notificationStatus
         ], 200);
 
     } catch (\Exception $e) {
@@ -222,40 +216,31 @@ class TruckController extends Controller
     }
 }
 
+private function sendTruckDeletedNotification($branchManager, $truck)
+{
+    $title = 'Truck Deleted';
+    $body = "The truck with number {$truck->number} has been deleted.";
 
-    //   public function  GetTruckInformation( $truck_number)
-    // {
-     
-    //     $truck = Truck::where('number', $truck_number)->first();
+    $deviceToken = $branchManager->device_token;
 
+    if ($deviceToken) {
+        $message = CloudMessage::withTarget('token', $deviceToken)
+            ->withNotification(Notification::create($title, $body));
 
-    //   if (!$truck) {
-    //       return response()->json([
-    //         'success' => false ,
-    //         'message' => 'Truck not found'
-    //     ], 404);
-    //   }
+        try {
+            $this->messaging->send($message);
+            Log::info('Notification sent: Truck Deleted', ['branch_manager_id' => $branchManager->id, 'truck_id' => $truck->id]);
+            return 'Notification sent successfully';
+        } catch (Exception $e) {
+            Log::error('Failed to send FCM message: ' . $e->getMessage(), ['branch_manager_id' => $branchManager->id, 'truck_id' => $truck->id]);
+            return 'Failed to send notification';
+        }
+    } else {
+        Log::warning('Branch Manager device token not found, notification not sent.', ['branch_manager_id' => $branchManager->id]);
+        return 'Branch Manager device token not found';
+    }
+}
 
-    //   $trips = DB::table('trips')
-    //       ->select( 'number', 'date','driver_id')
-    //       ->where('truck_id', $truck->id)
-    //       ->get();
-
-    //   $driverIds = $trips->pluck('driver_id')->unique();
-    //   $drivers = DB::table('drivers')
-    //       ->select('id', 'name')
-    //       ->whereIn('id', $driverIds)
-    //       ->get();
-
-    //   $truck->trips = $trips;
-    //   $truck->drivers = $drivers;
-
-    //   return response()->json([
-    //     'success' => true ,
-    //     'data' => $truck
-    //     ], 200);
-
-    // }
     public function GetTruckInformation($truck_number)
     {
         try {
@@ -299,20 +284,6 @@ class TruckController extends Controller
         }
     }
     
-    // public function  GetTrucks ()
-    // {
-    //   $trucks=Truck::pagiate(10);
-    //   if($trucks){
-    //     return response()->json([
-    //         'success' => true ,
-    //         'data' => $trucks
-    //     ] , 200);
-    //   }
-    //   return response()->json([
-    //     'success' => false ,
-    //     'message' => 'no trucks found' 
-    //     ] , 404);
-    // }
     public function GetTrucks()
     {
         try {
@@ -338,26 +309,7 @@ class TruckController extends Controller
             ], 500);
         }
     }
-    
-    // public function GetTruckRecord($desk)
-    // {
-  
-    //     $branch = Branch::where('desk', $desk)->first();
-    
-    //     if (!$branch) {
-    //         return response()->json([
-    //             'success' => false ,
-    //             'message' => 'Branch not found',
-    //         ], 404);
-    //     }
-    
-    //     $trucks = $branch->trucks;
-    
-    //     return response()->json([
-    //         'success' => true ,
-    //         'data' => $trucks
-    //     ] , 200);
-    // }
+   
     public function GetTruckRecord($desk)
 {
     try {

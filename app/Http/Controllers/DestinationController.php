@@ -32,21 +32,5 @@ class DestinationController extends Controller
         ], 200);
     }
 
-    // public function getDestinationName($id)
-    // {
-    //     $destination = collect($this->destinations)->firstWhere('id', $id);
-
-    //     if ($destination) {
-    //         return response()->json([
-    //             'success' => true,
-    //             'data' => $destination,
-    //             'message' => 'Destination retrieved successfully.'
-    //         ], 200);
-    //     }
-
-    //     return response()->json([
-    //         'success' => false,
-    //         'message' => 'Destination not found.'
-    //     ], 404);
-    // }
+  
 }

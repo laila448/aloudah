@@ -6,10 +6,20 @@ use App\Models\Driver;
 use App\Models\Trip;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
+use Kreait\Firebase\Factory;
+use Kreait\Firebase\Messaging\CloudMessage;
+use Kreait\Firebase\Messaging\Notification;
+use Exception;
+use Illuminate\Support\Facades\Log;
 class DriverController extends Controller
 {
-    
+    private $messaging;
+
+    public function __construct(Factory $firebase)
+    {
+        $serviceAccountPath = storage_path('app/firebase/firebase_credentials.json');
+        $this->messaging = $firebase->withServiceAccount($serviceAccountPath)->createMessaging();
+    }
 
     public function GetDriverTrips($id)
     {
@@ -149,6 +159,11 @@ class DriverController extends Controller
                 ], 404);
             }
     
+            $employee = Auth::guard('employee')->user();
+    
+            // Send notification
+            $notificationStatus = $this->sendLocationRetrievedNotification($employee, $driver);
+    
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -156,6 +171,7 @@ class DriverController extends Controller
                     'current_lng' => (float) $driver->current_lng,
                 ],
                 'message' => 'Location retrieved successfully.',
+                'notification_status' => $notificationStatus
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
@@ -166,46 +182,100 @@ class DriverController extends Controller
         }
     }
     
-    public function updateLocation(Request $request)
+    private function sendLocationRetrievedNotification($employee, $driver)
 {
-    try {
-        $request->validate([
-            'current_lat' => 'required|numeric',
-            'current_lng' => 'required|numeric',
-            'trip_number' => 'required|string',
-        ]);
+    $title = 'Location Retrieved';
+    $body = "The location of driver '{$driver->name}' has been successfully retrieved.";
 
-        // Find the trip by number
-        $trip = Trip::where('number', $request->trip_number)->where('status', 'active')->first();
+    $deviceToken = $employee->device_token;
 
-        if (!$trip) {
+    if ($deviceToken) {
+        $message = CloudMessage::withTarget('token', $deviceToken)
+            ->withNotification(Notification::create($title, $body));
+
+        try {
+            $this->messaging->send($message);
+            Log::info('Notification sent: Location Retrieved', ['employee_id' => $employee->id, 'employee_name' => $employee->name]);
+            return 'Notification sent successfully';
+        } catch (Exception $e) {
+            Log::error('Failed to send FCM message: ' . $e->getMessage(), ['employee_id' => $employee->id, 'employee_name' => $employee->name]);
+            return 'Failed to send notification';
+        }
+    } else {
+        Log::warning('Employee device token not found, notification not sent.', ['employee_name' => $employee->name]);
+        return 'Employee device token not found';
+    }
+}
+
+    public function updateLocation(Request $request)
+    {
+        try {
+            $request->validate([
+                'current_lat' => 'required|numeric',
+                'current_lng' => 'required|numeric',
+                'trip_number' => 'required|string',
+            ]);
+    
+            // Find the trip by number
+            $trip = Trip::where('number', $request->trip_number)->where('status', 'active')->first();
+    
+            if (!$trip) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Trip not found or is not active'
+                ], 404);
+            }
+    
+            // Get the associated driver
+            $driver = $trip->driver;
+    
+            if ($driver instanceof Driver) {
+                $driver->current_lat = $request->current_lat;
+                $driver->current_lng = $request->current_lng;
+                $driver->save();
+    
+                // Send notification
+                $notificationStatus = $this->sendLocationUpdatedNotification($driver);
+    
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Location updated successfully.',
+                    'notification_status' => $notificationStatus
+                ], 200);
+            } else {
+                throw new \Exception('Associated driver not found.');
+            }
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Trip not found or is not active'
-            ], 404);
+                'message' => 'Failed to update location.',
+                'error' => $e->getMessage(),
+            ], 500);
         }
+    }
+    
+private function sendLocationUpdatedNotification($driver)
+{
+    $title = 'Location Updated';
+    $body = "Your location has been updated successfully.";
 
-        // Get the associated driver
-        $driver = $trip->driver;
+    $deviceToken = $driver->device_token;
 
-        if ($driver instanceof Driver) {
-            $driver->current_lat = $request->current_lat;
-            $driver->current_lng = $request->current_lng;
-            $driver->save();
+    if ($deviceToken) {
+        $message = CloudMessage::withTarget('token', $deviceToken)
+            ->withNotification(Notification::create($title, $body));
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Location updated successfully.',
-            ], 200);
-        } else {
-            throw new \Exception('Associated driver not found.');
+        try {
+            $this->messaging->send($message);
+            Log::info('Notification sent: Location Updated', ['driver_id' => $driver->id, 'driver_name' => $driver->name]);
+            return 'Notification sent successfully';
+        } catch (Exception $e) {
+            Log::error('Failed to send FCM message: ' . $e->getMessage(), ['driver_id' => $driver->id, 'driver_name' => $driver->name]);
+            return 'Failed to send notification';
         }
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Failed to update location.',
-            'error' => $e->getMessage(),
-        ], 500);
+    } else {
+        Log::warning('Driver device token not found, notification not sent.', ['driver_name' => $driver->name]);
+        return 'Driver device token not found';
     }
 }
 
