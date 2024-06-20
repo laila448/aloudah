@@ -20,7 +20,6 @@ class GoodsController extends Controller
 
         $validator = Validator::make($request->all(),[
             'barcode' => 'required|string',
-            'quantity' => 'integer'
         ]);
 
         if ($validator->fails()) {
@@ -72,7 +71,8 @@ class GoodsController extends Controller
             'date' => now()->format('Y-m-d'),
             'sender' => $shipping->sender ,
             'receiver' => $shipping->receiver, 
-            'barcode' => $shipping->barcode
+            'barcode' => $shipping->barcode,
+            'quantity' =>$shipping->quantity
         ]);
 
         return response()->json([
@@ -284,6 +284,34 @@ class GoodsController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Inventory failed.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getArchivedGoods(){
+        
+        try{
+            $user = Auth::guard('warehouse_manager')->user(); 
+            $goods = Good::where('warehouse_id' , $user->warehouse_id)
+                           ->where('received' , true)
+                           ->paginate(10);
+            if(!$goods){
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No archived goods found'
+                ], 404);
+            }
+    
+            return response()->json([
+                'success' => true,
+                'data' => $goods,
+                'message' => 'Archived goods retrieved successfully.'
+            ], 200);
+        }catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieved archived goods.',
                 'error' => $e->getMessage()
             ], 500);
         }

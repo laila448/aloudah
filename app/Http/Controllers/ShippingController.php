@@ -398,6 +398,7 @@ public function AddInvoice(Request $request)
             'prepaid' => 'numeric|nullable',
             'discount' => 'numeric|nullable',
             'collection' => 'numeric|nullable',
+            'quantity' => 'numeric|nullable'
         ]);
 
         if ($validator->fails()) {
@@ -436,6 +437,7 @@ public function AddInvoice(Request $request)
             'discount' => $request->discount,
             'collection' => $request->collection,
             'barcode' => $barcode,
+            'quantity' => $request->quantity
         ]);
 
         $shipping->number = $shipping->id;
