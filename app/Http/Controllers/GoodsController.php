@@ -33,7 +33,6 @@ class GoodsController extends Controller
     {
         $validator = Validator::make($request->all(),[
             'barcode' => 'required|string',
-            'quantity' => 'integer'
         ]);
     
         if ($validator->fails()) {
@@ -62,7 +61,7 @@ class GoodsController extends Controller
                 ], 400);
             }
     
-            $trip = Trip::where('number', $shipping->manifest_number)->first();
+            $trip = Trip::where('number' , $shipping->manifest_number)->first();
             $price = Price::select('type')->where('id', $shipping->price_id)->first();
             $truck = Truck::select('line')->where('id', $trip->truck_id)->first();
             $driver = Driver::select('name')->where('id', $trip->driver_id)->first();
@@ -72,7 +71,7 @@ class GoodsController extends Controller
             $addGood = Good::create([
                 'warehouse_id' => $user->warehouse_id,
                 'type' => $price->type,
-                'quantity' => $request->input('quantity'),
+                // 'quantity' => $request->input('quantity'),
                 'weight' => $shipping->weight,
                 'size' => $shipping->size,
                 'content' => $shipping->content,
@@ -84,8 +83,8 @@ class GoodsController extends Controller
                 'date' => now()->format('Y-m-d'),
                 'sender' => $shipping->sender,
                 'receiver' => $shipping->receiver,
-                'barcode' => $shipping->barcode
-            ]);
+                'barcode' => $shipping->barcode,
+                'quantity' =>$shipping->quantity,            ]);
     
             // Send notification
             $notificationStatus = $this->sendGoodAddedNotification($user, $addGood);
@@ -393,5 +392,31 @@ class GoodsController extends Controller
             return 'Warehouse Manager device token not found';
         }
     }
-    
+    public function getArchivedGoods(){
+
+        try{
+            $user = Auth::guard('warehouse_manager')->user(); 
+            $goods = Good::where('warehouse_id' , $user->warehouse_id)
+                           ->where('received' , true)
+                           ->paginate(10);
+            if(!$goods){
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No archived goods found'
+                ], 404);
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => $goods,
+                'message' => 'Archived goods retrieved successfully.'
+            ], 200);
+        }catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieved archived goods.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

@@ -55,6 +55,8 @@ class ShippingController extends Controller
                 'prepaid' => 'numeric|nullable',
                 'discount' => 'numeric|nullable',
                 'collection' => 'numeric|nullable',
+                'quantity' => 'numeric|nullable'
+
             ]);
     
             if ($validator->fails()) {
@@ -92,6 +94,8 @@ class ShippingController extends Controller
                 'discount' => $request->discount,
                 'collection' => $request->collection,
                 'barcode' => $barcode,
+                'quantity' => $request->quantity
+
             ]);
             $shipping->number = $shipping->id;
             $shipping->save();
