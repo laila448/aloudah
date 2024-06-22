@@ -9,6 +9,7 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\compliantController;
 use App\Http\Controllers\DriverController;
 use App\Http\Controllers\GoodsController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ShippingController;
 use App\Http\Controllers\TripController;
@@ -74,7 +75,8 @@ Route::group(['middleware' => 'BranchManager',
        Route::get('getmanifest/{trip_number}' , [TripController::class , 'GetManifest']); 
        Route::get('getmanifestshipping/{trip_number}' , [TripController::class , 'GetManifestShipping']); 
        Route::get('gearchivedemployee' , [EmployeeController::class , 'GetArchivedEmployee']); 
-
+       Route::get('myprofile' , [ProfileController::class , 'getMyProfile']);
+       Route::post('editmyprofile',[ProfileController::class , 'editMyProfile']);
               });
 
                    /////////Employee///////  
@@ -112,6 +114,8 @@ Route::group(['middleware' => 'Employee',
         Route::get('alltripsreports', [ReportController::class, 'getTripReports']);
         Route::get('getbranchlatlng/{id}', [BranchController::class, 'getBranchlatlng']);
         Route::get('getdrivertrips/{id}', [DriverController::class, 'GetDriverTrips']);
+        Route::get('myprofile' , [ProfileController::class , 'getMyProfile']);
+        Route::post('editmyprofile',[ProfileController::class , 'editMyProfile']);
 
 
 
@@ -151,6 +155,8 @@ Route::group(['middleware' => 'Employee',
          Route::post('shippingprices', [ShippingController::class , 'DetermineShippingPrices']);
          Route::post('editshippingprices', [ShippingController::class , 'EditShippingPrices']);
          Route::get('priceslist', [ShippingController::class , 'GetPricesList']);
+         Route::get('myprofile' , [ProfileController::class , 'getMyProfile']);
+         Route::post('editmyprofile',[ProfileController::class , 'editMyProfile']);
      
      
      });
@@ -180,6 +186,8 @@ Route::group(['middleware' => 'WarehouseManager',
           Route::post('getgood' , [GoodsController::class , 'getGood']);
           Route::post('inventory' , [GoodsController::class , 'inventory']);
           Route::get('archivedgoods' , [GoodsController::class , 'getArchivedGoods']);
+          Route::get('myprofile' , [ProfileController::class , 'getMyProfile']);
+          Route::post('editmyprofile',[ProfileController::class , 'editMyProfile']);
      });  
 
 
