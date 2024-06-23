@@ -45,7 +45,7 @@ Route::group(['middleware' => 'BranchManager',
        Route::post('updatedriver' , [EmployeeController::class , 'UpdateDriver']);
        Route::post('deleteemployee' , [EmployeeController::class , 'DeleteEmployee']);
        Route::post('deletedriver' , [EmployeeController::class , 'DeleteDriver']);
-       Route::post('promoteemployee' , [EmployeeController::class , 'PromoteEmployee']);
+     //  Route::post('promoteemployee' , [EmployeeController::class , 'PromoteEmployee']);
        Route::post('rateemployee' , [EmployeeController::class , 'RateEmployee']);
        Route::post('addtruck' , [TruckController::class , 'AddTruck']);
        Route::post('updatetruck' , [TruckController::class , 'UpdateTruck']);
@@ -61,8 +61,8 @@ Route::group(['middleware' => 'BranchManager',
        Route::get('truckrecord/{desk}' , [TruckController::class , 'GetTruckRecord']);       
        Route::get('truckinformation/{truck_number}' , [TruckController::class , 'GetTruckInformation']);   
        Route::get('getcustomers', [CustomerController::class , 'GetCustomers']);
-       Route::post('shippingprices', [ShippingController::class , 'DetermineShippingPrices']);
-       Route::post('editshippingprices', [ShippingController::class , 'EditShippingPrices']);
+     //   Route::post('shippingprices', [ShippingController::class , 'DetermineShippingPrices']);
+     //   Route::post('editshippingprices', [ShippingController::class , 'EditShippingPrices']);
        Route::get('priceslist', [ShippingController::class , 'GetPricesList']);
        Route::post('addDriver', [EmployeeController::class, 'addDriver']);
        Route::get('branchdrivers' , [EmployeeController::class , 'GetDriversForMyBranch']);
@@ -153,7 +153,8 @@ Route::group(['middleware' => 'Employee',
          Route::post('editshippingprices', [ShippingController::class , 'EditShippingPrices']);
          Route::get('priceslist', [ShippingController::class , 'GetPricesList']);
      
-     
+         Route::get('notifications', [AuthController::class, 'getNotifications']);
+
      });
 
 

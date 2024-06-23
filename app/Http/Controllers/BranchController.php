@@ -17,9 +17,10 @@ use Illuminate\Database\QueryException;
 use App\Models\Trip;
 use Kreait\Firebase\Factory;
 use Kreait\Firebase\Messaging\CloudMessage;
-use Kreait\Firebase\Messaging\Notification;
+use Kreait\Firebase\Messaging\Notification as FCMNotification;
 use Illuminate\Support\Facades\Log;
 use Exception;
+use App\Models\Notification;
 
 class BranchController extends Controller
 {
@@ -132,11 +133,19 @@ class BranchController extends Controller
 
         if ($deviceToken) {
             $message = CloudMessage::withTarget('token', $deviceToken)
-                ->withNotification(Notification::create($title, $body));
+                ->withNotification(FCMNotification::create($title, $body));
 
             try {
                 $this->messaging->send($message);
                 Log::info('Notification sent: Done added branch', ['branch_id' => $branch->id, 'admin' => $admin->name]);
+
+                Notification::create([
+                    'admin_id' => $admin->id,
+                    'title' => $title,
+                    'body' => $body,
+                    'status' => 'sent',
+                    'created_at' => now()
+                ]);
                 return 'Notification sent successfully';
             } catch (Exception $e) {
                 Log::error('Failed to send FCM message: ' . $e->getMessage(), ['branch_id' => $branch->id, 'admin' => $admin->name]);
@@ -227,11 +236,19 @@ class BranchController extends Controller
     
         if ($deviceToken) {
             $message = CloudMessage::withTarget('token', $deviceToken)
-                ->withNotification(Notification::create($title, $body));
+                ->withNotification(FCMNotification::create($title, $body));
     
             try {
                 $this->messaging->send($message);
                 Log::info('Notification sent: Branch Manager Added', ['branch_manager_id' => $branchManager->id, 'admin' => $admin->name]);
+
+                Notification::create([
+                    'admin_id' => $admin->id,
+                    'title' => $title,
+                    'body' => $body,
+                    'status' => 'sent',
+                    'created_at' => now()
+                ]);
                 return 'Notification sent successfully';
             } catch (Exception $e) {
                 Log::error('Failed to send FCM message: ' . $e->getMessage(), ['branch_manager_id' => $branchManager->id, 'admin' => $admin->name]);
@@ -317,11 +334,19 @@ class BranchController extends Controller
 
     if ($deviceToken) {
         $message = CloudMessage::withTarget('token', $deviceToken)
-            ->withNotification(Notification::create($title, $body));
+            ->withNotification(FCMNotification::create($title, $body));
 
         try {
             $this->messaging->send($message);
             Log::info('Notification sent: Branch Updated', ['branch_id' => $branch->id, 'admin' => $admin->name]);
+
+            Notification::create([
+                'admin_id' => $admin->id,
+                'title' => $title,
+                'body' => $body,
+                'status' => 'sent',
+                'created_at' => now()
+            ]);
             return 'Notification sent successfully';
         } catch (Exception $e) {
             Log::error('Failed to send FCM message: ' . $e->getMessage(), ['branch_id' => $branch->id, 'admin' => $admin->name]);
@@ -387,11 +412,19 @@ public function deleteBranch(Request $request)
 
     if ($deviceToken) {
         $message = CloudMessage::withTarget('token', $deviceToken)
-            ->withNotification(Notification::create($title, $body));
+            ->withNotification(FCMNotification::create($title, $body));
 
         try {
             $this->messaging->send($message);
             Log::info('Notification sent: Branch Deleted', ['branch_id' => $branch->id, 'admin' => $admin->name]);
+            Notification::create([
+                'admin_id' => $admin->id,
+                'title' => $title,
+                'body' => $body,
+                'status' => 'sent',
+                'created_at' => now()
+            ]);
+          
             return 'Notification sent successfully';
         } catch (Exception $e) {
             Log::error('Failed to send FCM message: ' . $e->getMessage(), ['branch_id' => $branch->id, 'admin' => $admin->name]);
