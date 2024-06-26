@@ -278,5 +278,35 @@ private function sendLocationUpdatedNotification($driver)
         return 'Driver device token not found';
     }
 }
+public function getDriversByBranch(Request $request)
+{
+    try {
+        $user = Auth::guard('admin')->user();
 
+        $branch_id = $request->query('branch_id');
+
+        if (!$branch_id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'branch_id query parameter is required'
+            ], 400);
+        }
+
+        $drivers = Driver::where('branch_id', $branch_id)
+            ->select('id', 'name', 'phone_number', 'address', 'employment_date')
+            ->paginate(10);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Drivers retrieved successfully',
+            'data' => $drivers
+        ], 200);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'An error occurred while retrieving the drivers',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
 }

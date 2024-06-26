@@ -18,6 +18,7 @@ use App\Http\Controllers\WarehouseController;
 use Illuminate\Support\Facades\Route;
 use PHPOpenSourceSaver\JWTAuth\Claims\Custom;
 use App\Http\Controllers\DestinationController;
+use App\Http\Controllers\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,6 +34,7 @@ use App\Http\Controllers\DestinationController;
 Route::post( 'register' , [AuthController::class , 'Register']);
 Route::post( 'login' , [AuthController::class , 'Login']);
 Route::post('logout' , [AuthController::class , 'Logout']);
+Route::get('get-role', [AuthController::class, 'getRole']);
 
 
 
@@ -115,6 +117,11 @@ Route::group(['middleware' => 'Employee',
         Route::get('profile', [EmployeeController::class, 'GetProfile']);
         Route::post('customerByName', [CustomerController::class, 'GetCustomersByName']);
 
+        Route::get('myprofile' , [ProfileController::class , 'getMyProfile']);
+       
+       
+       
+        Route::get('notifications', [AuthController::class, 'getNotificationsEmployee']);
 
       });
               
@@ -155,6 +162,12 @@ Route::group(['middleware' => 'Employee',
      
          Route::get('notifications', [AuthController::class, 'getNotifications']);
 
+
+
+         Route::get('trucks', [BranchController::class, 'getTrucksByBranch']);
+         Route::get('driversByBranch', [DriverController::class, 'getDriversByBranch']);
+         Route::get('employeesByBranch', [EmployeeController::class, 'getEmployeesByBranch']);
+         Route::get('archiveEmployeeByBranch', [BranchController::class, 'getArchivedEmployeeByBranch']);
      });
 
 

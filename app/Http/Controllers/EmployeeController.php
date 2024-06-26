@@ -777,6 +777,8 @@ public function GetEmployee($id)
 
         if ($employee) {
             $employeeData = $employee->makeHidden(['password']);
+            $rating =round(Rating::where('employee_id', $id)->avg('rate'),1);
+            $employeeData->rating = $rating;
 
             return response()->json([
                 'status' => 'success',
@@ -918,6 +920,36 @@ public function GetProfile()
         ], 500);
     }
 }
+public function getEmployeesByBranch(Request $request)
+{
+    try {
+        $user = Auth::guard('admin')->user();
 
+        $branch_id = $request->query('branch_id');
+
+        if (!$branch_id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'branch_id query parameter is required'
+            ], 400);
+        }
+
+        $employees = Employee::where('branch_id', $branch_id)
+            ->select('id','name', 'email', 'phone_number', 'manager_name', 'employment_date', 'salary', 'address')
+            ->paginate(10);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Employees retrieved successfully',
+            'data' => $employees
+        ], 200);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'An error occurred while retrieving the employees',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
 }
 

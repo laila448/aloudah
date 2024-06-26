@@ -21,6 +21,7 @@ use Kreait\Firebase\Messaging\Notification as FCMNotification;
 use Illuminate\Support\Facades\Log;
 use Exception;
 use App\Models\Notification;
+use App\Models\Employee;
 
 class BranchController extends Controller
 {
@@ -506,6 +507,85 @@ public function deleteBranch(Request $request)
             ], 500);
         }
     }
+    public function getTrucksByBranch(Request $request)
+    {
+        try {
+            // Authenticate the admin user
+            $user = Auth::guard('admin')->user();
+    
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized'
+                ], 401);
+            }
+    
+            // Get the branch_id from query parameters
+            $branch_id = $request->query('branch_id');
+    
+            // Check if branch_id is provided
+            if (!$branch_id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'branch_id query parameter is required'
+                ], 400);
+            }
+    
+            // Find the branch by ID
+            $branch = Branch::find($branch_id);
+    
+            if (!$branch) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Branch not found'
+                ], 404);
+            }
+    
+            // Get the trucks associated with the branch
+            $trucks = $branch->trucks;
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'Trucks retrieved successfully',
+                'data' => $trucks
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while retrieving the trucks',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 
-  
+    public function getArchivedEmployeeByBranch(Request $request)
+    {
+        try {
+            $user = Auth::guard('admin')->user();
+            $branchId = $user->branch_id;
+    
+            $deletedEmployees = Employee::where('branch_id', $branchId)
+                ->onlyTrashed() // Use the onlyTrashed() scope
+                ->get();
+    
+            if ($deletedEmployees->isEmpty()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'No deleted employees found for the branch'
+                ], 200);
+            }
+    
+            return response()->json([
+                'success' => true,
+                'data' => $deletedEmployees
+            ], 200);
+    
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while fetching deleted employees',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

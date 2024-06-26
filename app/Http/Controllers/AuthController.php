@@ -169,5 +169,42 @@ class AuthController extends Controller
             'data' => $notifications
         ], 200);
     }
+    public function getRole(Request $request)
+    {
+        $user = null;
+
+        if (Auth::guard('admin')->check()) {
+            $user = Auth::guard('admin')->user();
+            $role = 'admin';
+        } elseif (Auth::guard('branch_manager')->check()) {
+            $user = Auth::guard('branch_manager')->user();
+            $role = 'branch_manager';
+        } elseif (Auth::guard('employee')->check()) {
+            $user = Auth::guard('employee')->user();
+            $role = 'employee';
+        } elseif (Auth::guard('customer')->check()) {
+            $user = Auth::guard('customer')->user();
+            $role = 'customer';
+        } elseif (Auth::guard('warehouse_manager')->check()) {
+            $user = Auth::guard('warehouse_manager')->user();
+            $role = 'warehouse_manager';
+        } elseif (Auth::guard('driver')->check()) {
+            $user = Auth::guard('driver')->user();
+            $role = 'driver';
+        }
+
+        if ($user) {
+            return response()->json([
+                'success' => true,
+                'role' => $role,
+              //  'user' => $user,
+            ], 200);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Unauthorized'
+        ], 401);
+    }
 }
 
