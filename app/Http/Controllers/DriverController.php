@@ -165,12 +165,10 @@ class DriverController extends Controller
     public function getLocation(Request $request)
     {
         try {
-            // Validate the request input
             $request->validate([
                 'trip_number' => 'required|string',
             ]);
     
-            // Find the trip by number
             $trip = Trip::where('number', $request->trip_number)->where('status', 'active')->first();
     
             if (!$trip) {
@@ -180,7 +178,6 @@ class DriverController extends Controller
                 ], 404);
             }
     
-            // Get the associated driver
             $driver = $trip->driver;
     
             if (!$driver) {
@@ -192,7 +189,6 @@ class DriverController extends Controller
     
             $employee = Auth::guard('employee')->user();
     
-            // Send notification
             $notificationStatus = $this->sendLocationRetrievedNotification($employee, $driver);
     
             return response()->json([
@@ -247,7 +243,6 @@ class DriverController extends Controller
                 'trip_number' => 'required|string',
             ]);
     
-            // Find the trip by number
             $trip = Trip::where('number', $request->trip_number)->where('status', 'active')->first();
     
             if (!$trip) {
@@ -257,7 +252,6 @@ class DriverController extends Controller
                 ], 404);
             }
     
-            // Get the associated driver
             $driver = $trip->driver;
     
             if ($driver instanceof Driver) {
@@ -265,7 +259,6 @@ class DriverController extends Controller
                 $driver->current_lng = $request->current_lng;
                 $driver->save();
     
-                // Send notification
                 $notificationStatus = $this->sendLocationUpdatedNotification($driver);
     
                 return response()->json([
