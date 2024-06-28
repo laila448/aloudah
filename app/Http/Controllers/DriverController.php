@@ -21,6 +21,34 @@ class DriverController extends Controller
         $this->messaging = $firebase->withServiceAccount($serviceAccountPath)->createMessaging();
     }
 
+    //!LQ Added
+    public function GetDrivers()
+    {
+        try{
+            $id=Auth::guard('branch_manager')->user()->branch_id;
+
+            $driver = Driver::where('branch_id',$id)->paginate(10);
+            if (!$driver) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Driver not found'
+                ], 404);
+            }
+        
+            return response()->json([
+                'success' => true,
+                'data' => $driver ,
+                'message' => 'Drivers retrieved successfully.'
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve drivers .',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function GetDriverTrips($id)
     {
         try{
@@ -77,34 +105,37 @@ class DriverController extends Controller
 
 
     }
+    //!done Updated this 
     public function GetMyTrips()
     {
-        try{
-        $id= Auth::guard('driver')->user()->id;
-        $driver = Trip::select('number','date','branch_id')->where('driver_id',$id)->paginate(10);
-        if (!$driver) {
+        try {
+            $id = Auth::guard('driver')->user()->id;
+            $closedTrips = Trip::select('number', 'date', 'branch_id')
+                                ->where('driver_id', $id)
+                                ->where('status', 'closed')
+                                ->paginate(10);
+    
+            if ($closedTrips->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You don\'t have any closed trips yet'
+                ], 404);
+            }
+    
+            return response()->json([
+                'success' => true,
+                'data' => $closedTrips,
+                'message' => 'Your closed trips retrieved successfully.'
+            ], 200);
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => '  you dont have any trips yet'
-            ], 404);
+                'message' => 'Failed to retrieve your trips.',
+                'error' => $e->getMessage()
+            ], 500);
         }
+    }
     
-        return response()->json([
-            'success' => true,
-            'data' => $driver ,
-            'message' => 'your trips retrieved successfully.'
-        ], 200);
-
-    }catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Failed to retrieve your trips.',
-            'error' => $e->getMessage()
-        ], 500);
-    }
-
-
-    }
 
     public function GetAllDrivers()
     {

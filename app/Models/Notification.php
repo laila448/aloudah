@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -10,12 +9,27 @@ class Notification extends Model
     use HasFactory;
 
     protected $fillable = [
-        'admin_id',
-
+        'branch_manager_id',
         'warehouse_manager_id',
         'title',
         'body',
+        'type',
+        'is_read',
+        'data',
         'status',
-        'created_at',
     ];
+
+    protected $casts = [
+        'data' => 'array',
+    ];
+
+    public function branchManager()
+    {
+        return $this->belongsTo(Branch_Manager::class);
+    }
+
+    public function warehouseManager()
+    {
+        return $this->belongsTo(Warehouse_Manager::class);
+    }
 }

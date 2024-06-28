@@ -28,12 +28,12 @@ class WarehouseController extends Controller
         $serviceAccountPath = storage_path('app/firebase/firebase_credentials.json');
         $this->messaging = $firebase->withServiceAccount($serviceAccountPath)->createMessaging();
     }
-   public function addWarehouse(Request $request)
+public function addWarehouse(Request $request)
 {
     try {
         $validator = Validator::make($request->all(), [               
             'warehouse_address' => 'required|string',
-            'branch_id' => 'required|numeric',
+            'branch_id' => 'required|numeric|exists:branches,id',
             'warehouse_name' => 'required|string',
             'area' => 'required|string',
             'notes' => 'required|string',
@@ -61,7 +61,8 @@ class WarehouseController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Warehouse added successfully',
-            'notification_status' => $notificationStatus
+            'notification_status' => $notificationStatus,
+            'data' => $warehouse
         ], 200);
 
     } catch (\Exception $e) {
@@ -72,6 +73,7 @@ class WarehouseController extends Controller
         ], 500);
     }
 }
+
 private function sendWarehouseAddedNotification($manager, $warehouse)
 {
     $title = 'New Warehouse Added';
@@ -96,12 +98,12 @@ private function sendWarehouseAddedNotification($manager, $warehouse)
         return 'Manager device token not found';
     }
 }
-
-public function AddWarehouseManager(Request $request)
+//!Changed this
+public function addWarehouseManager(Request $request)
 {
     try {
         $validator = Validator::make($request->all(), [                  
-            'warehouse_id' => 'required|numeric',
+            'warehouse_id' => 'required|numeric|exists:warehouses,id',
             'national_id' => 'required|max:11|unique:warehouse_managers,national_id',
             'manager_name' => 'required|string',
             'email' => 'required|email|unique:warehouse_managers,email',
@@ -138,6 +140,11 @@ public function AddWarehouseManager(Request $request)
         $warehouseManager->employment_date = now()->format('Y-m-d');
         $warehouseManager->save();
 
+        // Update the warehouse with the warehouse manager ID
+        $warehouse = Warehouse::find($request->input('warehouse_id'));
+        $warehouse->warehouse_manager_id = $warehouseManager->id;
+        $warehouse->save();
+
         if ($warehouseManager) {
             Mail::to($warehouseManager->email)->send(new PasswordMail($warehouseManager->name, $password));
         }
@@ -149,7 +156,8 @@ public function AddWarehouseManager(Request $request)
         return response()->json([
             'success' => true,
             'message' => 'Warehouse Manager added successfully',
-            'notification_status' => $notificationStatus
+            'notification_status' => $notificationStatus,
+            'data' => $warehouseManager
         ], 200);
 
     } catch (\Exception $e) {

@@ -58,75 +58,153 @@ class EmployeeController extends Controller
         }
     }
     
-    public function addDriver(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'national_id' => 'required|max:11|unique:drivers,national_id',
-            'name' => 'required|min:5|max:255|unique:drivers,name',
-            'email' => 'required|string|email|unique:drivers,email',
-            'phone_number' => 'required|max:10|unique:drivers,phone_number',
-            'gender' => 'required|in:male,female',
-            'branch_id' => 'required|exists:branches,id',
-            'mother_name' => 'required|string',
-            'birth_date' => 'required|date_format:Y-m-d',
-            'birth_place' => 'required|string',
-            'mobile' => 'required|unique:drivers,mobile',
-            'address' => 'required|string',
-            'salary' => 'required',
-            'rank' => 'required',
-            'certificate' => 'required|unique:drivers,certificate'
-        ]);
+    // public function addDriver(Request $request)
+    // {
+    //     $validator = Validator::make($request->all(), [
+    //         'national_id' => 'required|max:11|unique:drivers,national_id',
+    //         'name' => 'required|min:5|max:255|unique:drivers,name',
+    //         'email' => 'required|string|email|unique:drivers,email',
+    //         'phone_number' => 'required|max:10|unique:drivers,phone_number',
+    //         'gender' => 'required|in:male,female',
+    //         'branch_id' => 'required|exists:branches,id',
+    //         'mother_name' => 'required|string',
+    //         'birth_date' => 'required|date_format:Y-m-d',
+    //         'birth_place' => 'required|string',
+    //         'mobile' => 'required|unique:drivers,mobile',
+    //         'address' => 'required|string',
+    //         'salary' => 'required',
+    //         'rank' => 'required',
+    //         'certificate' => 'required|unique:drivers,certificate'
+    //     ]);
     
-        if ($validator->fails()) {
-            $errors = $validator->errors()->all();
+    //     if ($validator->fails()) {
+    //         $errors = $validator->errors()->all();
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Validation failed. Please check the following errors:',
+    //             'errors' => $errors
+    //         ], 400);
+    //     }
+    
+    //     try {
+    //         $password = Str::random(8);
+    //         $manager = Auth::guard('branch_manager')->user();
+    //         $driver = Driver::create(array_merge(
+    //             $validator->validated(),
+    //             [
+    //                 'password' => bcrypt($password),
+    //                 'employment_date' => now()->format('Y-m-d'),
+    //                 'manager_name' => $manager->name
+    //             ]
+    //         ));
+    
+    //         if ($driver) {
+    //             Mail::to($driver->email)->send(new PasswordMail($driver->name, $password));
+    
+    //             // Send notification
+    //             $notificationStatus = $this->sendDriverAddedNotification($driver);
+    //         }
+    
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'Driver added successfully',
+    //             'notification_status' => $notificationStatus
+    //         ], 200);
+    //     } catch (QueryException $e) {
+    //         $errorCode = $e->errorInfo[1];
+    //         if ($errorCode == 1062) {
+    //             return response()->json([
+    //                 'success' => false,
+    //                 'message' => 'A driver with the same National ID, Email, Phone Number, Mobile Number, or Certificate already exists. Please ensure all fields are unique.'
+    //             ], 400);
+    //         }
+    
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Failed to add driver.',
+    //             'error' => $e->getMessage()
+    //         ], 500);
+    //     }
+    // }
+    //!done Updated this 
+    public function addDriver(Request $request)
+{
+    $validator = Validator::make($request->all(), [
+        'national_id' => 'required|max:11|unique:drivers,national_id',
+        'name' => 'required|min:5|max:255|unique:drivers,name',
+        'email' => 'required|string|email|unique:drivers,email',
+        'phone_number' => 'required|max:10|unique:drivers,phone_number',
+        'gender' => 'required|in:male,female',
+        'branch_id' => 'required|exists:branches,id',
+        'mother_name' => 'required|string',
+        'birth_date' => 'required|date_format:Y-m-d',
+        'birth_place' => 'required|string',
+        'mobile' => 'required|unique:drivers,mobile',
+        'address' => 'required|string',
+        'salary' => 'required',
+        'rank' => 'required',
+        'certificate' => 'required|unique:drivers,certificate'
+    ]);
+
+    if ($validator->fails()) {
+        $errors = $validator->errors()->all();
+        return response()->json([
+            'success' => false,
+            'message' => 'Validation failed. Please check the following errors:',
+            'errors' => $errors
+        ], 400);
+    }
+
+    $manager = Auth::guard('branch_manager')->user();
+
+    // Check if the branch ID in the request matches the branch manager's branch ID
+    if ($request->branch_id != $manager->branch_id) {
+        return response()->json([
+            'success' => false,
+            'message' => 'You can only add drivers to your own branch.'
+        ], 403);
+    }
+
+    try {
+        $password = Str::random(8);
+        $driver = Driver::create(array_merge(
+            $validator->validated(),
+            [
+                'password' => bcrypt($password),
+                'employment_date' => now()->format('Y-m-d'),
+                'manager_name' => $manager->name
+            ]
+        ));
+
+        if ($driver) {
+            Mail::to($driver->email)->send(new PasswordMail($driver->name, $password));
+
+            // Send notification
+            $notificationStatus = $this->sendDriverAddedNotification($driver);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Driver added successfully',
+            'notification_status' => $notificationStatus
+        ], 200);
+    } catch (QueryException $e) {
+        $errorCode = $e->errorInfo[1];
+        if ($errorCode == 1062) {
             return response()->json([
                 'success' => false,
-                'message' => 'Validation failed. Please check the following errors:',
-                'errors' => $errors
+                'message' => 'A driver with the same National ID, Email, Phone Number, Mobile Number, or Certificate already exists. Please ensure all fields are unique.'
             ], 400);
         }
-    
-        try {
-            $password = Str::random(8);
-            $manager = Auth::guard('branch_manager')->user();
-            $driver = Driver::create(array_merge(
-                $validator->validated(),
-                [
-                    'password' => bcrypt($password),
-                    'employment_date' => now()->format('Y-m-d'),
-                    'manager_name' => $manager->name
-                ]
-            ));
-    
-            if ($driver) {
-                Mail::to($driver->email)->send(new PasswordMail($driver->name, $password));
-    
-                // Send notification
-                $notificationStatus = $this->sendDriverAddedNotification($driver);
-            }
-    
-            return response()->json([
-                'success' => true,
-                'message' => 'Driver added successfully',
-                'notification_status' => $notificationStatus
-            ], 200);
-        } catch (QueryException $e) {
-            $errorCode = $e->errorInfo[1];
-            if ($errorCode == 1062) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'A driver with the same National ID, Email, Phone Number, Mobile Number, or Certificate already exists. Please ensure all fields are unique.'
-                ], 400);
-            }
-    
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to add driver.',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to add driver.',
+            'error' => $e->getMessage()
+        ], 500);
     }
-    
+}
+
     private function sendDriverAddedNotification($driver)
 {
     $title = 'Welcome to the Team';
@@ -152,6 +230,78 @@ class EmployeeController extends Controller
     }
 }
 
+// public function AddEmployee(Request $request)
+// {
+//     $validator = Validator::make($request->all(), [
+//         'national_id' => 'required|max:11|unique:employees,national_id',
+//         'name' => 'required|min:5|max:255|unique:employees,name',
+//         'email' => 'string|email|unique:employees,email',
+//         'phone_number' => 'required|max:10|unique:employees,phone_number',
+//         'gender' => 'required|in:male,female',
+//         'password' => 'min:8',
+//         'branch_id' => 'required|exists:branches,id',
+//         'mother_name' => 'required|string',
+//         'birth_date' => 'required|date_format:Y-m-d',
+//         'birth_place' => 'required|string',
+//         'mobile' => 'required|unique:employees,mobile',
+//         'address' => 'required|string',
+//         'salary' => 'required',
+//         'rank' => 'required',
+//     ]);
+
+//     if ($validator->fails()) {
+//         $errors = $validator->errors()->all();
+//         return response()->json([
+//             'success' => false,
+//             'message' => 'Validation failed. Please check the following errors:',
+//             'errors' => $errors
+//         ], 400);
+//     }
+
+//     try {
+//         $password = Str::random(8);
+//         $manager = Auth::guard('branch_manager')->user();
+//         $employee = Employee::create(array_merge(
+//             $validator->validated(),
+//             [
+//                 'password' => bcrypt($password),
+//                 'employment_date' => now()->format('Y-m-d'),
+//                 'manager_name' => $manager->name
+//             ]
+//         ));
+
+//         if ($employee) {
+//             Mail::to($employee->email)->send(new PasswordMail($employee->name, $password));
+
+//             Permission::create([
+//                 'employee_id' => $employee->id
+//             ]);
+
+//             // Send notification
+//             $notificationStatus = $this->sendEmployeeAddedNotification($employee);
+//         }
+
+//         return response()->json([
+//             'success' => true,
+//             'message' => 'Employee added successfully',
+//             'notification_status' => $notificationStatus
+//         ], 200);
+//     } catch (QueryException $e) {
+//         $errorCode = $e->errorInfo[1];
+//         if ($errorCode == 1062) {
+//             return response()->json([
+//                 'success' => false,
+//                 'message' => 'An employee with the same National ID, Email, Phone Number, or Mobile Number already exists. Please ensure all fields are unique.'
+//             ], 400);
+//         }
+
+//         return response()->json([
+//             'success' => false,
+//             'message' => 'Failed to add employee.',
+//             'error' => $e->getMessage()
+//         ], 500);
+//     }
+// }
 public function AddEmployee(Request $request)
 {
     $validator = Validator::make($request->all(), [
@@ -180,9 +330,18 @@ public function AddEmployee(Request $request)
         ], 400);
     }
 
+    $manager = Auth::guard('branch_manager')->user();
+
+    // Check if the branch ID in the request matches the branch manager's branch ID
+    if ($request->branch_id != $manager->branch_id) {
+        return response()->json([
+            'success' => false,
+            'message' => 'You can only add employees to your own branch.'
+        ], 403);
+    }
+
     try {
         $password = Str::random(8);
-        $manager = Auth::guard('branch_manager')->user();
         $employee = Employee::create(array_merge(
             $validator->validated(),
             [
@@ -224,6 +383,7 @@ public function AddEmployee(Request $request)
         ], 500);
     }
 }
+
 
     private function sendEmployeeAddedNotification($employee)
     {
@@ -947,6 +1107,39 @@ public function getEmployeesByBranch(Request $request)
         return response()->json([
             'success' => false,
             'message' => 'An error occurred while retrieving the employees',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
+
+//!LQ Adding this
+public function GetArchivedEmployee()
+{
+    
+    try {
+        $branchManager = Auth::guard('branch_manager')->user();
+        $branchId = $branchManager->branch_id;
+
+        $deletedEmployees = Employee::where('branch_id', $branchId)
+            ->onlyTrashed() // Use the onlyTrashed() scope
+            ->get();
+
+        if ($deletedEmployees->isEmpty()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'No deleted employees found for the branch'
+            ], 200);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $deletedEmployees
+        ], 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'An error occurred while fetching deleted employees',
             'error' => $e->getMessage()
         ], 500);
     }

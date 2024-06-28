@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class DropNotificationsTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -25,13 +25,15 @@ class DropNotificationsTable extends Migration
     {
         Schema::create('notifications', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('admin_id');
+            $table->unsignedBigInteger('notifiable_id');
+            $table->string('notifiable_type');
             $table->string('title');
             $table->text('body');
+            $table->string('type');
+            $table->boolean('is_read')->default(false);
+            $table->json('data')->nullable();
             $table->string('status');
             $table->timestamps();
-
-            $table->foreign('admin_id')->references('id')->on('admins')->onDelete('cascade');
         });
     }
-}
+};

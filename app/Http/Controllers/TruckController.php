@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Branch;
 use App\Models\Truck;
+use App\Models\Trip;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -22,51 +24,128 @@ class TruckController extends Controller
         $serviceAccountPath = storage_path('app/firebase/firebase_credentials.json');
         $this->messaging = $firebase->withServiceAccount($serviceAccountPath)->createMessaging();
     }
-    public function AddTruck(Request $request)
+    //!LQ Added this
+    public function GetTruckTrips($id)
     {
         try {
-            $validator = Validator::make($request->all(), [
-                'branch_id' => 'required|numeric',
-                'number' => 'required|min:4|max:20|string',
-                'line' => 'required|string',
-                'notes' => 'string|nullable',
-            ]);
+           $trips=Trip::where('truck_id',$id)->paginate(10);
     
-            if ($validator->fails()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => $validator->errors()->toJson()
-                ], 400);
-            }
-    
-            $createdby = Auth::guard('branch_manager')->user();
-            $truck = Truck::create([
-                'branch_id' => $request->branch_id,
-                'number' => $request->number,
-                'line' => $request->line,
-                'notes' => $request->notes,
-                'created_by' => $createdby->name,
-                'adding_data' => now()->format('Y-m-d'),
-            ]);
-    
-            // Send notification
-            $notificationStatus = $this->sendTruckAddedNotification($createdby, $truck);
     
             return response()->json([
                 'success' => true,
-                'message' => 'Truck added successfully',
-                'data' => $truck,
-                'notification_status' => $notificationStatus
+                'message' => 'trips : ',
+                'data' => $trips
             ], 200);
     
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'An error occurred while adding the truck',
+                'message' => 'An error occurred while gettig the trips',
                 'error' => $e->getMessage()
             ], 500);
         }
     }
+    // public function AddTruck(Request $request)
+    // {
+    //     try {
+    //         $validator = Validator::make($request->all(), [
+    //             'branch_id' => 'required|numeric',
+    //             'number' => 'required|min:4|max:20|string',
+    //             'line' => 'required|string',
+    //             'notes' => 'string|nullable',
+    //         ]);
+    
+    //         if ($validator->fails()) {
+    //             return response()->json([
+    //                 'success' => false,
+    //                 'message' => $validator->errors()->toJson()
+    //             ], 400);
+    //         }
+    
+    //         $createdby = Auth::guard('branch_manager')->user();
+    //         $truck = Truck::create([
+    //             'branch_id' => $request->branch_id,
+    //             'number' => $request->number,
+    //             'line' => $request->line,
+    //             'notes' => $request->notes,
+    //             'created_by' => $createdby->name,
+    //             'adding_data' => now()->format('Y-m-d'),
+    //         ]);
+    
+    //         // Send notification
+    //         $notificationStatus = $this->sendTruckAddedNotification($createdby, $truck);
+    
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'Truck added successfully',
+    //             'data' => $truck,
+    //             'notification_status' => $notificationStatus
+    //         ], 200);
+    
+    //     } catch (\Exception $e) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'An error occurred while adding the truck',
+    //             'error' => $e->getMessage()
+    //         ], 500);
+    //     }
+    // }
+    //!Chane this
+    public function AddTruck(Request $request)
+{
+    try {
+        $validator = Validator::make($request->all(), [
+            'branch_id' => 'required|numeric',
+            'number' => 'required|min:4|max:20|string|unique:trucks,number',
+            'line' => 'required|string',
+            'notes' => 'string|nullable',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->toJson()
+            ], 400);
+        }
+
+        $createdby = Auth::guard('branch_manager')->user();
+
+        // Check if the branch ID in the request matches the branch manager's branch ID
+        if ($request->branch_id != $createdby->branch_id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You can only add trucks to your own branch.'
+            ], 403);
+        }
+
+        $truck = Truck::create([
+            'branch_id' => $request->branch_id,
+            'number' => $request->number,
+            'line' => $request->line,
+            'notes' => $request->notes,
+            'created_by' => $createdby->name,
+            'adding_data' => now()->format('Y-m-d'),
+        ]);
+
+        // Send notification
+        $notificationStatus = $this->sendTruckAddedNotification($createdby, $truck);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Truck added successfully',
+            'data' => $truck,
+            'notification_status' => $notificationStatus
+        ], 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'An error occurred while adding the truck',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
+
     
     private function sendTruckAddedNotification($branchManager, $truck)
     {

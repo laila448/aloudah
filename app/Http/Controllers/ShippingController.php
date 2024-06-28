@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Shipping;
 use App\Models\Manifest;
 use App\Models\Price;
+use App\Models\Trip;
+
 use App\Models\Branch;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,28 +15,13 @@ use Illuminate\Support\Str;
 
 class ShippingController extends Controller
 {
-    private $destinations = [
-        ['id' => 1, 'name' => 'Damascus'],
-        ['id' => 2, 'name' => 'Aleppo'],
-        ['id' => 3, 'name' => 'Homs'],
-        ['id' => 4, 'name' => 'Latakia'],
-        ['id' => 5, 'name' => 'Hama'],
-        ['id' => 6, 'name' => 'Raqqa'],
-        ['id' => 7, 'name' => 'Deir ez-Zor'],
-        ['id' => 8, 'name' => 'Idlib'],
-        ['id' => 9, 'name' => 'Hasakah'],
-        ['id' => 10, 'name' => 'Qamishli'],
-        ['id' => 11, 'name' => 'Daraa'],
-        ['id' => 12, 'name' => 'Suwayda'],
-        ['id' => 13, 'name' => 'Tartus'],
-        ['id' => 14, 'name' => 'Palmyra'],
-    ];
+  //!N Added it
     public function AddInvoice(Request $request)
     {
         try {
             $validator = Validator::make($request->all(), [
-                'source_id' => 'required|numeric',
-                'destination_id' => 'required|numeric',
+                'source_id' => 'required|numeric|exists:branches,id',
+                'destination_id' => 'required|numeric|exists:branches,id',
                 'manifest_number' => 'required|string',
                 'sender' => 'required|string',
                 'receiver' => 'required|string',
@@ -56,7 +43,6 @@ class ShippingController extends Controller
                 'discount' => 'numeric|nullable',
                 'collection' => 'numeric|nullable',
                 'quantity' => 'numeric|nullable'
-
             ]);
     
             if ($validator->fails()) {
@@ -65,6 +51,44 @@ class ShippingController extends Controller
                     'message' => $validator->errors()->toJson()
                 ], 400);
             }
+    
+            $employee = Auth::guard('employee')->user();
+            $employeeBranchId = $employee->branch_id;
+    
+            // Check if the source_id matches the employee's branch_id
+            if ($request->source_id != $employeeBranchId) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You can only add invoices for trips originating from your assigned branch.'
+                ], 403);
+            }
+    
+            // Check if source_id and destination_id are the same
+            if ($request->source_id == $request->destination_id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'The source and destination branches cannot be the same.'
+                ], 400);
+            }
+    
+            // Check if the status of the trip is closed
+            $trip = Trip::where('branch_id', $request->source_id)
+                         ->where('destination_id', $request->destination_id)
+                         ->first();
+    
+            if (!$trip) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Trip not found'
+                ], 404);
+            }
+    //!ee
+            // if ($trip->status === 'closed') {
+            //     return response()->json([
+            //         'success' => false,
+            //         'message' => 'Cannot add invoice. The status of this trip is closed.'
+            //     ], 403);
+            // }
     
             $shippingCost = $this->calculateShippingCost($request->type_id, $request->weight);
     
@@ -95,10 +119,11 @@ class ShippingController extends Controller
                 'collection' => $request->collection,
                 'barcode' => $barcode,
                 'quantity' => $request->quantity
-
             ]);
+    
             $shipping->number = $shipping->id;
             $shipping->save();
+    
             $manifest = Manifest::where('number', $request->manifest_number)->first();
     
             if ($manifest) {
@@ -120,7 +145,7 @@ class ShippingController extends Controller
             ], 500);
         }
     }
-   
+    
 //!Mark:Changed here
 
     public function getManifestWithInvoices($manifestNumber)
@@ -156,7 +181,7 @@ class ShippingController extends Controller
             ], 500);
         }
     }
-//!Mark:Changed here
+//!Mark:Changed here ?? i didn't use this
     public function GetAllRceipts($destination_id)
     {
         try {
@@ -310,11 +335,12 @@ class ShippingController extends Controller
     }
 //!Mark:Changed here
 
-    private function getDestinationName($id)
-    {
-        $destination = collect($this->destinations)->firstWhere('id', $id);
-        return $destination ? $destination['name'] : 'Unknown';
-    }
+private function getDestinationName($id)
+{
+    $destination = Branch::find($id);
+    return $destination ? $destination->desk : 'Unknown';
+}
+
 //!Mark:Changed here
 
     private function getBranchName($id)

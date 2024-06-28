@@ -157,7 +157,76 @@ class BranchController extends Controller
             return 'Admin device token not found';
         }
     }
-    public function AddBranchManager(Request $request)
+//     public function AddBranchManager(Request $request)
+// {
+//     $validator = Validator::make($request->all(), [
+//         'branch_id' => 'required',
+//         'national_id' => 'required|max:11|unique:branch_managers,national_id',
+//         'manager_name' => 'required|unique:branch_managers,name',
+//         'email' => 'required|email|unique:branch_managers,email',
+//         'phone_number' => 'required|min:4|max:15|unique:branch_managers,phone_number',
+//         'gender' => 'required',
+//         'mother_name' => 'required',
+//         'date_of_birth' => 'required|date_format:Y-m-d',
+//         'manager_address' => 'required',
+//         'salary' => 'required',
+//         'rank' => ['required', Rule::in(['Branch_manager'])],
+//     ]);
+
+//     if ($validator->fails()) {
+//         $errors = $validator->errors()->all();
+//         return response()->json([
+//             'success' => false,
+//             'message' => 'Validation failed. Please check the following errors:',
+//             'errors' => $errors
+//         ], 400);
+//     }
+
+//     try {
+//         $password = Str::random(8);
+//         $branchManager = new Branch_Manager();
+//         $branchManager->national_id = $request->input('national_id');
+//         $branchManager->name = $request->input('manager_name');
+//         $branchManager->email = $request->input('email');
+//         $branchManager->password = Hash::make($password);
+//         $branchManager->phone_number = $request->input('phone_number');
+//         $branchManager->branch_id = $request->input('branch_id');
+//         $branchManager->gender = $request->input('gender');
+//         $branchManager->mother_name = $request->input('mother_name');
+//         $branchManager->date_of_birth = $request->input('date_of_birth');
+//         $branchManager->manager_address = $request->input('manager_address');
+//         $branchManager->salary = $request->input('salary');
+//         $branchManager->rank = $request->input('rank');
+//         $branchManager->employment_date = now()->format('Y-m-d');
+//         $branchManager->save();
+
+//         Mail::to($branchManager->email)->send(new PasswordMail($branchManager->name, $password));
+
+//         // Send notification
+//         $notificationStatus = $this->sendBranchManagerAddedNotification($branchManager);
+
+//         return response()->json([
+//             'success' => true,
+//             'message' => 'Branch manager added successfully',
+//             'notification_status' => $notificationStatus
+//         ], 200);
+//     } catch (QueryException $e) {
+//         $errorCode = $e->errorInfo[1];
+//         if ($errorCode == 1062) {
+//             return response()->json([
+//                 'success' => false,
+//                 'message' => 'A manager with the same National ID, Email, Phone Number, or Manager Name already exists. Please ensure all fields are unique.'
+//             ], 400);
+//         }
+
+//         return response()->json([
+//             'success' => false,
+//             'message' => 'Failed to add branch manager.',
+//             'error' => $e->getMessage()
+//         ], 500);
+//     }
+// }
+public function AddBranchManager(Request $request)
 {
     $validator = Validator::make($request->all(), [
         'branch_id' => 'required',
@@ -199,6 +268,13 @@ class BranchController extends Controller
         $branchManager->rank = $request->input('rank');
         $branchManager->employment_date = now()->format('Y-m-d');
         $branchManager->save();
+
+        // Update the branch with the new branch manager ID
+        $branch = Branch::find($request->branch_id);
+        if ($branch) {
+            $branch->branchmanager_id = $branchManager->id;
+            $branch->save();
+        }
 
         Mail::to($branchManager->email)->send(new PasswordMail($branchManager->name, $password));
 
@@ -461,7 +537,7 @@ public function deleteBranch(Request $request)
             ], 500);
         }
     }
-    
+    //!N Added this
     public function GetBranchById($id)
     {
         try {
@@ -507,6 +583,7 @@ public function deleteBranch(Request $request)
             ], 500);
         }
     }
+    //!N Added this
     public function getTrucksByBranch(Request $request)
     {
         try {
@@ -557,7 +634,7 @@ public function deleteBranch(Request $request)
             ], 500);
         }
     }
-
+//!N Added this
     public function getArchivedEmployeeByBranch(Request $request)
     {
         try {

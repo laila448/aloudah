@@ -9,6 +9,8 @@ use App\Models\Employee;
 use App\Models\Price;
 use App\Models\Shipping;
 use App\Models\Trip;
+use App\Models\Warehouse;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -18,6 +20,10 @@ use Kreait\Firebase\Messaging\CloudMessage;
 use Kreait\Firebase\Messaging\Notification;
 use Exception;
 use Illuminate\Support\Facades\Log;
+use App\Models\Notification as NotificationTable;
+
+use App\Jobs\CloseTripJob;
+
 class TripController extends Controller
 {
 
@@ -29,23 +35,54 @@ class TripController extends Controller
         $this->messaging = $firebase->withServiceAccount($serviceAccountPath)->createMessaging();
     }
 
-    private $destinations = [
-        ['id' => 1, 'name' => 'Damascus'],
-        ['id' => 2, 'name' => 'Aleppo'],
-        ['id' => 3, 'name' => 'Homs'],
-        ['id' => 4, 'name' => 'Latakia'],
-        ['id' => 5, 'name' => 'Hama'],
-        ['id' => 6, 'name' => 'Raqqa'],
-        ['id' => 7, 'name' => 'Deir ez-Zor'],
-        ['id' => 8, 'name' => 'Idlib'],
-        ['id' => 9, 'name' => 'Hasakah'],
-        ['id' => 10, 'name' => 'Qamishli'],
-        ['id' => 11, 'name' => 'Daraa'],
-        ['id' => 12, 'name' => 'Suwayda'],
-        ['id' => 13, 'name' => 'Tartus'],
-        ['id' => 14, 'name' => 'Palmyra'],
-    ];
 
+
+    public function getNotifications(Request $request)
+    {
+        $user = Auth::user();
+        $notifications = collect();
+    
+        if ($user instanceof \App\Models\Branch_Manager || $user instanceof \App\Models\Warehouse_Manager) {
+            $notifications = $user->notifications()->get();
+        }
+    
+        return response()->json([
+            'success' => true,
+            'notifications' => $notifications
+        ], 200);
+    }
+    
+//!N Added this
+
+    public function getEmployeeTrips()
+    {
+        try {
+            $employee = Auth::guard('employee')->user();
+            $branchId = $employee->branch_id;
+
+            // Retrieve trips for the employee's branch
+            $trips = Trip::where('branch_id', $branchId)->paginate(10);
+
+            if ($trips->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No trips found for your branch'
+                ], 404);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Trips retrieved successfully',
+                'data' => $trips
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while retrieving trips',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
     public function GetAllTrips()
     {
         try {
@@ -73,79 +110,201 @@ class TripController extends Controller
             ], 500);
         }
     }
+//     public function addTrip(Request $request)
+// {
+//     try {
+//         $validator = Validator::make($request->all(), [
+//             'branch_id' => 'required|numeric|exists:branches,id',
+//             'destination_id' => 'required|numeric|exists:branches,id',
+//             'truck_id' => 'required|numeric',
+//             'driver_id' => 'required|numeric',
+//         ]);
 
-    public function AddTrip(Request $request)
-    {
-        try {
-            $validator = Validator::make($request->all(), [
-                'branch_id' => 'required|numeric',
-                'destination_id' => 'required|numeric',
-                'truck_id' => 'required|numeric',
-                'driver_id' => 'required|numeric',
-            ]);
-    
-            if ($validator->fails()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => $validator->errors()->toJson()
-                ], 400);
-            }
-    
-            $branch = Branch::findOrFail($request->branch_id);
-            $tripCount = Trip::where('branch_id', $branch->id)->count();
-            $tripNumber = strtoupper(substr($branch->desk, 0, 2)) . '_' . $branch->id . '_' . ($tripCount + 1);
-            $loggedInEmployee = Auth::guard('employee')->user();
-            $hasAddTripPermission = Permission::where([
-                ['employee_id', $loggedInEmployee->id],
-                ['add_trip', 1]
-            ])->exists();
-    
-            if (!$hasAddTripPermission) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'You do not have permission to add a trip'
-                ], 403);
-            }
-    
-            $trip = new Trip();
-            $trip->branch_id = $request->branch_id;
-            $trip->destination_id = $request->destination_id;
-            $trip->truck_id = $request->truck_id;
-            $trip->driver_id = $request->driver_id;
-            $trip->number = $tripNumber;
-            $trip->date = now()->format('Y-m-d');
-            $trip->created_by = $loggedInEmployee->name;
-            $trip->manifest_id = null;
-            $trip->save();
-    
-            $manifest = new Manifest();
-            $manifest->number = $tripNumber;
-            $manifest->trip_id = $trip->id;
-            $manifest->save();
-    
-            $trip->manifest_id = $manifest->id;
-            $trip->save();
-    
-            // Send notification
-            $notificationStatus = $this->sendTripAddedNotification($loggedInEmployee, $trip);
-    
-            return response()->json([
-                'success' => true,
-                'message' => 'Trip and manifest added successfully',
-                'data' => $trip,
-                'notification_status' => $notificationStatus
-            ], 201);
-    
-        } catch (\Exception $e) {
+//         if ($validator->fails()) {
+//             return response()->json([
+//                 'success' => false,
+//                 'message' => $validator->errors()->toJson()
+//             ], 400);
+//         }
+
+//         $branch = Branch::findOrFail($request->branch_id);
+//         $destinationBranch = Branch::findOrFail($request->destination_id);
+
+//         $tripCount = Trip::where('branch_id', $branch->id)->count();
+//         $tripNumber = strtoupper(substr($branch->desk, 0, 2)) . '_' . $branch->id . '_' . ($tripCount + 1);
+//         $loggedInEmployee = Auth::guard('employee')->user();
+//         $hasAddTripPermission = Permission::where([
+//             ['employee_id', $loggedInEmployee->id],
+//             ['add_trip', 1]
+//         ])->exists();
+
+//         if (!$hasAddTripPermission) {
+//             return response()->json([
+//                 'success' => false,
+//                 'message' => 'You do not have permission to add a trip'
+//             ], 403);
+//         }
+
+//         $trip = new Trip();
+//         $trip->branch_id = $request->branch_id;
+//         $trip->destination_id = $request->destination_id;
+//         $trip->truck_id = $request->truck_id;
+//         $trip->driver_id = $request->driver_id;
+//         $trip->number = $tripNumber;
+//         $trip->date = now()->format('Y-m-d');
+//         $trip->status = 'active';  // Set initial status to active
+//         $trip->created_by = $loggedInEmployee->name;
+//         $trip->closed_at = now()->addMinutes(1); // Set the closing time to 1 minute from now
+//         $trip->save();
+
+//         $manifest = new Manifest();
+//         $manifest->number = $tripNumber;
+//         $manifest->trip_id = $trip->id;
+//         $manifest->save();
+
+//         $trip->manifest_id = $manifest->id;
+//         $trip->save();
+
+//         Log::info('Trip created with ID: ' . $trip->id . ', closed_at: ' . $trip->closed_at->toDateTimeString());
+
+//         // Debug log for job dispatch time
+//         Log::info('Dispatching CloseTripJob at: ' . now()->toDateTimeString());
+//         Log::info('Job should execute at: ' . now()->addMinutes(1)->toDateTimeString());
+
+//         // Dispatch the job to close the trip after 1 minute
+//         $job = (new CloseTripJob($trip->id))->delay(now()->addMinutes(1));
+//         dispatch($job);
+
+//         // Send notification
+//         try {
+//             $notificationStatus = $this->sendTripAddedNotification($loggedInEmployee, $trip);
+//         } catch (\Exception $e) {
+//             Log::error('Failed to send FCM message: ' . $e->getMessage(), ['employee_id' => $loggedInEmployee->id, 'trip_id' => $trip->id]);
+//             $notificationStatus = false;
+//         }
+
+//         return response()->json([
+//             'success' => true,
+//             'message' => 'Trip and manifest added successfully',
+//             'data' => $trip,
+//             'notification_status' => $notificationStatus
+//         ], 201);
+
+//     } catch (\Exception $e) {
+//         return response()->json([
+//             'success' => false,
+//             'message' => 'An error occurred while adding the trip',
+//             'error' => $e->getMessage()
+//         ], 500);
+//     }
+// }
+//!Changed this for all cases 
+public function addTrip(Request $request)
+{
+    try {
+        $validator = Validator::make($request->all(), [
+            'branch_id' => 'required|numeric|exists:branches,id',
+            'destination_id' => 'required|numeric|exists:branches,id',
+            'truck_id' => 'required|numeric',
+            'driver_id' => 'required|numeric',
+        ]);
+
+        if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => 'An error occurred while adding the trip',
-                'error' => $e->getMessage()
-            ], 500);
+                'message' => $validator->errors()->toJson()
+            ], 400);
         }
+
+        $loggedInEmployee = Auth::guard('employee')->user();
+        $employeeBranchId = $loggedInEmployee->branch_id;
+
+        // Check if the branch_id matches the employee's branch_id
+        if ($request->branch_id != $employeeBranchId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You can only add trips from your assigned branch.'
+            ], 403);
+        }
+
+        $branch = Branch::findOrFail($request->branch_id);
+        $destinationBranch = Branch::findOrFail($request->destination_id);
+
+        // Check if the branch_id and destination_id are the same
+        if ($request->branch_id == $request->destination_id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'The branch and destination cannot be the same.'
+            ], 400);
+        }
+
+        $tripCount = Trip::where('branch_id', $branch->id)->count();
+        $tripNumber = strtoupper(substr($branch->desk, 0, 2)) . '_' . $branch->id . '_' . ($tripCount + 1);
+        $hasAddTripPermission = Permission::where([
+            ['employee_id', $loggedInEmployee->id],
+            ['add_trip', 1]
+        ])->exists();
+
+        if (!$hasAddTripPermission) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You do not have permission to add a trip'
+            ], 403);
+        }
+
+        $trip = new Trip();
+        $trip->branch_id = $request->branch_id;
+        $trip->destination_id = $request->destination_id;
+        $trip->truck_id = $request->truck_id;
+        $trip->driver_id = $request->driver_id;
+        $trip->number = $tripNumber;
+        $trip->date = now()->format('Y-m-d');
+        $trip->status = 'active';  
+        $trip->created_by = $loggedInEmployee->name;
+        $trip->closed_at = now()->addMinutes(60); // Set the closing time to 1 minute from now
+        $trip->save();
+
+        $manifest = new Manifest();
+        $manifest->number = $tripNumber;
+        $manifest->trip_id = $trip->id;
+        $manifest->save();
+
+        $trip->manifest_id = $manifest->id;
+        $trip->save();
+
+        Log::info('Trip created with ID: ' . $trip->id . ', closed_at: ' . $trip->closed_at->toDateTimeString());
+
+        // Debug log for job dispatch time
+        Log::info('Dispatching CloseTripJob at: ' . now()->toDateTimeString());
+        Log::info('Job should execute at: ' . now()->addMinutes(60)->toDateTimeString());
+
+        $job = (new CloseTripJob($trip->id))->delay(now()->addMinutes(60));
+        dispatch($job);
+
+        try {
+            $notificationStatus = $this->sendTripAddedNotification($loggedInEmployee, $trip);
+        } catch (\Exception $e) {
+            Log::error('Failed to send FCM message: ' . $e->getMessage(), ['employee_id' => $loggedInEmployee->id, 'trip_id' => $trip->id]);
+            $notificationStatus = false;
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Trip and manifest added successfully',
+            'data' => $trip,
+            'notification_status' => $notificationStatus
+        ], 201);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'An error occurred while adding the trip',
+            'error' => $e->getMessage()
+        ], 500);
     }
-    
-    private function sendTripAddedNotification($employee, $trip)
+}
+
+        private function sendTripAddedNotification($employee, $trip)
     {
         $title = 'New Trip Added';
         $body = "A new trip with number {$trip->number} has been added.";
@@ -301,7 +460,6 @@ class TripController extends Controller
     
             $trip->delete();
     
-            // Send notification
             $notificationStatus = $this->sendTripCanceledNotification($loggedInEmployee, $trip);
     
             return response()->json([
@@ -344,6 +502,43 @@ class TripController extends Controller
         }
     }
     
+    public function GetActiveTripsForBranch()
+{
+    try {
+        $employee = Auth::guard('employee')->user();
+        $employeeBranchId = $employee->branch_id;
+
+        $trips = Trip::with('driver:id,name', 'branch:id,address,desk', 'truck:id,number')
+            ->where('status', 'active')
+            ->where('branch_id', $employeeBranchId) // Filter by employee's branch
+            ->paginate(10);
+
+        if ($trips->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No active trips found for your branch'
+            ], 404);
+        }
+
+        foreach ($trips->items() as $trip) {
+            $trip->destination_name = $this->getDestinationName($trip->destination_id);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Active trips retrieved successfully',
+            'data' => $trips
+        ], 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'An error occurred while retrieving active trips',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
+
     public function GetActiveTrips()
 {
     try {
@@ -377,6 +572,45 @@ class TripController extends Controller
         ], 500);
     }
 }
+//!Added this
+public function GetClosedTrips()
+{
+    try {
+        $employee = Auth::guard('employee')->user();
+        $employeeBranchId = $employee->branch_id;
+
+        $trips = Trip::with('driver:id,name', 'branch:id,address,desk', 'truck:id,number')
+            ->where('status', 'closed')
+            ->where('branch_id', $employeeBranchId) // Filter by employee's branch
+            ->paginate(10);
+
+        if ($trips->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No closed trips found for your branch'
+            ], 404);
+        }
+
+        // Directly access the items and map the destination name
+        foreach ($trips->items() as $trip) {
+            $trip->destination_name = $this->getDestinationName($trip->destination_id);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Closed trips retrieved successfully',
+            'data' => $trips
+        ], 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'An error occurred while retrieving closed trips',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
+
 
 
     public function ArchiveData(Request $request)
@@ -412,9 +646,10 @@ class TripController extends Controller
     }
     private function getDestinationName($id)
     {
-        $destination = collect($this->destinations)->firstWhere('id', $id);
-        return $destination ? $destination['name'] : 'Unknown';
+        $destination = Branch::find($id);
+        return $destination ? $destination->desk : 'Unknown';
     }
+    
     //!Mark:Changed this
 
     public function GetTripInformation($trip_number)

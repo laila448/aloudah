@@ -14,8 +14,12 @@ return new class extends Migration
     public function up()
     {
         Schema::table('branches', function (Blueprint $table) {
-            $table->decimal('branch_lat')->nullable(); 
-             $table->decimal('branch_lng')->nullable();
+            if (!Schema::hasColumn('branches', 'branch_lat')) {
+                $table->decimal('branch_lat', 8, 2)->nullable();
+            }
+            if (!Schema::hasColumn('branches', 'branch_lng')) {
+                $table->decimal('branch_lng', 8, 2)->nullable();
+            }
         });
     }
 
@@ -27,7 +31,12 @@ return new class extends Migration
     public function down()
     {
         Schema::table('branches', function (Blueprint $table) {
-            //
+            if (Schema::hasColumn('branches', 'branch_lat')) {
+                $table->dropColumn('branch_lat');
+            }
+            if (Schema::hasColumn('branches', 'branch_lng')) {
+                $table->dropColumn('branch_lng');
+            }
         });
     }
 };
