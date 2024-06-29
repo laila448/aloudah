@@ -19,8 +19,8 @@ class Admin extends Authenticatable implements JWTSubject
       'phone_number',
       'gender',
       'password',
-      'device_token',
-      'rank',
+      'device_token'
+     
           ]; 
           public function user(){
             return $this->belongsTo(user::class, 'user_id');

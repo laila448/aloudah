@@ -67,8 +67,16 @@ Route::group(['middleware' => 'BranchManager',
        Route::get('priceslist', [ShippingController::class , 'GetPricesList']);
        Route::post('addDriver', [EmployeeController::class, 'addDriver']);
        Route::get('branchdrivers' , [EmployeeController::class , 'GetDriversForMyBranch']);
-
-
+       Route::get('getallactivetrips' , [TripController::class , 'GetActiveTrips']);
+       Route::get('GetArchiveData' , [TripController::class , 'GetArchiveData']);         
+       Route::get('GetTripInformation/{trip_number}' , [TripController::class , 'GetTripInformation']); 
+       Route::get('truckrecord/{desk}' , [TruckController::class , 'GetTruckRecord']); 
+       Route::get('getdrivers' , [DriverController::class , 'GetDrivers']); 
+       Route::get('gettrucktrips/{id}' , [TruckController::class , 'GetTruckTrips']); 
+       Route::get('gettrips' , [TripController::class , 'GetAllTrips']);  
+       Route::get('getmanifest/{trip_number}' , [TripController::class , 'GetManifest']); 
+       Route::get('getmanifestshipping/{trip_number}' , [TripController::class , 'GetManifestShipping']); 
+       Route::get('gearchivedemployee' , [EmployeeController::class , 'GetArchivedEmployee']); 
 
               });
 
@@ -109,25 +117,9 @@ Route::group(['middleware' => 'Employee',
       
         Route::get('getbranchlatlng/{id}', [BranchController::class, 'getBranchlatlng']);
         Route::get('getdrivertrips/{id}', [DriverController::class, 'GetDriverTrips']);
-        Route::get('getcustomers', [CustomerController::class , 'GetCustomers']);
 
-        Route::post('get-location', [DriverController::class, 'getLocation']);
-        Route::get('drivers', [DriverController::class, 'GetAllDrivers']);
-     //    Route::get('destinations', [DestinationController::class, 'getAllDestinations']);
-        Route::get('branches/{id}', [BranchController::class, 'GetBranchById']);
-        Route::get('profile', [EmployeeController::class, 'GetProfile']);
-        Route::post('customerByName', [CustomerController::class, 'GetCustomersByName']);
 
-     //    Route::get('myprofile' , [ProfileController::class , 'getMyProfile']);
-       //!make this in front
-        Route::get('getallclosedtrips' , [TripController::class , 'GetClosedTrips']);
 
-       
-     //    Route::get('notifications', [AuthController::class, 'getNotificationsEmployee']);
-
-        //!LQ
-        Route::get('myprofile' , [ProfileController::class , 'getMyProfile']);
-        Route::post('editmyprofile',[ProfileController::class , 'editMyProfile']);
       });
               
 
@@ -161,6 +153,9 @@ Route::group(['middleware' => 'Employee',
          Route::get('getwarehousemanager/{id}' , [WarehouseController::class , 'GetWarehouseManager']);
          Route::post('getcustomer' , [CustomerController::class , 'GetCustomer']);
          Route::get('getcustomers', [CustomerController::class , 'GetCustomers']);
+         Route::post('shippingprices', [ShippingController::class , 'DetermineShippingPrices']);
+         Route::post('editshippingprices', [ShippingController::class , 'EditShippingPrices']);
+         Route::get('priceslist', [ShippingController::class , 'GetPricesList']);
      
      
      });
@@ -183,6 +178,13 @@ Route::group(['middleware' => 'Employee',
 
 Route::group(['middleware' => 'WarehouseManager',
      'prefix' => 'warehousemanager'], function() {
-
+          Route::post('addgood' , [GoodsController::class , 'AddGood']);
+          Route::post('deletegood' , [GoodsController::class , 'deleteGood']);
+          Route::post('receivingood' , [GoodsController::class , 'receivingGood']);
+          Route::get('getallgoods' , [GoodsController::class , 'getAllGoods']);
+          Route::post('getgood' , [GoodsController::class , 'getGood']);
+          Route::post('inventory' , [GoodsController::class , 'inventory']);
      });  
+
+
 

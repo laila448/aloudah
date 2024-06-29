@@ -864,8 +864,6 @@ public function GetEmployee($id)
 
         if ($employee) {
             $employeeData = $employee->makeHidden(['password']);
-            $rating =round(Rating::where('employee_id', $id)->avg('rate'),1);
-            $employeeData->rating = $rating;
 
             return response()->json([
                 'status' => 'success',
