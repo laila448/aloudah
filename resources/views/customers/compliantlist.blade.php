@@ -6,7 +6,7 @@
 				<div class="breadcrumb-header justify-content-between">
 					<div class="my-auto">
 						<div class="d-flex">
-							<h4 class="content-title mb-0 my-auto">Branches  :</h4><span class="text-muted mt-1 tx-13 mr-2 mb-0"> </span>
+							<h4 class="content-title mb-0 my-auto"> </h4><span class="text-muted mt-1 tx-13 mr-2 mb-0"> </span>
 						</div>
 					</div>
 					<div class="d-flex my-xl-auto right-content">
@@ -74,7 +74,7 @@
 						<div class="card">
 							<div class="card-header pb-0">
 								<div class="d-flex justify-content-between">
-									<h4 class="card-title mg-b-0">Branches </h4>
+									<h4 class="card-title mg-b-0">الشكاوي :  </h4>
 									<i class="mdi mdi-dots-horizontal text-gray"></i>
 								</div>
 							</div>
@@ -84,32 +84,28 @@
 										<thead>
 											<tr>
 												<th>ID</th>
-                                                <th>Address</th>
-												<th>Desk</th>
+                                                <th>Customer_Name</th>
 												<th>Phone</th>
-                                                <th>Openning_Date</th>
+                                                <th>Compliant</th>
+                                                <th>Date</th>
+
 											</tr>
 										</thead>
 										<tbody>
                                         @php
                                         $count = 1;
                                          @endphp
-											 @foreach ($branches as $branch)
+											 @foreach ($comps as $comp)
                                                 <tr>
                                                   <th scope="row">{{ $count++ }}</th>
-                                                  <td>{{ $branch->address }}</td>
-                                                  <td>{{ $branch->desk }}</td>
-                                                  <td>{{ $branch->phone }}</td>
-                                                  <td>{{ $branch->opening_date }}</td>
-                                                  <td>{{ $branch->Operation }}</td>
-                                    <!-- brach manager -->
-                                                  <!-- <td>
-                                            <a class="modal-effect btn btn-sm btn-danger" data-effect="effect-scale"
-                                                data-id="{{ $branch->id }}" data-desk="{{ $branch->desk }}"
-                                                data-toggle="modal" href="#modaldemo9" title="حذف"><i
-                                                    class="las la-trash"></i></a>
-                                      
-                                                   </td> -->
+                                                  <td>{{ $comp->customer->name }}</td>
+                                                  <td>{{ $comp->customer->phone_number }}</td>
+                                                  <td>{{ $comp->message	 }}</td>
+                                                  <td>{{ $comp->created_at	 }}</td>
+                                                 
+                                                  <td>
+                                    
+                                            
                                                 </tr>
                                              @endforeach
 
@@ -119,76 +115,13 @@
 								</div><!-- bd -->
                                 
 							</div><!-- bd -->
-							<!--manager  -->
-                            <!-- <div class="col-xl-3">
-                                    <a class="modal-effect btn btn-outline-primary btn-block"
-                                     data-effect="effect-scale" data-toggle="modal" href="#modaldemo1">Add New Branch</a>
-                                    </div> -->
+                            
 						</div><!-- bd -->
 					</div>
 					<!--/div-->
- 
+                      
 
-<!-- delete -->
-<div class="modal" id="modaldemo9">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content modal-content-demo">
-                <div class="modal-header">
-                    <h6 class="modal-title">delete </h6><button aria-label="Close" class="close" data-dismiss="modal"
-                        type="button"><span aria-hidden="true">&times;</span></button>
-                </div>
-                <form action="{{ route('deletebranch') }}" method="post">
-                  
-                    {{ csrf_field() }}
-                    <div class="modal-body">
-                        <input type="hidden" name="id" id="id" value="">
-                        <input class="form-control" name="desk" id="desk" type="string" readonly>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">cancel</button>
-                        <button type="submit" class="btn btn-danger">delete</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-    	<!-- Basic modal -->
-		<div class="modal" id="modaldemo1">
-			<div class="modal-dialog" role="document">
-				<div class="modal-content modal-content-demo">
-					<div class="modal-header">
-						<h6 class="modal-title"> Add :</h6><button aria-label="Close" class="close" data-dismiss="modal" type="button"><span aria-hidden="true">&times;</span></button>
-					</div>
-					<div class="modal-body">
-                    <form action="{{ route('addbranch') }}" method="post">
-                        {{ csrf_field() }}
-
-                        <div class="form-group">
-                            <label for="exampleInputEmail1"> Address</label>
-                            <input type="integer" class="form-control" id="address" name="address">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="exampleFormControlTextarea1">Desk</label>
-                            <input type="string" class="form-control" id="desk" name="desk" >
-                        </div>
-						<div class="form-group">
-                            <label for="exampleFormControlTextarea1">Phone</label>
-                            <input type="string" class="form-control" id="phone" name="phone" >
-                        </div>
-
-					</div>
-					<div class="modal-footer">
-                    <button type="submit" class="btn btn-success">Add</button>
-                    <button class="btn ripple btn-secondary" data-dismiss="modal" type="button">Cancel</button>
-					</div>
-                    </form>
-				</div>
-
-                
-			</div>
-		</div>
-		<!-- End Basic modal -->
+    
 
 				<!-- /row -->
 			</div>
@@ -218,15 +151,6 @@
 <script src="{{ URL::asset('assets/js/table-data.js') }}"></script>
 <script src="{{ URL::asset('assets/js/modal.js') }}"></script>
 
-<script>
-    $('#modaldemo9').on('show.bs.modal', function(event) {
-        var button = $(event.relatedTarget)
-        var id = button.data('id')
-        var desk = button.data('desk')
-        var modal = $(this)
-        modal.find('.modal-body #id').val(id);
-        modal.find('.modal-body #desk').val(desk);
-    })
 
-</script>
+
 @endsection

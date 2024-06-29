@@ -88,7 +88,7 @@
 												<th>Phone</th>
                                                 <th>Branch_Address</th>
                                                 <th>Branch_Desk</th>
-                                                <th>Operations</th>
+                                                <!-- <th>Operations</th> -->
 											</tr>
 										</thead>
 										<tbody>
@@ -103,8 +103,8 @@
                                                   <td>{{ $manager->branch->address }}</td>
                                                   <td>{{ $manager->branch->desk }}</td>
                                            
-                                            
-
+                                            <!-- manager -->
+<!-- 
                                                   <td>
                                                   <a class="modal-effect btn btn-sm btn-info" data-effect="effect-scale"
                                                 data-id="{{ $manager->id }}" data-name="{{ $manager->name }}"
@@ -116,7 +116,7 @@
                                                 data-toggle="modal" href="#modaldemo9" title="حذف"><i
                                                     class="las la-trash"></i></a>
                                       
-                                                   </td>
+                                                   </td> -->
                                                 </tr>
                                              @endforeach
 

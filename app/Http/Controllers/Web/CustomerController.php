@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Models\Complaint;
 use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -80,6 +81,11 @@ class CustomerController extends Controller
     }
    
 
+public function getCompliant()
+{
 
+    $comps=Complaint::with('customer')->get();
+    return view ('customers.compliantlist',compact('comps'));
+}
 
 }

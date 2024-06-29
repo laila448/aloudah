@@ -26,7 +26,7 @@ class AdminLoginController extends Controller
         ]);
 
         if (Auth::guard('emp_web')->attempt(['email' => $request->email, 'password' => $request->password], $request->remember)) {
-            return redirect()->intended(route('index'));
+            return redirect()->intended(route('tripslist'));
         }
 
         return redirect()->back()->withInput($request->only('email', 'remember'));

@@ -12,4 +12,9 @@ class Complaint extends Model
         'customer_id',   
         'message',
          ];
+
+
+         public function customer(){
+            return $this->belongsTo(Customer::class, 'customer_id');
+         }
 }

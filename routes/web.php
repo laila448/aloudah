@@ -46,7 +46,7 @@ Route::post('/addtruck' , [truckController::class , 'AddTruck'])->name('addtruck
 Route::post('/deletetruck' , [truckController::class , 'DeleteTruck'])->name('deletetruck');
 Route::post('/edittruck' , [truckController::class , 'EditTruck'])->name('edittruck');
 
-Route::get('/tripslist' , [tripController::class , 'GetTrips']);
+Route::get('/tripslist' , [tripController::class , 'GetTrips'])->name('tripslist');
 Route::get('/temporarytrips' , [tripController::class , 'GetTemporaryTrips']);
 Route::get('/closedtrips' , [tripController::class , 'GetClosedTrips']);
 Route::post('/archivetrip', [tripController::class, 'ArchiveTrip'])->name('archivetrip');
@@ -78,6 +78,7 @@ Route::post('/editcustomer' , [CustomerController::class , 'EditCustomer'])->nam
 Route::post('/deletecustomer' , [CustomerController::class , 'DeleteCustomer'])->name('deletecustomer');
 
 
+Route::get('/getcompliant' , [CustomerController::class , 'getCompliant'])->name('getcompliant');
 
 });
  
