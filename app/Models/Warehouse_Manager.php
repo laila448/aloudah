@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -12,11 +11,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Warehouse_Manager extends Authenticatable implements JWTSubject
 {
-    use HasApiTokens, HasFactory, Notifiable;
-    use SoftDeletes;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     protected $table = 'warehouse_managers';
-    protected $guared = 'warehouse_manager';
+    protected $guard = 'warehouse_manager';
     protected $fillable = [
         'name',
         'national_id',
@@ -30,25 +28,32 @@ class Warehouse_Manager extends Authenticatable implements JWTSubject
         'manager_address',
         'salary',
         'rank',
-       'employment_date',
-       'device_token'
-        
-         ];
-         public function user(){
-            return $this->belongsTo(user::class, 'user_id');
-         }
+        'employment_date',
+        'device_token'
+    ];
 
-         public function warehouse(){
-            return $this->belongsTo(Warehouse::class , 'warehouse_id');
-         }
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 
-         public function getJWTIdentifier()
-         {
-             return $this->getKey();
-         }
-     
-         public function getJWTCustomClaims()
-         {
-             return [];
-         }
+    public function warehouse()
+    {
+        return $this->hasOne(Warehouse::class, 'warehouse_manager_id');
+    }    
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class, 'warehouse_manager_id');
+    }
+
+    
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    public function getJWTCustomClaims()
+    {
+        return [];
+    }
 }

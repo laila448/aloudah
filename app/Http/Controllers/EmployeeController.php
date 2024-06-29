@@ -16,25 +16,22 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Database\QueryException;
-
+use App\Models\Branch;
+use Kreait\Firebase\Factory;
+use Kreait\Firebase\Messaging\CloudMessage;
+use Kreait\Firebase\Messaging\Notification;
+use Exception;
+use Illuminate\Support\Facades\Log;
 
 class EmployeeController extends Controller
 {
+    private $messaging;
 
-    // public function GetEmployees(Request $request){
-
-    //     $emps=Employee::paginate(10);
-    //     if($emps){
-    //         return response()->json([
-    //             'success' => true ,
-    //             'data' => $emps
-    //         ] ,200);
-    //     }
-    //     return response()->json([
-    //         'success' => false ,
-    //         'message' => 'no employees found'
-    //         ] , 404);
-    // }
+    public function __construct(Factory $firebase)
+    {
+        $serviceAccountPath = storage_path('app/firebase/firebase_credentials.json');
+        $this->messaging = $firebase->withServiceAccount($serviceAccountPath)->createMessaging();
+    }
 
     public function GetEmployees(Request $request)
     {
@@ -61,240 +58,286 @@ class EmployeeController extends Controller
         }
     }
     
-
-    // public function AddEmployee(Request $request){
-
-    //     $validator =Validator::make($request->all(),[
-    //         'national_id' => 'required|max:11',
-    //         'name'=>'required|min:5|max:255|unique:employees',
-    //         'email'=>'string|email|unique:employees',
-    //         'phone_number'=> 'required|max:10',
-    //         'gender'=>'required|in:male,female',
-    //         'password'=>'min:8',
-    //         'branch_id'=>'required',
-    //         'mother_name'=>'required|string',
-    //         'birth_date'=>'required',
-    //         'birth_place'=>'required|string',
-    //         'mobile'=>'required',
-    //         'address'=>'required|string',
-    //         'salary'=>'required',
-    //         'rank'=>'required',
+    // public function addDriver(Request $request)
+    // {
+    //     $validator = Validator::make($request->all(), [
+    //         'national_id' => 'required|max:11|unique:drivers,national_id',
+    //         'name' => 'required|min:5|max:255|unique:drivers,name',
+    //         'email' => 'required|string|email|unique:drivers,email',
+    //         'phone_number' => 'required|max:10|unique:drivers,phone_number',
+    //         'gender' => 'required|in:male,female',
+    //         'branch_id' => 'required|exists:branches,id',
+    //         'mother_name' => 'required|string',
+    //         'birth_date' => 'required|date_format:Y-m-d',
+    //         'birth_place' => 'required|string',
+    //         'mobile' => 'required|unique:drivers,mobile',
+    //         'address' => 'required|string',
+    //         'salary' => 'required',
+    //         'rank' => 'required',
+    //         'certificate' => 'required|unique:drivers,certificate'
     //     ]);
-    //     if ($validator->fails())
-    //     {
-    //         return response()->json($validator->errors()->toJson(),400);
-    //     }
-
-    //     $manager = Auth::guard('branch_manager')->user();
-    //     if($request->rank == 'driver')
-    //     {
-    //         $driver=Driver::create([
-    //             'national_id'=>$request->national_id,
-    //             'name'=>$request->name,
-    //             'phone_number'=> $request->phone_number,
-    //             'gender'=>$request->gender,
-    //             'branch_id'=>$request->branch_id,
-    //             'mother_name'=>$request->mother_name,
-    //             'birth_date'=>$request->birth_date,
-    //             'birth_place'=>$request->birth_place,
-    //             'mobile'=>$request->mobile,
-    //             'address'=>$request->address,
-    //             'salary'=>$request->salary,
-    //             'rank'=>$request->rank,
-    //             'employment_date'=>now()->format('Y-m-d'),
-    //             'manager_name'=>$manager->name,
-    //        ]);
-    //        return response()->json([
-    //         'message'=>'Driver addedd successfully',
-    //     ],201);
-    //     }
-    //         else{
-
-    //            $password = Str::random(8);
-               
-    //     $employee=Employee::create(array_merge(
-    //         $validator->validated(),
-    //         [ 'password'=>bcrypt($password),
-    //            // 'password'=>bcrypt($request->password),
-    //          'employment_date'=>now()->format('Y-m-d'),
-    //          'manager_name'=>$manager->name
-    //         ]
-    //     ));
-    //     if($employee){
-    //         Mail::to($request->email)->send(new PasswordMail($request->name , $password));
-    //         $permissions = Permission::create([
-    //             'employee_id' => $employee->id
-    //         ]);
-    //             }
-    //     return response()->json([
-    //         'message'=>'Employee added successfully',
-    //     ],200);
-    // }
-       
-    // }
-
-
-    public function addDriver(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'national_id' => 'required|max:11|unique:drivers,national_id',
-            'name' => 'required|min:5|max:255|unique:drivers,name',
-            'email' => 'required|string|email|unique:drivers,email',
-            'phone_number' => 'required|max:10|unique:drivers,phone_number',
-            'gender'=>'required|in:male,female',
-            'branch_id' => 'required|exists:branches,id',
-            'mother_name' => 'required|string',
-            'birth_date' => 'required|date_format:Y-m-d',
-            'birth_place' => 'required|string',
-            'mobile' => 'required|unique:drivers,mobile',
-            'address' => 'required|string',
-            'salary' => 'required',
-            'rank' => 'required',
-            'certificate' => 'required|unique:drivers,certificate'
-        ]);
-        if ($validator->fails()) {
-            $errors = $validator->errors()->all();
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation failed. Please check the following errors:',
-                'errors' => $errors
-            ], 400);
-        }
-
-        try {
-            $password = Str::random(8);
-            $manager = Auth::guard('branch_manager')->user();
-            $driver = Driver::create(array_merge(
-                $validator->validated(),
-                [
-                    'password' => bcrypt($password),
-                    'employment_date' => now()->format('Y-m-d'),
-                    'manager_name' => $manager->name
-                ]
-            ));
-            if ($driver) {
-                Mail::to($driver->email)->send(new PasswordMail($driver->name, $password));
-            }
-            return response()->json([
-                'success' => true,
-                'message' => 'Driver added successfully'
-            ], 200);
-        } catch (QueryException $e) {
-            $errorCode = $e->errorInfo[1];
-            if ($errorCode == 1062) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'A driver with the same National ID, Email, Phone Number, Mobile Number, or Certificate already exists. Please ensure all fields are unique.'
-                ], 400);
-            }
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to add driver.',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-        public function AddEmployee(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'national_id' => 'required|max:11|unique:employees,national_id',
-            'name' => 'required|min:5|max:255|unique:employees,name',
-            'email' => 'string|email|unique:employees,email',
-            'phone_number' => 'required|max:10|unique:employees,phone_number',
-            'gender'=>'required|in:male,female',
-            'password' => 'min:8',
-            'branch_id' => 'required|exists:branches,id',
-            'mother_name' => 'required|string',
-            'birth_date' => 'required|date_format:Y-m-d',
-            'birth_place' => 'required|string',
-            'mobile' => 'required|unique:employees,mobile',
-            'address' => 'required|string',
-            'salary' => 'required',
-            'rank' => 'required',
-        ]);
-            if ($validator->fails()) {
-            $errors = $validator->errors()->all();
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation failed. Please check the following errors:',
-                'errors' => $errors
-            ], 400);
-        }
     
-        try {
-            $password = Str::random(8);
-                $manager = Auth::guard('branch_manager')->user();
-            $employee = Employee::create(array_merge(
-                $validator->validated(),
-                [
-                    'password' => bcrypt($password),
-                    'employment_date' => now()->format('Y-m-d'),
-                    'manager_name' => $manager->name
-                ]
-            ));
-                if ($employee) {
-                Mail::to($employee->email)->send(new PasswordMail($employee->name, $password));
-                    Permission::create([
-                    'employee_id' => $employee->id
-                ]);
-            }
-                return response()->json([
-                'success' => true,
-                'message' => 'Employee added successfully'
-            ], 200);
-        } catch (QueryException $e) {
-            $errorCode = $e->errorInfo[1];
-            if ($errorCode == 1062) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'A manager with the same National ID, Email, Phone Number, or Mobile Number already exists. Please ensure all fields are unique.'
-                ], 400);
-            }
-    
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to add employee.',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-    // public function UpdateEmployee(Request $request){
-
-    //     $validator =Validator::make($request->all(),[
-    //         'national_id'=>'max:11',
-    //         'name'=>'min:5|max:255|unique:employees',
-    //         'email'=>'string|email|unique:employees',
-    //         'phone_number'=> 'max:10',
-    //         'gender'=>'in:male,female',
-    //         'password'=>'min:8',
-    //         'branch_id'=>'numeric',
-    //         'mother_name'=>'string',
-    //         'birth_date'=>'date_format:Y-m-d',
-    //         'birth_place'=>'string',
-    //         'mobile'=>'max:10',
-    //         'address'=>'string',
-    //         'employee_id'=>'required|numeric'
-    //     ]);
-    //     if ($validator->fails())
-    //     {
-    //         return response()->json($validator->errors()->toJson(),400);
-    //     }
-
-    //     $employee = Employee::where('id' , $request->employee_id)->first();
-
-    //     if($employee){
-
-    //         $updated_employee = $employee->update( array_merge(
-    //             $validator->validated(),
-    //             ['password'=>bcrypt($request->password)]
-    //         ));
-
+    //     if ($validator->fails()) {
+    //         $errors = $validator->errors()->all();
     //         return response()->json([
-    //             'message'=>'Employee updated successfully',
-    //         ],200); 
+    //             'success' => false,
+    //             'message' => 'Validation failed. Please check the following errors:',
+    //             'errors' => $errors
+    //         ], 400);
+    //     }
+    
+    //     try {
+    //         $password = Str::random(8);
+    //         $manager = Auth::guard('branch_manager')->user();
+    //         $driver = Driver::create(array_merge(
+    //             $validator->validated(),
+    //             [
+    //                 'password' => bcrypt($password),
+    //                 'employment_date' => now()->format('Y-m-d'),
+    //                 'manager_name' => $manager->name
+    //             ]
+    //         ));
+    
+    //         if ($driver) {
+    //             Mail::to($driver->email)->send(new PasswordMail($driver->name, $password));
+    
+    //             // Send notification
+    //             $notificationStatus = $this->sendDriverAddedNotification($driver);
+    //         }
+    
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'Driver added successfully',
+    //             'notification_status' => $notificationStatus
+    //         ], 200);
+    //     } catch (QueryException $e) {
+    //         $errorCode = $e->errorInfo[1];
+    //         if ($errorCode == 1062) {
+    //             return response()->json([
+    //                 'success' => false,
+    //                 'message' => 'A driver with the same National ID, Email, Phone Number, Mobile Number, or Certificate already exists. Please ensure all fields are unique.'
+    //             ], 400);
+    //         }
+    
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Failed to add driver.',
+    //             'error' => $e->getMessage()
+    //         ], 500);
     //     }
     // }
+    //!done Updated this 
+    public function addDriver(Request $request)
+{
+    $validator = Validator::make($request->all(), [
+        'national_id' => 'required|max:11|unique:drivers,national_id',
+        'name' => 'required|min:5|max:255|unique:drivers,name',
+        'email' => 'required|string|email|unique:drivers,email',
+        'phone_number' => 'required|max:10|unique:drivers,phone_number',
+        'gender' => 'required|in:male,female',
+        'branch_id' => 'required|exists:branches,id',
+        'mother_name' => 'required|string',
+        'birth_date' => 'required|date_format:Y-m-d',
+        'birth_place' => 'required|string',
+        'mobile' => 'required|unique:drivers,mobile',
+        'address' => 'required|string',
+        'salary' => 'required',
+        'rank' => 'required',
+        'certificate' => 'required|unique:drivers,certificate'
+    ]);
+
+    if ($validator->fails()) {
+        $errors = $validator->errors()->all();
+        return response()->json([
+            'success' => false,
+            'message' => 'Validation failed. Please check the following errors:',
+            'errors' => $errors
+        ], 400);
+    }
+
+    $manager = Auth::guard('branch_manager')->user();
+
+    // Check if the branch ID in the request matches the branch manager's branch ID
+    if ($request->branch_id != $manager->branch_id) {
+        return response()->json([
+            'success' => false,
+            'message' => 'You can only add drivers to your own branch.'
+        ], 403);
+    }
+
+    try {
+        $password = Str::random(8);
+        $driver = Driver::create(array_merge(
+            $validator->validated(),
+            [
+                'password' => bcrypt($password),
+                'employment_date' => now()->format('Y-m-d'),
+                'manager_name' => $manager->name
+            ]
+        ));
+
+        if ($driver) {
+            Mail::to($driver->email)->send(new PasswordMail($driver->name, $password));
+
+            $notificationStatus = $this->sendDriverAddedNotification($driver);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Driver added successfully',
+            'notification_status' => $notificationStatus
+        ], 200);
+    } catch (QueryException $e) {
+        $errorCode = $e->errorInfo[1];
+        if ($errorCode == 1062) {
+            return response()->json([
+                'success' => false,
+                'message' => 'A driver with the same National ID, Email, Phone Number, Mobile Number, or Certificate already exists. Please ensure all fields are unique.'
+            ], 400);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to add driver.',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
+
+    private function sendDriverAddedNotification($driver)
+{
+    $title = 'Welcome to the Team';
+    $body = "Welcome, {$driver->name}! Your account has been created successfully.";
+
+    $deviceToken = $driver->device_token;
+
+    if ($deviceToken) {
+        $message = CloudMessage::withTarget('token', $deviceToken)
+            ->withNotification(Notification::create($title, $body));
+
+        try {
+            $this->messaging->send($message);
+            Log::info('Notification sent: Driver Added', ['driver_id' => $driver->id, 'driver_name' => $driver->name]);
+            return 'Notification sent successfully';
+        } catch (Exception $e) {
+            Log::error('Failed to send FCM message: ' . $e->getMessage(), ['driver_id' => $driver->id, 'driver_name' => $driver->name]);
+            return 'Failed to send notification';
+        }
+    } else {
+        Log::warning('Driver device token not found, notification not sent.', ['driver_name' => $driver->name]);
+        return 'Driver device token not found';
+    }
+}
+
+public function AddEmployee(Request $request)
+{
+    $validator = Validator::make($request->all(), [
+        'national_id' => 'required|max:11|unique:employees,national_id',
+        'name' => 'required|min:5|max:255|unique:employees,name',
+        'email' => 'string|email|unique:employees,email',
+        'phone_number' => 'required|max:10|unique:employees,phone_number',
+        'gender' => 'required|in:male,female',
+        'password' => 'min:8',
+        'branch_id' => 'required|exists:branches,id',
+        'mother_name' => 'required|string',
+        'birth_date' => 'required|date_format:Y-m-d',
+        'birth_place' => 'required|string',
+        'mobile' => 'required|unique:employees,mobile',
+        'address' => 'required|string',
+        'salary' => 'required',
+        'rank' => 'required',
+    ]);
+
+    if ($validator->fails()) {
+        $errors = $validator->errors()->all();
+        return response()->json([
+            'success' => false,
+            'message' => 'Validation failed. Please check the following errors:',
+            'errors' => $errors
+        ], 400);
+    }
+
+    $manager = Auth::guard('branch_manager')->user();
+
+    // Check if the branch ID in the request matches the branch manager's branch ID
+    if ($request->branch_id != $manager->branch_id) {
+        return response()->json([
+            'success' => false,
+            'message' => 'You can only add employees to your own branch.'
+        ], 403);
+    }
+
+    try {
+        $password = Str::random(8);
+        $employee = Employee::create(array_merge(
+            $validator->validated(),
+            [
+                'password' => bcrypt($password),
+                'employment_date' => now()->format('Y-m-d'),
+                'manager_name' => $manager->name
+            ]
+        ));
+
+        if ($employee) {
+            Mail::to($employee->email)->send(new PasswordMail($employee->name, $password));
+
+            Permission::create([
+                'employee_id' => $employee->id
+            ]);
+
+            // Send notification
+            $notificationStatus = $this->sendEmployeeAddedNotification($employee);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Employee added successfully',
+            'notification_status' => $notificationStatus
+        ], 200);
+    } catch (QueryException $e) {
+        $errorCode = $e->errorInfo[1];
+        if ($errorCode == 1062) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An employee with the same National ID, Email, Phone Number, or Mobile Number already exists. Please ensure all fields are unique.'
+            ], 400);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to add employee.',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
+
+
+    private function sendEmployeeAddedNotification($employee)
+    {
+        $title = 'Welcome to the Team';
+        $body = "Welcome, {$employee->name}! Your account has been created successfully.";
+    
+        $deviceToken = $employee->device_token;
+    
+        if ($deviceToken) {
+            $message = CloudMessage::withTarget('token', $deviceToken)
+                ->withNotification(Notification::create($title, $body));
+    
+            try {
+                $this->messaging->send($message);
+                Log::info('Notification sent: Employee Added', ['employee_id' => $employee->id, 'employee_name' => $employee->name]);
+                return 'Notification sent successfully';
+            } catch (Exception $e) {
+                Log::error('Failed to send FCM message: ' . $e->getMessage(), ['employee_id' => $employee->id, 'employee_name' => $employee->name]);
+                return 'Failed to send notification';
+            }
+        } else {
+            Log::warning('Employee device token not found, notification not sent.', ['employee_name' => $employee->name]);
+            return 'Employee device token not found';
+        }
+    }
+
+
     public function UpdateEmployee(Request $request)
     {
         try {
@@ -321,7 +364,8 @@ class EmployeeController extends Controller
                     'errors' => $validator->errors()
                 ], 400);
             }
-                $employee = Employee::where('id', $request->employee_id)->first();
+    
+            $employee = Employee::where('id', $request->employee_id)->first();
     
             if (!$employee) {
                 return response()->json([
@@ -329,14 +373,19 @@ class EmployeeController extends Controller
                     'message' => 'Employee not found'
                 ], 404);
             }
-                $employee->update(array_merge(
+    
+            $employee->update(array_merge(
                 $validator->validated(),
-                ['password' => bcrypt($request->password)]
+                $request->password ? ['password' => bcrypt($request->password)] : []
             ));
+    
+            // Send notification
+            $notificationStatus = $this->sendEmployeeUpdateNotification($employee);
     
             return response()->json([
                 'status' => 'success',
-                'message' => 'Employee updated successfully'
+                'message' => 'Employee updated successfully',
+                'notification_status' => $notificationStatus
             ], 200);
     
         } catch (\Exception $e) {
@@ -347,108 +396,110 @@ class EmployeeController extends Controller
             ], 500);
         }
     }
+    private function sendEmployeeUpdateNotification($employee)
+    {
+        $title = 'Profile Updated';
+        $body = "Your profile has been successfully updated.";
     
-    // public function UpdateDriver(Request $request){
-
-    //     $validator =Validator::make($request->all(),[
-    //         'national_id'=>'max:11',
-    //         'name'=>'min:5|max:255|unique:drivers',
-    //         'phone_number'=> 'max:10',
-    //         'gender'=>'in:male,female',
-    //         'certificate'=>'string',
-    //         'branch_id'=>'numeric',
-    //         'mother_name'=>'string',
-    //         'birth_date'=>'date_format:Y-m-d',
-    //         'birth_place'=>'string',
-    //         'mobile'=>'max:10',
-    //         'address'=>'string', 
-    //         'driver_id'=>'required|numeric'
-    //     ]);
-    //     if ($validator->fails())
-    //     {
-    //         return response()->json($validator->errors()->toJson(),400);
-    //     }
-
-    //     $driver = Driver::where('id' , $request->driver_id)->first();
-
-    //     if($driver){
-
-    //         $updated_driver = $driver->update( $validator->validated());
-
-    //         return response()->json([
-    //             'message'=>'Driver updated successfully'
-    //         ],200); 
-    //     }
-    // }
-
-    public function UpdateDriver(Request $request)
-{
-    try {
-        $validator = Validator::make($request->all(), [
-            'national_id' => 'max:11',
-            'name' => 'min:5|max:255|unique:drivers',
-            'phone_number' => 'max:10',
-            'gender' => 'in:male,female',
-            'certificate' => 'string',
-            'branch_id' => 'numeric',
-            'mother_name' => 'string',
-            'birth_date' => 'date_format:Y-m-d',
-            'birth_place' => 'string',
-            'mobile' => 'max:10',
-            'address' => 'string', 
-            'driver_id' => 'required|numeric'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Validation error',
-                'errors' => $validator->errors()
-            ], 400);
+        $deviceToken = $employee->device_token;
+    
+        if ($deviceToken) {
+            $message = CloudMessage::withTarget('token', $deviceToken)
+                ->withNotification(Notification::create($title, $body));
+    
+            try {
+                $this->messaging->send($message);
+                Log::info('Notification sent: Profile Updated', ['employee_id' => $employee->id, 'employee_name' => $employee->name]);
+                return 'Notification sent successfully';
+            } catch (Exception $e) {
+                Log::error('Failed to send FCM message: ' . $e->getMessage(), ['employee_id' => $employee->id, 'employee_name' => $employee->name]);
+                return 'Failed to send notification';
+            }
+        } else {
+            Log::warning('Employee device token not found, notification not sent.', ['employee_name' => $employee->name]);
+            return 'Employee device token not found';
         }
-        $driver = Driver::where('id', $request->driver_id)->first();
-
-        if (!$driver) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Driver not found'
-            ], 404);
-        }
-        $driver->update($validator->validated());
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Driver updated successfully'
-        ], 200);
-
-    } catch (\Exception $e) {
-        return response()->json([
-            'status' => 'error',
-            'message' => 'An error occurred while updating the driver',
-            'error' => $e->getMessage()
-        ], 500);
     }
-}
-
-    // public function DeleteEmployee(Request $request){
-
-    //     $validator =Validator::make($request->all(),[
-    //         'employee_id'=>'required|numeric',
-    //     ]);
-
-    //     if ($validator->fails())
-    //     {
-    //         return response()->json($validator->errors()->toJson(),400);
-    //     }
-
-    //     $employee = Employee::where('id' , $request->employee_id)->first();
-
-    //     if($employee){
-    //        $deletedemp = $employee->delete();
-
-    //        return response()->json(['message'=>'Employee has been deleted'], 200,); 
-    //     }
-    // }
+        
+    public function UpdateDriver(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'national_id' => 'max:11',
+                'name' => 'min:5|max:255|unique:drivers',
+                'phone_number' => 'max:10',
+                'gender' => 'in:male,female',
+                'certificate' => 'string',
+                'branch_id' => 'numeric',
+                'mother_name' => 'string',
+                'birth_date' => 'date_format:Y-m-d',
+                'birth_place' => 'string',
+                'mobile' => 'max:10',
+                'address' => 'string', 
+                'driver_id' => 'required|numeric'
+            ]);
+    
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Validation error',
+                    'errors' => $validator->errors()
+                ], 400);
+            }
+    
+            $driver = Driver::where('id', $request->driver_id)->first();
+    
+            if (!$driver) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Driver not found'
+                ], 404);
+            }
+    
+            $driver->update($validator->validated());
+    
+            // Send notification
+            $notificationStatus = $this->sendDriverUpdateNotification($driver);
+    
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Driver updated successfully',
+                'notification_status' => $notificationStatus
+            ], 200);
+    
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'An error occurred while updating the driver',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+    private function sendDriverUpdateNotification($driver)
+    {
+        $title = 'Profile Updated';
+        $body = "Your profile has been successfully updated.";
+    
+        $deviceToken = $driver->device_token;
+    
+        if ($deviceToken) {
+            $message = CloudMessage::withTarget('token', $deviceToken)
+                ->withNotification(Notification::create($title, $body));
+    
+            try {
+                $this->messaging->send($message);
+                Log::info('Notification sent: Profile Updated', ['driver_id' => $driver->id, 'driver_name' => $driver->name]);
+                return 'Notification sent successfully';
+            } catch (Exception $e) {
+                Log::error('Failed to send FCM message: ' . $e->getMessage(), ['driver_id' => $driver->id, 'driver_name' => $driver->name]);
+                return 'Failed to send notification';
+            }
+        } else {
+            Log::warning('Driver device token not found, notification not sent.', ['driver_name' => $driver->name]);
+            return 'Driver device token not found';
+        }
+    }
+        
     public function DeleteEmployee(Request $request)
     {
         try {
@@ -487,25 +538,6 @@ class EmployeeController extends Controller
         }
     }
     
-    // public function DeleteDriver(Request $request){
-
-    //     $validator =Validator::make($request->all(),[
-    //         'driver_id'=>'required|numeric',
-    //     ]);
-
-    //     if ($validator->fails())
-    //     {
-    //         return response()->json($validator->errors()->toJson(),400);
-    //     }
-
-    //     $driver = Driver::where('id' , $request->driver_id)->first();
-
-    //     if($driver){
-    //        $deleteddriver = $driver->delete();
-
-    //        return response()->json(['message'=>'Driver has been deleted'], 200,); 
-    //     }
-    // }
     public function DeleteDriver(Request $request)
     {
         try {
@@ -544,86 +576,6 @@ class EmployeeController extends Controller
         }
     }
     
-    // public function PromoteEmployee (Request $request){
-
-    //     $validator = Validator::make($request->all() , [
-    //         'rank' => 'required',
-    //         'branch_id' => 'required' ,
-    //         'employee_id' => 'required'
-    //     ]);
-    //     if ($validator->fails()){
-    //         return response()->json([
-    //         'success' => false,
-    //         'message' => $validator->errors()->toJson()
-    //         ],400);
-    //         }
-
-
-    //     $employee = Employee::where('id' , $request->employee_id)->first();
-    //     if($employee){
-
-    //     if ($request->rank == 'Branch_manager'){
-    //         $manager = Branch_Manager::create([
-    //             'national_id'=>$employee->national_id,
-    //             'name' => $employee->name,
-    //             'email' => $employee->email,
-    //             'password' => $employee->password,
-    //             'phone_number' => $employee->phone_number,
-    //             'branch_id' => $request->branch_id,
-    //             'gender' => $employee->gender,
-    //             'mother_name' => $employee->mother_name,
-    //             'date_of_birth' => $employee->birth_date,
-    //             'manager_address' =>$employee->address,
-    //             'salary' => $employee->salary,
-    //             'rank' => $request->rank,
-    //             'employment_date' => now()->format('Y-m-d'),
-    //         ]);
-
-    //         $deletemp = $employee->delete();
-
-    //         return response()->json([
-    //             'success' => true ,
-    //             'message'=>'Employee has been promoted to manager'], 200);  
-    //     }
-    //     elseif($request->rank == 'warehouse_manager') {
-    //         $whmanager = Warehouse_Manager::create([
-    //             'national_id'=>$employee->national_id,
-    //             'name' => $employee->name,
-    //             'email' => $employee->email,
-    //             'password' => $employee->password,
-    //             'phone_number' => $employee->phone_number,
-    //             'warehouse_id' => $request->branch_id,
-    //             'gender' => $employee->gender,
-    //             'mother_name' => $employee->mother_name,
-    //             'date_of_birth' => $employee->birth_date,
-    //             'manager_address' =>$employee->address,
-    //             'salary' => $employee->salary,
-    //             'rank' => $request->rank,
-    //             'employment_date' => now()->format('Y-m-d'),
-
-    //         ]);
-    //         $deletemp = $employee->delete();
-    //         return response()->json([
-    //             'success' => true ,
-    //             'message'=>'Employee has been promoted to warehouse manager'], 200); 
-    //     }
-    //     else{
-    //         $updateemp = $employee->update([
-    //             'rank' => $request->rank , 
-    //             'branch_id' => $request->branch_id ,
-    //         ]);
-
-    //         return response()->json([
-    //             'success' => true ,
-    //             'message'=>'Employee has been promoted'], 200);  
-    //     }
-    // }
-     
-    // return response()->json([
-    //     'success' => false ,
-    //     'message'=>'Employee not found'], 404);  
-    // }
-
     public function PromoteEmployee(Request $request)
     {
         try {
@@ -640,7 +592,8 @@ class EmployeeController extends Controller
                     'errors' => $validator->errors()
                 ], 400);
             }
-                $employee = Employee::where('id', $request->employee_id)->first();
+    
+            $employee = Employee::where('id', $request->employee_id)->first();
     
             if (!$employee) {
                 return response()->json([
@@ -648,7 +601,8 @@ class EmployeeController extends Controller
                     'message' => 'Employee not found'
                 ], 404);
             }
-                if ($request->rank == 'Branch_manager') {
+    
+            if ($request->rank == 'Branch_manager') {
                 Branch_Manager::create([
                     'national_id' => $employee->national_id,
                     'name' => $employee->name,
@@ -666,9 +620,13 @@ class EmployeeController extends Controller
                 ]);
                 $employee->delete();
     
+                // Send notification
+                $notificationStatus = $this->sendPromotionNotification($employee, $request->rank);
+    
                 return response()->json([
                     'status' => 'success',
-                    'message' => 'Employee has been promoted to Branch Manager'
+                    'message' => 'Employee has been promoted to Branch Manager',
+                    'notification_status' => $notificationStatus
                 ], 200);
     
             } elseif ($request->rank == 'warehouse_manager') {
@@ -689,9 +647,13 @@ class EmployeeController extends Controller
                 ]);
                 $employee->delete();
     
+                // Send notification
+                $notificationStatus = $this->sendPromotionNotification($employee, $request->rank);
+    
                 return response()->json([
                     'status' => 'success',
-                    'message' => 'Employee has been promoted to Warehouse Manager'
+                    'message' => 'Employee has been promoted to Warehouse Manager',
+                    'notification_status' => $notificationStatus
                 ], 200);
     
             } else {
@@ -700,9 +662,13 @@ class EmployeeController extends Controller
                     'branch_id' => $request->branch_id,
                 ]);
     
+                // Send notification
+                $notificationStatus = $this->sendPromotionNotification($employee, $request->rank);
+    
                 return response()->json([
                     'status' => 'success',
-                    'message' => 'Employee has been promoted'
+                    'message' => 'Employee has been promoted',
+                    'notification_status' => $notificationStatus
                 ], 200);
             }
     
@@ -714,32 +680,31 @@ class EmployeeController extends Controller
             ], 500);
         }
     }
-    
-    // public function RateEmployee (Request $request){
+        private function sendPromotionNotification($employee, $newRank)
+{
+    $title = 'Promotion Received';
+    $body = "Congratulations! You have been promoted to the position of {$newRank}.";
 
-    //     $validator = Validator::make($request->all() ,[
-    //         'rate' => 'required|numeric|between:1,5' ,
-    //         'employee_id' => 'required',
-    //     ]);
+    $deviceToken = $employee->device_token;
 
-    //     if ($validator->fails())
-    //     {
-    //         return response()->json($validator->errors()->toJson(),400);
-    //     }
+    if ($deviceToken) {
+        $message = CloudMessage::withTarget('token', $deviceToken)
+            ->withNotification(Notification::create($title, $body));
 
-    //     $employee = Employee::where('id' , $request->employee_id)->first();
-    //     if($employee){
+        try {
+            $this->messaging->send($message);
+            Log::info('Notification sent: Promotion Received', ['employee_id' => $employee->id, 'employee_name' => $employee->name]);
+            return 'Notification sent successfully';
+        } catch (Exception $e) {
+            Log::error('Failed to send FCM message: ' . $e->getMessage(), ['employee_id' => $employee->id, 'employee_name' => $employee->name]);
+            return 'Failed to send notification';
+        }
+    } else {
+        Log::warning('Employee device token not found, notification not sent.', ['employee_name' => $employee->name]);
+        return 'Employee device token not found';
+    }
+}
 
-    //         $ratingemp = Rating::create([
-    //             'rate' => $request->rate ,
-    //             'employee_id' => $request->employee_id
-    //         ]);
-            
-    //         return response()->json(['message' => 'Rating addedd successfully'] , 201);
-    //     }
-
-    //     return response()->json(['message'=>'Employee not found'], 400,);  
-    // }
     public function RateEmployee(Request $request)
 {
     try {
@@ -755,6 +720,7 @@ class EmployeeController extends Controller
                 'errors' => $validator->errors()
             ], 400);
         }
+
         $employee = Employee::where('id', $request->employee_id)->first();
 
         if (!$employee) {
@@ -763,15 +729,20 @@ class EmployeeController extends Controller
                 'message' => 'Employee not found'
             ], 404);
         }
+
         Rating::create([
             'rate' => $request->rate,
             'employee_id' => $request->employee_id
         ]);
 
+        // Send notification
+        $notificationStatus = $this->sendRatingNotification($employee, $request->rate);
+
         return response()->json([
             'status' => 'success',
-            'message' => 'Rating added successfully'
-        ], 201);
+            'message' => 'Rating added successfully',
+            'notification_status' => $notificationStatus
+        ], 200);
 
     } catch (\Exception $e) {
         return response()->json([
@@ -781,19 +752,30 @@ class EmployeeController extends Controller
         ], 500);
     }
 }
+private function sendRatingNotification($employee, $rating)
+{
+    $title = 'New Rating Received';
+    $body = "You have received a new rating of {$rating}.";
 
-//    public function GetAllEmployees()
-//    {
-//     $branchid = Auth::guard('branch_manager')->user()->branch_id;
+    $deviceToken = $employee->device_token;
 
+    if ($deviceToken) {
+        $message = CloudMessage::withTarget('token', $deviceToken)
+            ->withNotification(Notification::create($title, $body));
 
-//     $employees=Employee::where('branch_id','=',$branchid)->pluck('name');
-//     // $branchManager = BranchManager::findOrFail($id);
-
-//     // $employees = $branchManager->branch->employees()->pluck('name');
-
-//     return response()->json($employees);
-//    }
+        try {
+            $this->messaging->send($message);
+            Log::info('Notification sent: New Rating Received', ['employee_id' => $employee->id, 'employee_name' => $employee->name]);
+            return 'Notification sent successfully';
+        } catch (Exception $e) {
+            Log::error('Failed to send FCM message: ' . $e->getMessage(), ['employee_id' => $employee->id, 'employee_name' => $employee->name]);
+            return 'Failed to send notification';
+        }
+    } else {
+        Log::warning('Employee device token not found, notification not sent.', ['employee_name' => $employee->name]);
+        return 'Employee device token not found';
+    }
+}
 
 public function GetAllEmployees()
 {
@@ -817,46 +799,6 @@ public function GetAllEmployees()
 }
 
 
-//    public function EditPermissions(Request $request){
-
-//     $validator = Validator::make($request->all() , [
-//         'employee_id' => 'required|numeric',
-//         'add_trip' => 'boolean',
-//         'edit_trip' => 'boolean',
-//         'delete_trip' => 'boolean',
-//         'drawer' => 'boolean',
-//         'email' => 'boolean',
-//         'trip_list' => 'boolean',
-//         'print_road' => 'boolean',
-//         'print_trips' => 'boolean',
-//         'edit_close' => 'boolean',
-//         'add_manifest' => 'boolean',
-//         'edit_manifest' => 'boolean',
-//         'delete_manifest' => 'boolean',
-//         'view_manifest' => 'boolean',
-//         'add_report' => 'boolean',
-//         'edit_report' => 'boolean',
-//         'delete_report' => 'boolean',
-//         'view_report' => 'boolean',
-//         'add_misc' => 'boolean',
-//         'edit_misc' => 'boolean',
-//         'delete_misc' => 'boolean',
-//     ]);
-//     if ($validator->fails())
-//     {
-//         return response()->json($validator->errors()->toJson(),400);
-//     }
-
-//     $employee = Employee::where('id' , $request->employee_id)->first();
-//     if($employee){
-//         $permissions = Permission::where('employee_id' , $request->employee_id)
-//                                 ->update($validator->validated());
-
-//         return response()->json(['message'=>'Permissions updated successfully '], 200);  
-//     }
-
-//          return response()->json(['message'=>'Employee not found'], 400);  
-//    }
 
 public function EditPermissions(Request $request)
 {
@@ -915,24 +857,6 @@ public function EditPermissions(Request $request)
         ], 500);
     }
 }
-
-//    public function GetEmployee( $id){
-
-
-//     $employee = Employee::where('id' , $id)->first();
-
-//     if($employee){
-//         return response()->json([
-//             'success' => true ,
-//             'data' => $employee 
-//         ], 200); 
-//     }
-
-//     return response()->json([
-//         'success' => false ,
-//         'message'=>'Employee not found'], 404);  
-
-//    }
 public function GetEmployee($id)
 {
     try {
@@ -940,6 +864,8 @@ public function GetEmployee($id)
 
         if ($employee) {
             $employeeData = $employee->makeHidden(['password']);
+            $rating =round(Rating::where('employee_id', $id)->avg('rate'),1);
+            $employeeData->rating = $rating;
 
             return response()->json([
                 'status' => 'success',
@@ -961,24 +887,6 @@ public function GetEmployee($id)
         ], 500);
     }
 }
-
-
-//    public function GetBranchEmployees( $id){
-
-   
-
-//     $employees = Employee::where('branch_id' , $id)->get();
-//     if($employees){
-//         return response()->json([
-//             'success' => true ,
-//             'data' => $employees
-//         ] , 200); 
-//     }
-
-//     return response()->json([
-//         'success' => false ,
-//         'message'=>'No employees found'], 404);  
-//    }
 
 public function GetBranchEmployees($id)
 {
@@ -1064,36 +972,5 @@ public function GetBranchEmployees($id)
 
 
 
-public function GetArchivedEmployee()
-{
-    
-    try {
-        $branchManager = Auth::guard('branch_manager')->user();
-        $branchId = $branchManager->branch_id;
-
-        $deletedEmployees = Employee::where('branch_id', $branchId)
-            ->onlyTrashed() // Use the onlyTrashed() scope
-            ->get();
-
-        if ($deletedEmployees->isEmpty()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'No deleted employees found for the branch'
-            ], 200);
-        }
-
-        return response()->json([
-            'success' => true,
-            'data' => $deletedEmployees
-        ], 200);
-
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => 'An error occurred while fetching deleted employees',
-            'error' => $e->getMessage()
-        ], 500);
-    }
-}
 }
 

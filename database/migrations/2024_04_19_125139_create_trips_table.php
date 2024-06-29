@@ -6,11 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
     public function up()
     {
         Schema::create('trips', function (Blueprint $table) {
@@ -23,6 +18,8 @@ return new class extends Migration
             $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
             $table->unsignedBigInteger('manifest_id')->nullable(); // Make manifest_id nullable
             $table->foreign('manifest_id')->references('id')->on('manifests')->onDelete('cascade');
+            $table->unsignedBigInteger('destination_id')->nullable();
+            $table->foreign('destination_id')->references('id')->on('branches')->onDelete('cascade');
             $table->string('number')->unique();
             $table->date('date');
             $table->string('status')->default('active');
@@ -33,11 +30,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
         Schema::dropIfExists('trips');

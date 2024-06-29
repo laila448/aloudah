@@ -13,10 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('drivers', function (Blueprint $table) {
-            if (!Schema::hasColumn('drivers', 'certificate_type')) {
-                $table->string('certificate_type')->nullable();
-            }
+        Schema::table('shippings', function (Blueprint $table) {
+            $table->string('barcode')->unique();
         });
     }
 
@@ -27,10 +25,9 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('drivers', function (Blueprint $table) {
-            if (Schema::hasColumn('drivers', 'certificate_type')) {
-                $table->dropColumn('certificate_type');
-            }
+        Schema::table('shippings', function (Blueprint $table) {
+            $table->dropUnique(['barcode']);
+            $table->dropColumn('barcode');
         });
     }
 };

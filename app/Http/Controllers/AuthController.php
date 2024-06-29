@@ -1,5 +1,6 @@
 <?php
 
+
 namespace App\Http\Controllers;
 
 use App\Models\Admin;
@@ -12,10 +13,24 @@ use App\Models\Warehouse_Manager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Kreait\Firebase\Factory;
+use Kreait\Firebase\Messaging\CloudMessage;
+use Kreait\Firebase\Messaging\Notification as FCMNotification;
+use Exception;
+use Illuminate\Support\Facades\Log;
+use App\Models\Notification;
 
 class AuthController extends Controller
 {
-    public function Register (Request $request)
+    private $messaging;
+
+    public function __construct(Factory $firebase)
+    {
+        $serviceAccountPath = storage_path('app/firebase/firebase_credentials.json');
+        $this->messaging = $firebase->withServiceAccount($serviceAccountPath)->createMessaging();
+    }
+
+    public function Register(Request $request)
     {
         try{
         $validator =Validator::make($request->all(),[
@@ -34,13 +49,13 @@ class AuthController extends Controller
                 'errors' => $errors
             ], 400);
         }
-    
-        $admin=Admin::create(array_merge(
+
+        $admin = Admin::create(array_merge(
             $validator->validated(),
-            ['password'=>bcrypt($request->password)]
+            ['password' => bcrypt($request->password)]
         ));
-        $credentials=$request->only(['name','password']);
-        $token=Auth::guard('admin')->attempt($credentials);
+        $credentials = $request->only(['name', 'password']);
+        $token = Auth::guard('admin')->attempt($credentials);
 
         return response()->json([
             'message'=>'Registered successfully',
@@ -64,6 +79,7 @@ class AuthController extends Controller
             'password' => 'required|min:8',
             'device_token' => 'required'
         ]);
+
         if ($validator->fails()) {
             $errors = $validator->errors()->all();
             return response()->json([
@@ -73,87 +89,135 @@ class AuthController extends Controller
             ], 400);
         }
 
-       $credentials = $request->only(['name', 'password']);
+        $credentials = $request->only(['name', 'password']);
+        $user = null;
 
         if ($token = Auth::guard('admin')->attempt($credentials)) {
             $user = Auth::guard('admin')->user();
-            $admin = Admin::where('id' , $user->id)->update([
-                'device_token' => $request->device_token
-            ]);
-        return response()->json([
-            'token' => $token,
-        ]);
-        }
-       else if ($token = Auth::guard('branch_manager')->attempt($credentials)) {
+            $this->updateDeviceToken($user, Admin::class, $request->device_token);
+        } elseif ($token = Auth::guard('branch_manager')->attempt($credentials)) {
             $user = Auth::guard('branch_manager')->user();
-            $bm = Branch_Manager::where('id' , $user->id)->update([
-                'device_token' => $request->device_token
-            ]);
-        return response()->json([
-            'token' => $token,
-        ]);
-        }
-        else if ($token = Auth::guard('employee')->attempt($credentials)) {
+            $this->updateDeviceToken($user, Branch_Manager::class, $request->device_token);
+        } elseif ($token = Auth::guard('employee')->attempt($credentials)) {
             $user = Auth::guard('employee')->user();
-            $emp = Employee::where('id' , $user->id)->update([
-                'device_token' => $request->device_token
-            ]);
-        return response()->json([
-            'token' => $token,
-        ]);
-        }
-        else if ($token = Auth::guard('customer')->attempt($credentials)) {
+            $this->updateDeviceToken($user, Employee::class, $request->device_token);
+        } elseif ($token = Auth::guard('customer')->attempt($credentials)) {
             $user = Auth::guard('customer')->user();
-            $cust = Customer::where('id' , $user->id)->update([
-                'device_token' => $request->device_token
-            ]);
-        return response()->json([
-            'token' => $token,
-        ]);
-        }
-        else if ($token = Auth::guard('warehouse_manager')->attempt($credentials)) {
+            $this->updateDeviceToken($user, Customer::class, $request->device_token);
+        } elseif ($token = Auth::guard('warehouse_manager')->attempt($credentials)) {
             $user = Auth::guard('warehouse_manager')->user();
-            $wm = Warehouse_Manager::where('id' , $user->id)->update([
-                'device_token' => $request->device_token
-            ]);
-        return response()->json([
-            'token' => $token,
-        ]);
-        }
-        else if ($token = Auth::guard('driver')->attempt($credentials)) {
+            $this->updateDeviceToken($user, Warehouse_Manager::class, $request->device_token);
+        } elseif ($token = Auth::guard('driver')->attempt($credentials)) {
             $user = Auth::guard('driver')->user();
-            $driver = Driver::where('id' , $user->id)->update([
-                'device_token' => $request->device_token
+            $this->updateDeviceToken($user, Driver::class, $request->device_token);
+        }
+
+        if ($user) {
+            $this->sendLoginNotification($user);
+            return response()->json([
+                'token' => $token,
             ]);
-        return response()->json([
-            'token' => $token,
-        ]);
-    }
-        return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        return response()->json(['message' => 'Unauthorized'], 401);
     }
 
-    public function Logout(){
-
-        if(Auth::guard('admin')->check()){
+    public function Logout()
+    {
+        if (Auth::guard('admin')->check()) {
             Auth::guard('admin')->logout();
-        }
-        elseif(Auth::guard('employee')->check()){
+        } elseif (Auth::guard('employee')->check()) {
             Auth::guard('employee')->logout();
-        }
-        elseif(Auth::guard('branch_manager')->check()){
+        } elseif (Auth::guard('branch_manager')->check()) {
             Auth::guard('branch_manager')->logout();
-        }
-        elseif(Auth::guard('customer')->check()){
+        } elseif (Auth::guard('customer')->check()) {
             Auth::guard('customer')->logout();
-        }
-        elseif(Auth::guard('warehouse_manager')->check()){
+        } elseif (Auth::guard('warehouse_manager')->check()) {
             Auth::guard('warehouse_manager')->logout();
-        }
-        elseif(Auth::guard('driver')->check()){
+        } elseif (Auth::guard('driver')->check()) {
             Auth::guard('driver')->logout();
         }
 
-        return response()->json(['message'=>'Loged out successfully']);
+        return response()->json(['message' => 'Logged out successfully']);
+    }
 
+    private function updateDeviceToken($user, $model, $deviceToken)
+    {
+        $model::where('id', $user->id)->update([
+            'device_token' => $deviceToken
+        ]);
+    }
+
+    private function sendLoginNotification($user)
+    {
+        $title = 'Login Successful';
+        $body = 'You have successfully logged in.';
+
+        $message = CloudMessage::withTarget('token', $user->device_token)
+            ->withNotification(FCMNotification::create($title, $body));
+
+        try {
+            $this->messaging->send($message);
+            Log::info('Notification sent to user', ['user_id' => $user->id]);
+        } catch (Exception $e) {
+            Log::error('Failed to send FCM message: ' . $e->getMessage(), ['user_id' => $user->id]);
+        }
+    }
+
+     public function getNotifications(Request $request)
+    {
+        $user = Auth::guard('admin')->user();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized'
+            ], 401);
+        }
+
+        $notifications = Notification::where('admin_id', $user->id)->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $notifications
+        ], 200);
+    }
+    public function getRole(Request $request)
+    {
+        $user = null;
+
+        if (Auth::guard('admin')->check()) {
+            $user = Auth::guard('admin')->user();
+            $role = 'admin';
+        } elseif (Auth::guard('branch_manager')->check()) {
+            $user = Auth::guard('branch_manager')->user();
+            $role = 'branch_manager';
+        } elseif (Auth::guard('employee')->check()) {
+            $user = Auth::guard('employee')->user();
+            $role = 'employee';
+        } elseif (Auth::guard('customer')->check()) {
+            $user = Auth::guard('customer')->user();
+            $role = 'customer';
+        } elseif (Auth::guard('warehouse_manager')->check()) {
+            $user = Auth::guard('warehouse_manager')->user();
+            $role = 'warehouse_manager';
+        } elseif (Auth::guard('driver')->check()) {
+            $user = Auth::guard('driver')->user();
+            $role = 'driver';
+        }
+
+        if ($user) {
+            return response()->json([
+                'success' => true,
+                'role' => $role,
+              //  'user' => $user,
+            ], 200);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Unauthorized'
+        ], 401);
     }
 }
+

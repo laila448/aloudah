@@ -8,24 +8,29 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Warehouse extends Model
 {
-    use HasFactory;
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
+
     protected $fillable = [
-       'warehouse_name',
-       'address',
-       'branch-id',
+        'warehouse_name',
+        'address',
+        'branch_id',
         'area',
         'notes',
-         ];
-         public function wmanager(){
-             return $this->belongsTo(warehouse_manager::class, 'wmanager_id');
-         }
-         public function branch(){
-            return $this->belongsTo(Branch::class, 'branch_id');
-        }
-         public function good(){
-            return $this->hasMany(good::class, 'warehouse_id');
-        }
-     
-         
+        'warehouse_manager_id',
+    ];
+
+    public function wmanager()
+    {
+        return $this->belongsTo(Warehouse_Manager::class, 'warehouse_manager_id');
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
+    }
+
+    public function good()
+    {
+        return $this->hasMany(Good::class, 'warehouse_id');
+    }
 }

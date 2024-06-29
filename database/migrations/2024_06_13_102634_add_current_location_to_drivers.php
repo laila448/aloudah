@@ -14,9 +14,8 @@ return new class extends Migration
     public function up()
     {
         Schema::table('drivers', function (Blueprint $table) {
-            if (!Schema::hasColumn('drivers', 'certificate_type')) {
-                $table->string('certificate_type')->nullable();
-            }
+            $table->decimal('current_lat', 10, 7)->nullable();
+            $table->decimal('current_lng', 10, 7)->nullable();
         });
     }
 
@@ -28,9 +27,7 @@ return new class extends Migration
     public function down()
     {
         Schema::table('drivers', function (Blueprint $table) {
-            if (Schema::hasColumn('drivers', 'certificate_type')) {
-                $table->dropColumn('certificate_type');
-            }
+            $table->dropColumn(['current_lat', 'current_lng']);
         });
     }
 };

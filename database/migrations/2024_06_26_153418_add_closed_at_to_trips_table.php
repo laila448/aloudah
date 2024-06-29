@@ -6,21 +6,23 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
     public function up()
     {
         Schema::table('trips', function (Blueprint $table) {
-            if (!Schema::hasColumn('trips', 'archived')) {
-                $table->boolean('archived')->default(false);
-            }
+            $table->timestamp('closed_at')->nullable();
         });
     }
-
+    
     public function down()
     {
         Schema::table('trips', function (Blueprint $table) {
-            if (Schema::hasColumn('trips', 'archived')) {
-                $table->dropColumn('archived');
-            }
+            $table->dropColumn('closed_at');
         });
+        
     }
 };

@@ -16,6 +16,7 @@ use App\Http\Controllers\TruckController;
 use App\Http\Controllers\VacationController;
 use App\Http\Controllers\WarehouseController;
 use Illuminate\Support\Facades\Route;
+use PHPOpenSourceSaver\JWTAuth\Claims\Custom;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,6 +32,7 @@ use Illuminate\Support\Facades\Route;
 Route::post( 'register' , [AuthController::class , 'Register']);
 Route::post( 'login' , [AuthController::class , 'Login']);
 Route::post('logout' , [AuthController::class , 'Logout']);
+Route::get('get-role', [AuthController::class, 'getRole']);
 
 
 
@@ -43,7 +45,7 @@ Route::group(['middleware' => 'BranchManager',
        Route::post('updatedriver' , [EmployeeController::class , 'UpdateDriver']);
        Route::post('deleteemployee' , [EmployeeController::class , 'DeleteEmployee']);
        Route::post('deletedriver' , [EmployeeController::class , 'DeleteDriver']);
-       Route::post('promoteemployee' , [EmployeeController::class , 'PromoteEmployee']);
+     //  Route::post('promoteemployee' , [EmployeeController::class , 'PromoteEmployee']);
        Route::post('rateemployee' , [EmployeeController::class , 'RateEmployee']);
        Route::post('addtruck' , [TruckController::class , 'AddTruck']);
        Route::post('updatetruck' , [TruckController::class , 'UpdateTruck']);
@@ -60,20 +62,12 @@ Route::group(['middleware' => 'BranchManager',
        Route::get('truckinformation/{truck_number}' , [TruckController::class , 'GetTruckInformation']);   
        Route::get('getcustomers', [CustomerController::class , 'GetCustomers']);
        Route::post('shippingprices', [ShippingController::class , 'DetermineShippingPrices']);
-       Route::post('editshippingprices', [ShippingController::class , 'EditShippingPrices']);
+     //   Route::post('editshippingprices', [ShippingController::class , 'EditShippingPrices']);
        Route::get('priceslist', [ShippingController::class , 'GetPricesList']);
        Route::post('addDriver', [EmployeeController::class, 'addDriver']);
        Route::get('branchdrivers' , [EmployeeController::class , 'GetDriversForMyBranch']);
-       Route::get('getallactivetrips' , [TripController::class , 'GetActiveTrips']);
-       Route::get('GetArchiveData' , [TripController::class , 'GetArchiveData']);         
-       Route::get('GetTripInformation/{trip_number}' , [TripController::class , 'GetTripInformation']); 
-       Route::get('truckrecord/{desk}' , [TruckController::class , 'GetTruckRecord']); 
-       Route::get('getdrivers' , [DriverController::class , 'GetDrivers']); 
-       Route::get('gettrucktrips/{id}' , [TruckController::class , 'GetTruckTrips']); 
-       Route::get('gettrips' , [TripController::class , 'GetAllTrips']);  
-       Route::get('getmanifest/{trip_number}' , [TripController::class , 'GetManifest']); 
-       Route::get('getmanifestshipping/{trip_number}' , [TripController::class , 'GetManifestShipping']); 
-       Route::get('gearchivedemployee' , [EmployeeController::class , 'GetArchivedEmployee']); 
+
+
 
               });
 
@@ -88,8 +82,8 @@ Route::group(['middleware' => 'Employee',
         Route::post('archiveData' , [TripController::class , 'ArchiveData']);
         Route::get('GetArchiveData' , [TripController::class , 'GetArchiveData']);         
         Route::get('getbranches' , [BranchController::class , 'GetBranches']);  
-        Route::get('gettrips' , [TripController::class , 'GetAllTrips']);    
-        Route::get('getallactivetrips' , [TripController::class , 'GetActiveTrips']);
+        Route::get('gettrips' , [TripController::class , 'getEmployeeTrips']);    
+        Route::get('getallactivetrips' , [TripController::class , 'GetActiveTripsForBranch']);
         Route::post('addcustomer' , [CustomerController::class , 'AddCustomer']);
         Route::post('updatecustomer'  ,[CustomerController::class , 'UpdateCustomer']);
         Route::post('deletecustomer' , [CustomerController::class , 'DeleteCustomer']);
@@ -110,11 +104,29 @@ Route::group(['middleware' => 'Employee',
         Route::get('tripreports/{reportId}/download', [ReportController::class, 'downloadTripReport']);
         Route::get('alltrucksreports', [ReportController::class, 'getTruckReports']);
         Route::get('alltripsreports', [ReportController::class, 'getTripReports']);
+      
+      
         Route::get('getbranchlatlng/{id}', [BranchController::class, 'getBranchlatlng']);
         Route::get('getdrivertrips/{id}', [DriverController::class, 'GetDriverTrips']);
+        Route::get('getcustomers', [CustomerController::class , 'GetCustomers']);
 
+        Route::post('get-location', [DriverController::class, 'getLocation']);
+        Route::get('drivers', [DriverController::class, 'GetAllDrivers']);
+     //    Route::get('destinations', [DestinationController::class, 'getAllDestinations']);
+        Route::get('branches/{id}', [BranchController::class, 'GetBranchById']);
+        Route::get('profile', [EmployeeController::class, 'GetProfile']);
+        Route::post('customerByName', [CustomerController::class, 'GetCustomersByName']);
 
+     //    Route::get('myprofile' , [ProfileController::class , 'getMyProfile']);
+       //!make this in front
+        Route::get('getallclosedtrips' , [TripController::class , 'GetClosedTrips']);
 
+       
+     //    Route::get('notifications', [AuthController::class, 'getNotificationsEmployee']);
+
+        //!LQ
+        Route::get('myprofile' , [ProfileController::class , 'getMyProfile']);
+        Route::post('editmyprofile',[ProfileController::class , 'editMyProfile']);
       });
               
 
@@ -148,9 +160,6 @@ Route::group(['middleware' => 'Employee',
          Route::get('getwarehousemanager/{id}' , [WarehouseController::class , 'GetWarehouseManager']);
          Route::post('getcustomer' , [CustomerController::class , 'GetCustomer']);
          Route::get('getcustomers', [CustomerController::class , 'GetCustomers']);
-         Route::post('shippingprices', [ShippingController::class , 'DetermineShippingPrices']);
-         Route::post('editshippingprices', [ShippingController::class , 'EditShippingPrices']);
-         Route::get('priceslist', [ShippingController::class , 'GetPricesList']);
      
      
      });
@@ -167,19 +176,12 @@ Route::group(['middleware' => 'Employee',
           Route::get('getprofile', [DriverController::class , 'GetProfile']);
           Route::get('getbranchlatlng/{id}', [BranchController::class, 'getBranchlatlng']);
           Route::get('getmytrips', [DriverController::class, 'GetMyTrips']);
-  
+          Route::post('update-location', [DriverController::class, 'updateLocation']);
 
      });   
 
 Route::group(['middleware' => 'WarehouseManager',
      'prefix' => 'warehousemanager'], function() {
-          Route::post('addgood' , [GoodsController::class , 'AddGood']);
-          Route::post('deletegood' , [GoodsController::class , 'deleteGood']);
-          Route::post('receivingood' , [GoodsController::class , 'receivingGood']);
-          Route::get('getallgoods' , [GoodsController::class , 'getAllGoods']);
-          Route::post('getgood' , [GoodsController::class , 'getGood']);
-          Route::post('inventory' , [GoodsController::class , 'inventory']);
+
      });  
-
-
 
