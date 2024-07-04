@@ -22,7 +22,7 @@ use Kreait\Firebase\Messaging\Notification as FCMNotification;
 use Illuminate\Support\Facades\Log;
 use Exception;
 use App\Models\Notification;
-use App\Models\Employee;
+
 
 class BranchController extends Controller
 {
@@ -75,7 +75,7 @@ class BranchController extends Controller
        
     }
 
-     }
+    // }
     //public function AddBranch (Request $request)
     //{
     //    $validator =  Validator::make($request->all(),[

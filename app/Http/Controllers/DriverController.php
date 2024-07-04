@@ -13,7 +13,13 @@ use Exception;
 use Illuminate\Support\Facades\Log;
 class DriverController extends Controller
 {
-    
+    private $messaging;
+
+    public function __construct(Factory $firebase)
+    {
+        $serviceAccountPath = storage_path('app/firebase/firebase_credentials.json');
+        $this->messaging = $firebase->withServiceAccount($serviceAccountPath)->createMessaging();
+    }
 
     public function GetDriverTrips($id)
     {

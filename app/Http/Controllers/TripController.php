@@ -26,22 +26,59 @@ use App\Jobs\CloseTripJob;
 
 class TripController extends Controller
 {
-    // public function GetAllTrips()
-    // {
-    //   $trips=Trip::paginate(10);
-    //   if($trips){
-    //     return response()->json([
-    //       'success' => true ,
-    //       'data' => $trips
-    //     ] , 200);
+    private $messaging;
 
-    //   }
-    //   return response()->json([
-    //     'success' => false ,
-    //     'message' => 'no trips found'
-    //   ] , 404);
+    public function __construct(Factory $firebase)
+    {
+        $serviceAccountPath = storage_path('app/firebase/firebase_credentials.json');
+        $this->messaging = $firebase->withServiceAccount($serviceAccountPath)->createMessaging();
+    }
 
-    // }
+    public function getNotifications(Request $request)
+    {
+        $user = Auth::user();
+        $notifications = collect();
+    
+        if ($user instanceof \App\Models\Branch_Manager || $user instanceof \App\Models\Warehouse_Manager) {
+            $notifications = $user->notifications()->get();
+        }
+    
+        return response()->json([
+            'success' => true,
+            'notifications' => $notifications
+        ], 200);
+    }
+
+    public function getEmployeeTrips()
+    {
+        try {
+            $employee = Auth::guard('employee')->user();
+            $branchId = $employee->branch_id;
+
+            // Retrieve trips for the employee's branch
+            $trips = Trip::where('branch_id', $branchId)->paginate(10);
+
+            if ($trips->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No trips found for your branch'
+                ], 404);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Trips retrieved successfully',
+                'data' => $trips
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while retrieving trips',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+    
     public function GetAllTrips()
     {
         try {
