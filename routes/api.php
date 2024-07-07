@@ -35,6 +35,8 @@ Route::post( 'register' , [AuthController::class , 'Register']);
 Route::post( 'login' , [AuthController::class , 'Login']);
 Route::post('logout' , [AuthController::class , 'Logout']);
 Route::get('get-role', [AuthController::class, 'getRole']);
+Route::post('sendresetlink' , [AuthController::class , 'SendResetLink']);
+Route::post('resetpassword' , [AuthController::class , 'ResetPassword'])->name('password.reset');
 
 
 

@@ -176,6 +176,36 @@ return [
             'expire' => 60,
             'throttle' => 60,
         ],
+        'admins' => [
+            'provider' => 'admins',
+            'table' => 'password_resets',
+            'expire' => 60,
+        ],
+        'branch_managers' => [
+            'provider' => 'branch_managers',
+            'table' => 'password_resets',
+            'expire' => 60,
+        ],
+        'drivers' => [
+            'provider' => 'drivers',
+            'table' => 'password_resets',
+            'expire' => 60,
+        ],
+        'employees' => [
+            'provider' => 'employees',
+            'table' => 'password_resets',
+            'expire' => 60,
+        ],
+        'customers' => [
+            'provider' => 'customers',
+            'table' => 'password_resets',
+            'expire' => 60,
+        ],
+        'warehouse_managers' => [
+            'provider' => 'warehouse_managers',
+            'table' => 'password_resets',
+            'expire' => 60,
+        ],
     ],
 
     /*
