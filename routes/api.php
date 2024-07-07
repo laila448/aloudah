@@ -12,6 +12,7 @@ use App\Http\Controllers\GoodsController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ShippingController;
+use App\Http\Controllers\ShippmentTripStatusController;
 use App\Http\Controllers\TripController;
 use App\Http\Controllers\TruckController;
 use App\Http\Controllers\VacationController;
@@ -79,6 +80,7 @@ Route::group(['middleware' => 'BranchManager',
        Route::get('gearchivedemployee' , [EmployeeController::class , 'GetArchivedEmployee']); 
        Route::get('myprofile' , [ProfileController::class , 'getMyProfile']);
        Route::post('editmyprofile',[ProfileController::class , 'editMyProfile']);
+       Route::get('drivers', [DriverController::class, 'GetAllDrivers']);
        //!N Added this
        Route::get('notifications', [TripController::class, 'getNotifications']);
 
@@ -179,7 +181,9 @@ Route::group(['middleware' => 'Employee',
          Route::post('shippingprices', [ShippingController::class , 'DetermineShippingPrices']);
          Route::post('editshippingprices', [ShippingController::class , 'EditShippingPrices']);
          Route::get('priceslist', [ShippingController::class , 'GetPricesList']);
-     
+
+         Route::get('getManifest/{manifest_number}', [ShippingController::class, 'GetManifestWithInvoices']);
+          //Route::get('notifications', [AuthController::class, 'getNotifications']);
          Route::get('trucks', [BranchController::class, 'getTrucksByBranch']);
          Route::get('driversByBranch', [DriverController::class, 'getDriversByBranch']);
          Route::get('employeesByBranch', [EmployeeController::class, 'getEmployeesByBranch']);
@@ -200,6 +204,7 @@ Route::group(['middleware' => 'Employee',
      Route::group(['middleware' => 'Driver',
      'prefix' => 'driver'], function() {
           Route::get('getprofile', [DriverController::class , 'GetProfile']);
+          Route::post('updateprofile', [DriverController::class , 'UpdateProfile']);
           Route::get('getbranchlatlng/{id}', [BranchController::class, 'getBranchlatlng']);
           Route::get('getmytrips', [DriverController::class, 'GetMyTrips']);
           Route::post('update-location', [DriverController::class, 'updateLocation']);
@@ -216,6 +221,9 @@ Route::group(['middleware' => 'WarehouseManager',
           Route::post('inventory' , [GoodsController::class , 'inventory']);
           Route::get('archivedgoods' , [GoodsController::class , 'getArchivedGoods']);
           Route::get('notifications', [TripController::class, 'getNotifications']);
+          Route::post('trip/status', [ShippmentTripStatusController::class, 'updateTripStatus']);
+          Route::get('getManifest/{manifest_number}' , [ShippingController::class , 'GetManifestWithInvoices']);    
+
           //!LQ
           Route::get('myprofile' , [ProfileController::class , 'getMyProfile']);
           Route::post('editmyprofile',[ProfileController::class , 'editMyProfile']);

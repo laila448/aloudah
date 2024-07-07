@@ -8,7 +8,6 @@ use App\Models\Branch_Manager;
 use App\Models\Customer;
 use App\Models\Driver;
 use App\Models\Employee;
-use App\Models\User;
 use App\Models\Warehouse_Manager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -210,7 +209,6 @@ class AuthController extends Controller
             return response()->json([
                 'success' => true,
                 'role' => $role,
-              //  'user' => $user,
             ], 200);
         }
 

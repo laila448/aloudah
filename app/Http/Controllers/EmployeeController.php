@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\PasswordMail;
+use App\Models\Branch;
 use App\Models\Branch_Manager;
 use App\Models\Driver;
 use App\Models\Employee;
@@ -11,12 +12,10 @@ use App\Models\Rating;
 use App\Models\Warehouse_Manager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Database\QueryException;
-use App\Models\Branch;
 use Kreait\Firebase\Factory;
 use Kreait\Firebase\Messaging\CloudMessage;
 use Kreait\Firebase\Messaging\Notification;
@@ -58,74 +57,6 @@ class EmployeeController extends Controller
         }
     }
     
-    // public function addDriver(Request $request)
-    // {
-    //     $validator = Validator::make($request->all(), [
-    //         'national_id' => 'required|max:11|unique:drivers,national_id',
-    //         'name' => 'required|min:5|max:255|unique:drivers,name',
-    //         'email' => 'required|string|email|unique:drivers,email',
-    //         'phone_number' => 'required|max:10|unique:drivers,phone_number',
-    //         'gender' => 'required|in:male,female',
-    //         'branch_id' => 'required|exists:branches,id',
-    //         'mother_name' => 'required|string',
-    //         'birth_date' => 'required|date_format:Y-m-d',
-    //         'birth_place' => 'required|string',
-    //         'mobile' => 'required|unique:drivers,mobile',
-    //         'address' => 'required|string',
-    //         'salary' => 'required',
-    //         'rank' => 'required',
-    //         'certificate' => 'required|unique:drivers,certificate'
-    //     ]);
-    
-    //     if ($validator->fails()) {
-    //         $errors = $validator->errors()->all();
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'Validation failed. Please check the following errors:',
-    //             'errors' => $errors
-    //         ], 400);
-    //     }
-    
-    //     try {
-    //         $password = Str::random(8);
-    //         $manager = Auth::guard('branch_manager')->user();
-    //         $driver = Driver::create(array_merge(
-    //             $validator->validated(),
-    //             [
-    //                 'password' => bcrypt($password),
-    //                 'employment_date' => now()->format('Y-m-d'),
-    //                 'manager_name' => $manager->name
-    //             ]
-    //         ));
-    
-    //         if ($driver) {
-    //             Mail::to($driver->email)->send(new PasswordMail($driver->name, $password));
-    
-    //             // Send notification
-    //             $notificationStatus = $this->sendDriverAddedNotification($driver);
-    //         }
-    
-    //         return response()->json([
-    //             'success' => true,
-    //             'message' => 'Driver added successfully',
-    //             'notification_status' => $notificationStatus
-    //         ], 200);
-    //     } catch (QueryException $e) {
-    //         $errorCode = $e->errorInfo[1];
-    //         if ($errorCode == 1062) {
-    //             return response()->json([
-    //                 'success' => false,
-    //                 'message' => 'A driver with the same National ID, Email, Phone Number, Mobile Number, or Certificate already exists. Please ensure all fields are unique.'
-    //             ], 400);
-    //         }
-    
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'Failed to add driver.',
-    //             'error' => $e->getMessage()
-    //         ], 500);
-    //     }
-    // }
     //!done Updated this 
     public function addDriver(Request $request)
 {
@@ -864,6 +795,8 @@ public function GetEmployee($id)
 
         if ($employee) {
             $employeeData = $employee->makeHidden(['password']);
+            $rating =round(Rating::where('employee_id', $id)->avg('rate'),1);
+            $employeeData->rating = $rating;
 
             return response()->json([
                 'status' => 'success',
@@ -967,8 +900,107 @@ public function GetBranchEmployees($id)
 
 }
 
-
-
-
+private function getBranchName($id)
+{
+    $branch = Branch::find($id);
+    return $branch ? $branch->desk : 'Unknown';
 }
 
+public function GetProfile()
+{
+    try {
+        $id = Auth::guard('employee')->user()->id;
+        $employee = Employee::select('name', 'national_id', 'email', 'phone_number', 'gender', 'branch_id', 'mother_name', 'birth_date', 'birth_place', 'mobile', 'address', 'salary', 'rank', 'employment_date', 'resignation_date', 'manager_name')
+            ->where('id', $id)
+            ->first();
+        
+        if (!$employee) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Employee not found'
+            ], 404);
+        }
+
+        $employeeData = $employee->toArray();
+        $employeeData['branch_name'] = $this->getBranchName($employee->branch_id);
+
+        return response()->json([
+            'success' => true,
+            'data' => $employeeData,
+            'message' => 'Employee profile retrieved successfully.'
+        ], 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to retrieve employee profile.',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
+
+public function getEmployeesByBranch(Request $request)
+{
+    try {
+        $user = Auth::guard('admin')->user();
+
+        $branch_id = $request->query('branch_id');
+
+        if (!$branch_id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'branch_id query parameter is required'
+            ], 400);
+        }
+
+        $employees = Employee::where('branch_id', $branch_id)
+            ->select('id','name', 'email', 'phone_number', 'manager_name', 'employment_date', 'salary', 'address')
+            ->paginate(10);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Employees retrieved successfully',
+            'data' => $employees
+        ], 200);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'An error occurred while retrieving the employees',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
+
+//!LQ Adding this
+public function GetArchivedEmployee()
+{
+    
+    try {
+        $branchManager = Auth::guard('branch_manager')->user();
+        $branchId = $branchManager->branch_id;
+
+        $deletedEmployees = Employee::where('branch_id', $branchId)
+            ->onlyTrashed() 
+            ->get();
+
+        if ($deletedEmployees->isEmpty()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'No deleted employees found for the branch'
+            ], 200);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $deletedEmployees
+        ], 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'An error occurred while fetching deleted employees',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
+}

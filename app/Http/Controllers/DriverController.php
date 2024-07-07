@@ -21,6 +21,34 @@ class DriverController extends Controller
         $this->messaging = $firebase->withServiceAccount($serviceAccountPath)->createMessaging();
     }
 
+    //!LQ Added
+    public function GetDrivers()
+    {
+        try{
+            $id=Auth::guard('branch_manager')->user()->branch_id;
+
+            $driver = Driver::where('branch_id',$id)->paginate(10);
+            if (!$driver) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Driver not found'
+                ], 404);
+            }
+        
+            return response()->json([
+                'success' => true,
+                'data' => $driver ,
+                'message' => 'Drivers retrieved successfully.'
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve drivers .',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function GetDriverTrips($id)
     {
         try{
@@ -48,6 +76,47 @@ class DriverController extends Controller
 
     }
 
+    public function UpdateProfile(Request $request)
+    {
+        try {
+            $id = Auth::guard('driver')->user()->id;
+            
+            // Validate the incoming request data
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'phone_number' => 'required|string|max:15',
+                'address' => 'required|string|max:255',
+            ]);
+    
+            // Find the driver by ID
+            $driver = Driver::find($id);
+    
+            if (!$driver) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Driver not found'
+                ], 404);
+            }
+    
+            // Update the driver's profile data
+            $driver->name = $request->name;
+            $driver->phone_number = $request->phone_number;
+            $driver->address = $request->address;
+            $driver->save();
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'Driver profile updated successfully.'
+            ], 200);
+    
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update driver profile.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 
     public function GetProfile()
     {
@@ -224,23 +293,18 @@ class DriverController extends Controller
                 ], 404);
             }
     
-            $driver = $trip->driver;
+             // Update the trip's location
+              $trip->current_lat = $request->current_lat;
+              $trip->current_lng = $request->current_lng;
+              $trip->save();
     
-            if ($driver instanceof Driver) {
-                $driver->current_lat = $request->current_lat;
-                $driver->current_lng = $request->current_lng;
-                $driver->save();
-    
-                $notificationStatus = $this->sendLocationUpdatedNotification($driver);
+                $notificationStatus = $this->sendLocationUpdatedNotification($trip);
     
                 return response()->json([
                     'success' => true,
                     'message' => 'Location updated successfully.',
                     'notification_status' => $notificationStatus
                 ], 200);
-            } else {
-                throw new \Exception('Associated driver not found.');
-            }
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -249,7 +313,8 @@ class DriverController extends Controller
             ], 500);
         }
     }
-    
+
+    ///////////////warning/////////////
 private function sendLocationUpdatedNotification($driver)
 {
     $title = 'Location Updated';

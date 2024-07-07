@@ -24,6 +24,8 @@ class Trip extends Model
         'edited_by',
         'closed_at',
         'archived',
+        'current_lat',
+        'current_lng',
     ];
 
     protected $hidden = ['created_at', 'updated_at'];
