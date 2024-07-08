@@ -210,12 +210,12 @@ class DriverController extends Controller
                 'trip_number' => 'required|string',
             ]);
     
-            $trip = Trip::where('number', $request->trip_number)->where('status', 'active')->first();
+            $trip = Trip::where('number', $request->trip_number)->where('status', 'closed')->first();
     
             if (!$trip) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Trip not found or is not active'
+                    'message' => 'Trip not found or is not closed'
                 ], 404);
             }
     
@@ -284,12 +284,12 @@ class DriverController extends Controller
                 'trip_number' => 'required|string',
             ]);
     
-            $trip = Trip::where('number', $request->trip_number)->where('status', 'active')->first();
+            $trip = Trip::where('number', $request->trip_number)->where('status', 'closed')->first();
     
             if (!$trip) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Trip not found or is not active'
+                    'message' => 'Trip not found or is not closed'
                 ], 404);
             }
     
