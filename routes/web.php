@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\Web\BranchController;
 use App\Http\Controllers\Web\CustomerController;
 use App\Http\Controllers\Web\DashboardController;
@@ -24,6 +26,12 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+//////reset paasword //////
+Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('updatepassword' , [ResetPasswordController::class , 'ResetPassword'])->name('password.update');
+Route::get('password/reset/result', function () {
+    return view('mail.resetresult');
+})->name('password.reset.result');
 
 
 //Auth::routes();

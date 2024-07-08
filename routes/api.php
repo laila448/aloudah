@@ -11,6 +11,7 @@ use App\Http\Controllers\DriverController;
 use App\Http\Controllers\GoodsController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\ShippingController;
 use App\Http\Controllers\ShippmentTripStatusController;
 use App\Http\Controllers\TripController;
@@ -35,8 +36,8 @@ Route::post( 'register' , [AuthController::class , 'Register']);
 Route::post( 'login' , [AuthController::class , 'Login']);
 Route::post('logout' , [AuthController::class , 'Logout']);
 Route::get('get-role', [AuthController::class, 'getRole']);
-Route::post('sendresetlink' , [AuthController::class , 'SendResetLink']);
-Route::post('resetpassword' , [AuthController::class , 'ResetPassword'])->name('password.reset');
+Route::post('sendresetlink' , [ResetPasswordController::class , 'SendResetLink']);
+//Route::post('resetpassword' , [AuthController::class , 'ResetPassword'])->name('password.reset');
 
 
 

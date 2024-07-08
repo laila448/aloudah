@@ -12,7 +12,7 @@ use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 
 class Driver extends Authenticatable implements JWTSubject
 {
-    use HasFactory, SoftDeletes;
+    use HasApiTokens,HasFactory, SoftDeletes , Notifiable;
 
     protected $fillable = [
         'name',
@@ -53,12 +53,7 @@ class Driver extends Authenticatable implements JWTSubject
              return [];
          }
 
-       
-   
-
-    protected $hidden = [
-        'password', 'created_at', 'updated_at'
-    ];
+    
 
     public function user()
     {
