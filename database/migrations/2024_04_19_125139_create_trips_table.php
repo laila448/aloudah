@@ -26,6 +26,8 @@ return new class extends Migration
             $table->date('arrival_date')->nullable();
             $table->string('created_by');
             $table->string('edited_by')->nullable();
+            $table->decimal('current_lat', 10, 7)->nullable();
+            $table->decimal('current_lng', 10, 7)->nullable();
             $table->timestamps();
         });
     }

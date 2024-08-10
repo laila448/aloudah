@@ -5,11 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Branch;
 use App\Models\Manifest;
 use App\Models\Permission;
-use App\Models\Employee;
-use App\Models\Price;
-use App\Models\Shipping;
 use App\Models\Trip;
-use App\Models\Warehouse;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -107,96 +103,6 @@ class TripController extends Controller
         }
     }
     
-
-//     public function AddTrip(Request $request)
-//     {
-//         $validator =  $request->validate([
-//             'branch_id'=>'required',
-//             'destination_id'=>'required',
-//             'truck_id'=>'required',
-//             'driver_id'=>'required',
-//           //  'trip_number'=>'required|string',
-    
-//         ]);
-
-//         if ($validator->fails()) {
-//             return response()->json([
-//                 'success' => false,
-//                 'message' => $validator->errors()->toJson()
-//             ], 400);
-//         }
-
-//         $branch = Branch::findOrFail($request->branch_id);
-//         $destinationBranch = Branch::findOrFail($request->destination_id);
-
-//         $tripCount = Trip::where('branch_id', $branch->id)->count();
-//         $tripNumber = strtoupper(substr($branch->desk, 0, 2)) . '_' . $branch->id . '_' . ($tripCount + 1);
-//         $loggedInEmployee = Auth::guard('employee')->user();
-//         $hasAddTripPermission = Permission::where([
-//             ['employee_id', $loggedInEmployee->id],
-//             ['add_trip', 1]
-//         ])->exists();
-
-//         if (!$hasAddTripPermission) {
-//             return response()->json([
-//                 'success' => false,
-//                 'message' => 'You do not have permission to add a trip'
-//             ], 403);
-//         }
-
-//         $trip = new Trip();
-//         $trip->branch_id = $request->branch_id;
-//         $trip->destination_id = $request->destination_id;
-//         $trip->truck_id = $request->truck_id;
-//         $trip->driver_id = $request->driver_id;
-//         $trip->number = $tripNumber;
-//         $trip->date = now()->format('Y-m-d');
-//         $trip->status = 'active';  // Set initial status to active
-//         $trip->created_by = $loggedInEmployee->name;
-//         $trip->closed_at = now()->addMinutes(1); // Set the closing time to 1 minute from now
-//         $trip->save();
-
-//         $manifest = new Manifest();
-//         $manifest->number = $tripNumber;
-//         $manifest->trip_id = $trip->id;
-//         $manifest->save();
-
-//         $trip->manifest_id = $manifest->id;
-//         $trip->save();
-
-//         Log::info('Trip created with ID: ' . $trip->id . ', closed_at: ' . $trip->closed_at->toDateTimeString());
-
-//         // Debug log for job dispatch time
-//         Log::info('Dispatching CloseTripJob at: ' . now()->toDateTimeString());
-//         Log::info('Job should execute at: ' . now()->addMinutes(1)->toDateTimeString());
-
-//         // Dispatch the job to close the trip after 1 minute
-//         $job = (new CloseTripJob($trip->id))->delay(now()->addMinutes(1));
-//         dispatch($job);
-
-//         // Send notification
-//         try {
-//             $notificationStatus = $this->sendTripAddedNotification($loggedInEmployee, $trip);
-//         } catch (\Exception $e) {
-//             Log::error('Failed to send FCM message: ' . $e->getMessage(), ['employee_id' => $loggedInEmployee->id, 'trip_id' => $trip->id]);
-//             $notificationStatus = false;
-//         }
-
-//         return response()->json([
-//             'success' => true,
-//             'message' => 'Trip and manifest added successfully',
-//             'data' => $trip,
-//             'notification_status' => $notificationStatus
-//         ], 201);
-
-//     } catch (\Exception $e) {
-//         return response()->json([
-//             'success' => false,
-//             'message' => 'An error occurred while adding the trip',
-//             'error' => $e->getMessage()
-//         ], 500);
-//     }
-// }
 //!Changed this for all cases 
 public function addTrip(Request $request)
 {

@@ -8,7 +8,6 @@ use App\Models\Branch_Manager;
 use App\Models\Customer;
 use App\Models\Driver;
 use App\Models\Employee;
-use App\Models\User;
 use App\Models\Warehouse_Manager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -19,6 +18,11 @@ use Kreait\Firebase\Messaging\Notification as FCMNotification;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use App\Models\Notification;
+use App\Notifications\ResetPasswordNotification;
+use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Support\Facades\Notification as FacadesNotification;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -210,7 +214,6 @@ class AuthController extends Controller
             return response()->json([
                 'success' => true,
                 'role' => $role,
-              //  'user' => $user,
             ], 200);
         }
 

@@ -6,7 +6,6 @@ use App\Mail\PasswordMail;
 use App\Models\Branch;
 use App\Models\Branch_Manager;
 use App\Models\Employee;
-use Dotenv\Parser\Value;
 use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -54,89 +53,32 @@ class BranchController extends Controller
   }
 
 
-     public function getBranchlatlng( $id)
-     {
-      
-      $branch = Branch::select('branch_lat', 'branch_lng')->where('id', $id)->first();
+  public function getBranchlatlng( $id)
+  {
+    try{
+   $branch = Branch::select('branch_lat', 'branch_lng')->where('id', $id)->first();
 
-      if (!$branch) {
-          return response()->json([
-            'success' => false ,
-            'message' => 'Branch not found'
-          ], 404);
-      }
-      
+   if (!$branch) {
        return response()->json([
-        'success' => true ,
-        'data' => $branch ,
-        'message' => 'Branch location retrieved successfully.'
-        ] , 200) ;
-  
-       
-    }
+         'success' => false ,
+         'message' => 'Branch not found'
+       ], 404);
+   }
+    return response()->json([
+     'success' => true ,
+     'data' => $branch ,
+     'message' => 'Branch location retrieved successfully.'
+     ] , 200) ;
+    }catch (\Exception $e) {
+     return response()->json([
+         'success' => false,
+         'message' => 'Failed to retrieve branch location.',
+         'error' => $e->getMessage()
+     ], 500);
+ }
 
-    // }
-    //public function AddBranch (Request $request)
-    //{
-    //    $validator =  Validator::make($request->all(),[
-    //     'desk'=>'required|min:3',
-    //      'address'=>'required',
-    //       'phone'=>'required|min:4|max:15',
-          
-    //     ]);
-      
-    //     if ($validator->fails())
-    //     {
-    //         return response()->json([
-    //          'success' => false,
-    //          'message' => $validator->errors()->toJson()
-    //         ],400);
-    //     }
+  }
 
-    //     $branch = new Branch();
-    //   $branch->desk = $validator['desk'];
-    //     $branch->address = $validator['address'];
-    //     $branch->phone = $validator['phone'];
-    //     $branch->opening_date = now()->format('Y-m-d');
-    //     $branch->created_by = Auth::guard('admin')->user()->name;
-    //     $branch->save();
-      
-
-    //             return response()->json([
-    //               'success' => true ,
-    //               'message'=>'branch added successfully',  
-    //             ],200);
-   
-    // }
-//     public function AddBranch(Request $request)
-// {
-//     $validator = Validator::make($request->all(), [
-//         'desk' => 'required|min:3',
-//         'address' => 'required',
-//         'phone' => 'required|min:4|max:15',
-//     ]);
-
-//     if ($validator->fails()) {
-//         return response()->json([
-//             'success' => false,
-//             'message' => $validator->errors()->toJson()
-//         ], 400);
-//     }
-
-//     $branch = new Branch();
-//     $branch->desk = $request->input('desk');
-//     $branch->address = $request->input('address');
-//     $branch->phone = $request->input('phone');
-//     $branch->opening_date = now()->format('Y-m-d');
-//     $branch->created_by = Auth::guard('admin')->user()->name;
-
-//     $branch->save();
-
-//     return response()->json([
-//         'success' => true,
-//         'message' => 'Branch added successfully'
-//     ], 200);
-// }
 public function AddBranch(Request $request)
 {
     try {
@@ -156,7 +98,7 @@ public function AddBranch(Request $request)
         }
 
         $branch = new Branch();
-      $branch->desk = $request->desk;
+        $branch->desk = $request->desk;
         $branch->address = $request->address;
         $branch->phone = $request->phone;
         $branch->branch_lat = $request->branch_lat;
@@ -165,6 +107,7 @@ public function AddBranch(Request $request)
         $branch->created_by = Auth::guard('admin')->user()->name;
 
         $branch->save();
+        $this->sendDoneAddedBranchNotification($branch);
 
         return response()->json([
             'success' => true,
@@ -180,57 +123,39 @@ public function AddBranch(Request $request)
     }
 }
 
-    // public function AddBranchManager (Request $request)
-    // {
-    //     $validator = Validator::make($request->all() ,[
-    //         'branch_id'=>'required',
-    //         'national_id'=>'required|max:11',
-    //          'manager_name'=>'required',
-    //          'email'=>'required',
-    //          'phone_number'=>'required ',
-    //          'gender'=>'required',   
-    //          'mother_name'=>'required',
-    //          'date_of_birth'=>'required|date_format:Y-m-d',
-    //          'manager_address'=>'required',
-    //         'salary'=>'required',
-    //         'rank'=> ['required',Rule::in(['Branch_manager'])  ],
-          
-    //     ]);
-      
-    //     if ($validator->fails())
-    //     {
-    //         return response()->json([
-    //          'success' => false,
-    //          'message' => $validator->errors()->toJson()
-    //         ],400);
-    //     }
+private function sendDoneAddedBranchNotification($branch)
+{
+    $title = 'Done added branch';
+    $body = "Branch '{$branch->desk}' has been successfully added.";
 
-    //    $password = Str::random(8);
-    //    $branchmanager = new Branch_Manager();
-    //            $branchmanager->national_id = $request->national_id;
-    //            $branchmanager->name = $request->manager_name;
-    //            $branchmanager->email = $request->email;
-    //            $branchmanager->password = Hash::make($password); 
-    //            $branchmanager->phone_number = $request->phone_number;
-    //            $branchmanager->branch_id = $request->branch_id;
-    //            $branchmanager->gender = $request->gender;
-    //            $branchmanager->mother_name = $request->mother_name; 
-    //            $branchmanager->date_of_birth = $request->date_of_birth;
-    //            $branchmanager->manager_address = $request->manager_address;
-    //            $branchmanager->salary = $request->salary;
-    //           $branchmanager->rank = $request->rank;
-    //            $branchmanager->employment_date = now()->format('Y-m-d');
-    //            $branchmanager->save();
+    $admin = Auth::guard('admin')->user();
+    $deviceToken = $admin->device_token;
 
-    //             if($branchmanager){
-    //               Mail::to($request->email)->send(new PasswordMail($request->manager_name , $password));
-    //             }
-    //             return response()->json([
-    //               'success' => true ,
-    //               'message'=>'branch manager added successfully',  
-    //             ],200);
-   
-    // }
+    if ($deviceToken) {
+        $message = CloudMessage::withTarget('token', $deviceToken)
+            ->withNotification(FCMNotification::create($title, $body));
+
+        try {
+            $this->messaging->send($message);
+            Log::info('Notification sent: Done added branch', ['branch_id' => $branch->id, 'admin' => $admin->name]);
+
+            Notification::create([
+                'admin_id' => $admin->id,
+                'title' => $title,
+                'body' => $body,
+                'status' => 'sent',
+                'created_at' => now()
+            ]);
+            return 'Notification sent successfully';
+        } catch (Exception $e) {
+            Log::error('Failed to send FCM message: ' . $e->getMessage(), ['branch_id' => $branch->id, 'admin' => $admin->name]);
+            return 'Failed to send notification';
+        }
+    } else {
+        Log::warning('Admin device token not found, notification not sent.', ['admin' => $admin->name]);
+        return 'Admin device token not found';
+    }
+}
 
 public function AddBranchManager(Request $request)
 {
@@ -403,28 +328,41 @@ public function AddBranchManager(Request $request)
             ], 500);
         }
     }
+
+    private function sendBranchUpdatedNotification($branch)
+    {
+        $title = 'Branch Updated';
+        $body = "Branch '{$branch->desk}' has been successfully updated.";
     
-
-    // public function deleteBranch(Request $request)
-    // {
-    //   $validator =Validator::make($request->all(),[
-    //     'branch_id'=>'required|numeric',
-    // ]);
-
-    // if ($validator->fails()){
-    //   return response()->json([
-    //   'success' => false,
-    //   'message' => $validator->errors()->toJson()
-    //   ],400);
-    //   }
-
-    //     $branch = Branch::find($request->branch_id)->delete();
-    //     $branchManager = Branch_Manager::where('branch_id', $request->branch_id)->delete();
-
-    //     return response()->json([
-    //       'success' => true ,
-    //       'msg'=>'Branch has been deleted'], 200) ;
-    // }
+        $admin = Auth::guard('admin')->user();
+        $deviceToken = $admin->device_token;
+    
+        if ($deviceToken) {
+            $message = CloudMessage::withTarget('token', $deviceToken)
+                ->withNotification(FCMNotification::create($title, $body));
+    
+            try {
+                $this->messaging->send($message);
+                Log::info('Notification sent: Branch Updated', ['branch_id' => $branch->id, 'admin' => $admin->name]);
+    
+                Notification::create([
+                    'admin_id' => $admin->id,
+                    'title' => $title,
+                    'body' => $body,
+                    'status' => 'sent',
+                    'created_at' => now()
+                ]);
+                return 'Notification sent successfully';
+            } catch (Exception $e) {
+                Log::error('Failed to send FCM message: ' . $e->getMessage(), ['branch_id' => $branch->id, 'admin' => $admin->name]);
+                return 'Failed to send notification';
+            }
+        } else {
+            Log::warning('Admin device token not found, notification not sent.', ['admin' => $admin->name]);
+            return 'Admin device token not found';
+        }
+    }
+    
     public function deleteBranch(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -444,12 +382,15 @@ public function AddBranchManager(Request $request)
             if ($branch) {
                 $branch->delete();
                     Branch_Manager::where('branch_id', $request->branch_id)->delete();
-    
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Branch has been deleted'
-                ], 200);
-            }
+                   
+                    $notificationStatus = $this->sendBranchDeletedNotification($branch);
+
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Branch has been deleted',
+                        'notification_status' => $notificationStatus
+                    ], 200);
+                }
     
             return response()->json([
                 'success' => false,
@@ -464,8 +405,41 @@ public function AddBranchManager(Request $request)
             ], 500);
         }
     }
-    
 
+    private function sendBranchDeletedNotification($branch)
+{
+    $title = 'Branch Deleted';
+    $body = "Branch '{$branch->desk}' has been successfully deleted.";
+
+    $admin = Auth::guard('admin')->user();
+    $deviceToken = $admin->device_token;
+
+    if ($deviceToken) {
+        $message = CloudMessage::withTarget('token', $deviceToken)
+            ->withNotification(FCMNotification::create($title, $body));
+
+        try {
+            $this->messaging->send($message);
+            Log::info('Notification sent: Branch Deleted', ['branch_id' => $branch->id, 'admin' => $admin->name]);
+            Notification::create([
+                'admin_id' => $admin->id,
+                'title' => $title,
+                'body' => $body,
+                'status' => 'sent',
+                'created_at' => now()
+            ]);
+          
+            return 'Notification sent successfully';
+        } catch (Exception $e) {
+            Log::error('Failed to send FCM message: ' . $e->getMessage(), ['branch_id' => $branch->id, 'admin' => $admin->name]);
+            return 'Failed to send notification';
+        }
+    } else {
+        Log::warning('Admin device token not found, notification not sent.', ['admin' => $admin->name]);
+        return 'Admin device token not found';
+    }
+}
+    
     public function GetBranches()
     {
         try {
@@ -581,7 +555,7 @@ public function AddBranchManager(Request $request)
             ], 500);
         }
     }
-//!N Added this
+//!N Added this ////////////////warning//////
     public function getArchivedEmployeeByBranch(Request $request)
     {
         try {

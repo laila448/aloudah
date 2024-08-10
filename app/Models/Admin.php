@@ -19,7 +19,8 @@ class Admin extends Authenticatable implements JWTSubject
       'phone_number',
       'gender',
       'password',
-      'device_token'
+      'device_token',
+      'rank',
      
           ]; 
           public function user(){

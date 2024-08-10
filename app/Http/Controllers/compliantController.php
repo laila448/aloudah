@@ -9,10 +9,9 @@ use Illuminate\Http\Request;
 
 class compliantController extends Controller
 {
-
-
 public function AddCompliant(Request $request)
 {
+    
     try {
         // Validate the request data
         $validator = Validator::make($request->all(), [
@@ -49,7 +48,6 @@ public function AddCompliant(Request $request)
         ], 500);
     }
 }
-
 
 public function AddCompliantEmp(Request $request)
 {
