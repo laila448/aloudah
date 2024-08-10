@@ -430,6 +430,7 @@ public function AddEmployee(Request $request)
                 'phone_number' => 'max:10',
                 'gender' => 'in:male,female',
                 'certificate' => 'string',
+                'certificate_type' => 'string',
                 'branch_id' => 'numeric',
                 'mother_name' => 'string',
                 'birth_date' => 'date_format:Y-m-d',

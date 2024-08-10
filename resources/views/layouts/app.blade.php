@@ -43,7 +43,11 @@
                         @guest
                             @if (Route::has('login'))
                                 <li class="nav-item">
-                                <a class="desktop-logo logo-light active" href=""><img src="{{URL::asset('assets/img/brand/logo.png')}}" class="main-logo" alt="logo"></a>
+                                <a class="btn btn-primary" href="{{ route('admin2login') }}" role="button">Login as Admin</a>
+                                <a class="desktop-logo logo-light active" href=""><img src="{{URL::asset('assets/img/brand/logo.png')}}" class="main-logo" alt="logo">
+
+                            </a>
+                            
                                 </li>
                             @endif
 

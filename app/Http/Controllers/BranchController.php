@@ -387,12 +387,12 @@ public function AddBranchManager(Request $request)
             }
     
             // Send notification
-            $notificationStatus = $this->sendBranchUpdatedNotification($branch);
+          //  $notificationStatus = $this->sendBranchUpdatedNotification($branch);
     
             return response()->json([
                 'success' => true,
                 'message' => 'Branch updated successfully',
-                'notification_status' => $notificationStatus
+               // 'notification_status' => $notificationStatus
             ], 200);
     
         } catch (\Exception $e) {

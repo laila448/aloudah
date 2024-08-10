@@ -25,10 +25,37 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/empty', [App\Http\Controllers\HomeController::class, 'empty'])->name('empty');
+
 
 //Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+
+Route::group(['prefix' => 'admin'], function() {
+    Route::get('/login', [App\Http\Controllers\Auth\AdminController::class, 'showLoginFormadmin'])->name('admin2login');
+    Route::post('/login', [App\Http\Controllers\Auth\AdminController::class, 'loginadmin'])->name('adminlogin');
+    Route::post('/logout',[App\Http\Controllers\Auth\AdminController::class, 'logoutadmin'])->name('adminlogout');
+    
+     });
+
+     Route::get('/indexadmin', [App\Http\Controllers\AdminController::class, 'index'])->name('indexadmin');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
  Route::group(['prefix' => 'employee'], function() {
 Route::get('/login', [App\Http\Controllers\Auth\AdminLoginController::class, 'showLoginForm'])->name('admin.login');

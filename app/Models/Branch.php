@@ -26,6 +26,12 @@ class Branch extends Model
         return $this->belongsTo(Branch_Manager::class, 'branchmanager_id');
     }
 
+    public function branch_manager()
+    {
+        return $this->belongsTo(Branch_Manager::class, 'branchmanager_id');
+    }
+
+
     public function employees()
     {
         return $this->hasMany(Employee::class, 'branch_id');

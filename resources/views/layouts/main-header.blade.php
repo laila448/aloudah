@@ -135,7 +135,12 @@
 										<div class="d-flex wd-100p">
 											<div class="main-img-user"><img alt="" src="{{URL::asset('assets/img/faces/6.jpg')}}" class=""></div>
 											<div class="mr-3 my-auto">
-												<h6>{{ Auth::guard('emp_web')->user()->name }}</h6><span></span>
+												<h6>  
+													@if (auth()->guard('admin_web')->check())
+                                                    {{ auth()->guard('admin_web')->user()->name }}
+                                                    @elseif (auth()->guard('emp_web')->check())
+                                                   {{ auth()->guard('emp_web')->user()->name }}
+											   @endif</h6><span></span>
 											</div>
 										</div>
 									</div>

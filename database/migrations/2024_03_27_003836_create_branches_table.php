@@ -18,7 +18,7 @@ return new class extends Migration
            // $table->unsignedBigInteger('branchmanager_id');
             //$table->foreign('branchmanager_id')->references('id')->on('branch_managers')->onDelete('cascade');
             $table->string('address');
-            $table->integer('phone');
+            $table->integer('phone')->unique();
             $table->date('opening_date');
             $table->string('created_by');
             $table->string('edited_by')->nullable();

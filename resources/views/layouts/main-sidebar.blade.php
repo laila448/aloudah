@@ -14,8 +14,22 @@
 							<!-- <img alt="user-img" class="avatar avatar-xl brround" src="{{URL::asset('assets/img/brand/logo2.png')}}"><span class="avatar-status profile-status bg-green"></span> -->
 						</div>
 						<div class="user-info">
-							<h4 class="font-weight-semibold mt-3 mb-0">{{ Auth::guard('emp_web')->user()->name }}</h4>
-							<span class="mb-0 text-muted">{{ Auth::guard('emp_web')->user()->email }}</</span>
+						<h4 class="font-weight-semibold mt-3 mb-0">
+    @if (auth()->guard('admin_web')->check())
+        {{ auth()->guard('admin_web')->user()->name }}
+    @elseif (auth()->guard('emp_web')->check())
+        {{ auth()->guard('emp_web')->user()->name }}
+
+    @endif
+</h4>
+<span class="mb-0 text-muted">
+    @if (auth()->guard('admin_web')->check())
+        {{ auth()->guard('admin_web')->user()->email }}
+    @elseif (auth()->guard('emp_web')->check())
+        {{ auth()->guard('emp_web')->user()->email }}
+  
+    @endif
+</span>
 						</div>
 					</div>
 				</div>

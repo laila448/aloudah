@@ -14,7 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Kreait\Firebase\Factory;
-use Kreait\Firebase\Messaging\CloudMessage;
+use Kreait\Firebase\Messaging\CloudMessage; 
 use Kreait\Firebase\Messaging\Notification as FCMNotification;
 use Exception;
 use Illuminate\Support\Facades\Log;
