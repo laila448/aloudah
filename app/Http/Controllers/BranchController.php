@@ -170,7 +170,6 @@ public function AddBranchManager(Request $request)
         'date_of_birth' => 'required|date_format:Y-m-d',
         'manager_address' => 'required',
         'salary' => 'required',
-        'rank' => ['required', Rule::in(['Branch_manager'])],
     ]);
 
     if ($validator->fails()) {
@@ -196,7 +195,6 @@ public function AddBranchManager(Request $request)
         $branchManager->date_of_birth = $request->input('date_of_birth');
         $branchManager->manager_address = $request->input('manager_address');
         $branchManager->salary = $request->input('salary');
-        $branchManager->rank = $request->input('rank');
         $branchManager->employment_date = now()->format('Y-m-d');
         $branchManager->save();
 
@@ -281,7 +279,6 @@ public function AddBranchManager(Request $request)
                 'mother_name' => 'string',
                 'birth_date' => 'date_format:Y-m-d',
                 'salary' => 'string',
-                'rank' => 'string',
             ]);
     
             if ($validator->fails()) {

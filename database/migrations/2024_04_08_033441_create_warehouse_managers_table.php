@@ -28,7 +28,7 @@ return new class extends Migration
              $table->date('date_of_birth');
              $table->string('manager_address');
              $table->integer('salary');
-             $table->string('rank');
+             $table->string('rank')->default('warehouse_manager');
              $table->date('employment_date');
              $table->text('device_token')->nullable();
              $table->softDeletes();

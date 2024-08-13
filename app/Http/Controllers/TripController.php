@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Notification as NotificationTable;
 
 use App\Jobs\CloseTripJob;
+use App\Models\Shipping;
 
 class TripController extends Controller
 {
@@ -101,6 +102,63 @@ class TripController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function GetManifest( $trip_number)
+    {
+    
+        try {
+            $tripDetails = Manifest::where('number', $trip_number)->get();
+    
+            if ($tripDetails->isNotEmpty()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Manifest retrieved successfully',
+                    'data' => $tripDetails
+                ], 200);
+            }
+    
+            return response()->json([
+                'success' => false,
+                'message' => 'Trip not found'
+            ], 404);
+    
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while retrieving the Manifest',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+        
+    }
+    public function GetManifestShipping( $trip_number)
+    {
+    
+        try {
+            $tripDetails = Shipping::where('manifest_number', $trip_number)->paginate(10);
+    
+            if ($tripDetails->isNotEmpty()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Manifest  Shipping retrieved successfully',
+                    'data' => $tripDetails
+                ], 200);
+            }
+    
+            return response()->json([
+                'success' => false,
+                'message' => 'shipping not found'
+            ], 404);
+    
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while retrieving the shipping',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+        
     }
     
 //!Changed this for all cases 
@@ -516,6 +574,48 @@ public function GetClosedTrips()
     }
 }
 
+public function GetAllTripsForMyBranch()
+{
+    try {
+        $user = null;
+        if(Auth::guard('branch_manager')->check()){
+            $user = Auth::guard('branch_manager')->user();
+        }elseif(Auth::guard('employee')->check()){
+            $user = Auth::guard('employee')->user();
+        }
+        $Trips = Trip::with('driver:id,name', 'branch:id,address', 'truck:id,number')
+            ->where('branch_id' , $user->branch_id)
+            ->where('archived', false)
+            ->paginate(10);
+
+        if ($Trips->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No trips found'
+            ], 404);
+        }
+
+         // Directly access the items and map the destination name
+         foreach ($Trips->items() as $trip) {
+            $trip->destination_name = $this->getDestinationName($trip->destination_id);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Trips retrieved successfully',
+            'data' => $Trips
+        ], 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'An error occurred while retrieving trips',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+
+}
+
 
 
     public function ArchiveData(Request $request)
@@ -648,4 +748,112 @@ public function GetClosedTrips()
             ], 500);
         }
     }
+
+    public function GetArchivedTrips()
+    {
+        try {
+            $user = null;
+            if(Auth::guard('branch_manager')->check()){
+                $user = Auth::guard('branch_manager')->user();
+            }elseif(Auth::guard('employee')->check()){
+                $user = Auth::guard('employee')->user();
+            }
+            $archivedRecords = Trip::with('driver:id,name', 'branch:id,address', 'truck:id,number')
+                ->where('branch_id' , $user->branch_id)
+                ->where('archived', true)
+                ->paginate(10);
+
+            if ($archivedRecords->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No archived trips found'
+                ], 404);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Archived trips retrieved successfully',
+                'data' => $archivedRecords
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while retrieving archived trips',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function GetAllTripsForBranch($branch_id)
+{
+    try {
+        $Trips = Trip::with('driver:id,name', 'branch:id,address', 'truck:id,number')
+            ->where('branch_id' , $branch_id)
+            ->where('archived', false)
+            ->paginate(10);
+
+        if ($Trips->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No trips found'
+            ], 404);
+        }
+
+         // Directly access the items and map the destination name
+         foreach ($Trips->items() as $trip) {
+            $trip->destination_name = $this->getDestinationName($trip->destination_id);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Trips retrieved successfully',
+            'data' => $Trips
+        ], 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'An error occurred while retrieving trips',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+
+}
+
+public function GetAllTripsByTruck($truck_id)
+{
+    try {
+        $Trips = Trip::with('driver:id,name', 'branch:id,address', 'truck:id,number')
+            ->where('truck_id' , $truck_id)
+            ->where('archived', false)
+            ->paginate(10);
+
+        if ($Trips->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No trips found'
+            ], 404);
+        }
+
+         // Directly access the items and map the destination name
+         foreach ($Trips->items() as $trip) {
+            $trip->destination_name = $this->getDestinationName($trip->destination_id);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Trips retrieved successfully',
+            'data' => $Trips
+        ], 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'An error occurred while retrieving trips',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+
+}
 }

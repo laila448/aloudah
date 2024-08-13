@@ -113,7 +113,6 @@ public function addWarehouseManager(Request $request)
             'date_of_birth' => 'required|date_format:Y-m-d',
             'manager_address' => 'required|string',
             'salary' => 'required|numeric',
-            'rank' => ['required', Rule::in(['warehouse_manager'])],
         ]);
 
         if ($validator->fails()) {
@@ -136,7 +135,6 @@ public function addWarehouseManager(Request $request)
         $warehouseManager->date_of_birth = $request->input('date_of_birth');
         $warehouseManager->manager_address = $request->input('manager_address');
         $warehouseManager->salary = $request->input('salary');
-        $warehouseManager->rank = $request->input('rank');
         $warehouseManager->employment_date = now()->format('Y-m-d');
         $warehouseManager->save();
 
@@ -212,7 +210,6 @@ public function UpdateWarehouse(Request $request)
         'mother_name' => 'string',
         'birth_date' => 'date_format:Y-m-d',
         'salary' => 'string',
-        'rank' => 'string',
     ]);
 
     if ($validator->fails()) {
