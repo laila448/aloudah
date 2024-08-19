@@ -15,19 +15,19 @@ return new class extends Migration
     {
         Schema::create('branch_managers', function (Blueprint $table) {
             $table->id();
-            $table->string('national_id')->unique();
+            $table->string('national_id')->unique()->nullable();
             $table->string('name')->unique();
-             $table->string('email')->unique();
+             $table->string('email')->unique()->nullable();
              $table->timestamp('email_verified_at')->nullable();
-             $table->string('password');
+             $table->string('password')->nullable();
              $table->integer('phone_number')->unique();
              $table->unsignedBigInteger('branch_id');
              $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
-             $table->string('gender');
-             $table->string('mother_name');
-             $table->date('date_of_birth');
-             $table->string('manager_address');
-             $table->integer('salary');
+             $table->string('gender')->nullable();
+             $table->string('mother_name')->nullable();
+             $table->date('date_of_birth')->nullable();
+             $table->string('manager_address')->nullable();
+             $table->integer('salary')->nullable();
              $table->string('rank')->nullable();
              $table->date('employment_date');
              $table->text('device_token')->nullable();

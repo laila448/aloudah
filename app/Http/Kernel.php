@@ -73,5 +73,6 @@ class Kernel extends HttpKernel
         'WarehouseManager' => \App\Http\Middleware\WarehouseManagerMiddleware::class,
         'employeeweb' => \App\Http\Middleware\emplyeeMiddleware::class,
         'EmployeeAuthMiddleware' => \App\Http\Middleware\EmployeeAuthMiddleware::class,
+        'AdminAuthMiddleware' => \App\Http\Middleware\AdminAuthMiddleware::class,
     ];
 }
