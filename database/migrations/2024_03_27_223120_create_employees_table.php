@@ -30,7 +30,7 @@ return new class extends Migration
             $table->string('mobile');
             $table->string('address');
             $table->integer('salary');
-            $table->string('rank');
+            $table->string('rank')->default('employee');
             $table->date('employment_date');
             $table->date('resignation_date')->nullable();
             $table->string('manager_name');

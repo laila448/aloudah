@@ -28,7 +28,7 @@ return new class extends Migration
              $table->date('date_of_birth')->nullable();
              $table->string('manager_address')->nullable();
              $table->integer('salary')->nullable();
-             $table->string('rank')->nullable();
+             $table->string('rank')->default('branch_manager');
              $table->date('employment_date');
              $table->text('device_token')->nullable();
              $table->softDeletes();

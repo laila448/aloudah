@@ -153,8 +153,8 @@ class ShippingController extends Controller
     public function getManifestWithInvoices($manifestNumber)
     {
         try {
-            $manifest = Manifest::with('shippings')->where('number', $manifestNumber)->first();
-
+            //$manifest = Manifest::with('shippings')->where('number', $manifestNumber)->first();
+            $manifest = Manifest::where('number' , $manifestNumber)->first();
             if (!$manifest) {
                 return response()->json([
                     'success' => false,
@@ -162,7 +162,7 @@ class ShippingController extends Controller
                 ], 404);
             }
 
-            $shippings = $manifest->shippings->map(function ($shipping) {
+            $manifest->shippings = $manifest->shippings->map(function ($shipping) {
                 return $this->transformShipping($shipping);
             });
 
@@ -170,8 +170,8 @@ class ShippingController extends Controller
                 'success' => true,
                 'message' => 'Manifest retrieved successfully',
                 'data' => [
-                    // 'manifest' => $manifest,
-                    'shippings' => $shippings
+                     'manifest' => $manifest,
+                   // 'shippings' => $shippings
                 ],
             ], 200);
 
@@ -418,6 +418,35 @@ public function UpdateManifest(Request $request)
     }
 }
 
+public function getShipping($shipping_id){
+
+    try{
+    $shipping = Shipping::where('id' , $shipping_id)->first();
+
+    if(!$shipping){
+        return response()->json([
+            'success' => false,
+            'message' => 'shipping not found'
+        ], 404);
+    }
+
+    $transformed = $this->transformShipping($shipping);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Shipping retrieved successfully',
+        'data' => $transformed
+    ], 200);
+
+} catch (\Exception $e) {
+    return response()->json([
+        'success' => false,
+        'message' => 'An error occurred while retrieving the shipping',
+        'error' => $e->getMessage()
+    ], 500);
+}
+}
+
 //!Mark:Changed here
 private function transformShipping($shipping)
     {
@@ -432,7 +461,7 @@ private function transformShipping($shipping)
             'receiver' => $shipping->receiver,
             'sender_number' => $shipping->sender_number,
             'receiver_number' => $shipping->receiver_number,
-            'num_of_packages' => $shipping->num_of_packages,
+            'quantity' => $shipping->quantity,
             'weight' => $shipping->weight,
             'size' => $shipping->size,
             'content' => $shipping->content,

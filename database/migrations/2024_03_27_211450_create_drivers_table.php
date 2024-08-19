@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('birth_place');
             $table->string('mobile')->unique();
             $table->string('address');
-            $table->string('rank');
+            $table->string('rank')->default('driver');
             $table->integer('salary');
             $table->date('employment_date');
             $table->date('resignation_date')->nullable();

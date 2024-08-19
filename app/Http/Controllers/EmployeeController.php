@@ -73,7 +73,6 @@ class EmployeeController extends Controller
         'mobile' => 'required|unique:drivers,mobile',
         'address' => 'required|string',
         'salary' => 'required',
-        'rank' => 'required',
         'certificate' => 'required|unique:drivers,certificate'
     ]);
 
@@ -176,7 +175,6 @@ public function AddEmployee(Request $request)
         'mobile' => 'required|unique:employees,mobile',
         'address' => 'required|string',
         'salary' => 'required',
-        'rank' => 'required',
     ]);
 
     if ($validator->fails()) {
@@ -534,7 +532,7 @@ public function AddEmployee(Request $request)
                 ], 404);
             }
     
-            if ($request->rank == 'Branch_manager') {
+            if ($request->rank == 'branch_manager') {
                 Branch_Manager::create([
                     'national_id' => $employee->national_id,
                     'name' => $employee->name,
