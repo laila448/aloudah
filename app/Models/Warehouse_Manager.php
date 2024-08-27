@@ -41,6 +41,12 @@ class Warehouse_Manager extends Authenticatable implements JWTSubject
     {
         return $this->hasOne(Warehouse::class, 'warehouse_manager_id');
     }    
+
+
+    public function branch()
+    {
+        return $this->belongsTo(branch::class, 'branch_id');
+    } 
     public function notifications()
     {
         return $this->hasMany(Notification::class, 'warehouse_manager_id');

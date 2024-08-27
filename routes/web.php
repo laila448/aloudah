@@ -10,6 +10,7 @@ use App\Http\Controllers\Web\DriverController;
 use App\Http\Controllers\Web\EmployeeController;
 use App\Http\Controllers\Web\tripController;
 use App\Http\Controllers\Web\truckController;
+use App\Http\Controllers\Web\WarehouseController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -103,6 +104,21 @@ Route::get('/getallmanagers' , [BranchController::class , 'GetAllManagers'])->na
 Route::post('/deletebranch' , [BranchController::class , 'DeleteBranch'])->name('deletebranch');
 Route::post('/editbranchmanager' , [BranchController::class , 'EditBranchManager'])->name('editbranchmanager');
 Route::post('/deletebranchmanager' , [BranchController::class , 'DeleteBranchManager'])->name('deletebranchmanager');
+
+
+
+Route::get('/getAllWarehouses' , [WarehouseController::class , 'getAllWarehouses'])->name('getAllWarehouses');
+Route::get('/getallwmanagers' , [WarehouseController::class , 'getAllWarehousesM'])->name('getallwmanagers');
+
+Route::post('/addwmanager' , [WarehouseController::class , 'Addwmanager'])->name('addwmanager');
+Route::post('/editwmanager' , [WarehouseController::class , 'editbranchmanager'])->name('editbranchmanager');
+Route::post('/deletemanager' , [WarehouseController::class , 'deletewarehouse'])->name('deletewarehouse');
+
+Route::post('/addwarehouse' , [WarehouseController::class , 'addwarehouse'])->name('addwarehouse');
+Route::post('/editwarehouse' , [WarehouseController::class , 'editwarehouse'])->name('editwarehouse');
+Route::post('/deletewarehouse' , [WarehouseController::class , 'deletewarehouse'])->name('deletewarehouse');
+
+
 
 
 

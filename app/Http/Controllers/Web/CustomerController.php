@@ -34,7 +34,7 @@ class CustomerController extends Controller
             'address' => $request->address,
             'address_detail' => $request->address_detail,
             'notes' => $request->notes,
-            'added_by' => ( Auth::guard('emp_web')->user()->name),
+            'added_by' => ( Auth::guard('admin_web')->user()->name),
            
 
 

@@ -39,17 +39,7 @@ public function AddBranch(Request $request)
 
 public function AddBranchManager(Request $request)
 {
-
-    // Branch::create([
-    //     'name' => $request->name,
-    //     'email' => $request->email,
-    //     'password' => $request->password,
-    //     'manager_address' => $request->manager_address,
-    //     'phone_number' => $request->phone_number,
-    //     'branch_id' => $request->branch_id,
-
-    // ]);
-
+ 
     $validatedData = $request->validate([
         'name' => 'required',
         'email' => 'required',

@@ -72,7 +72,9 @@ Route::group(['middleware' => 'BranchManager',
        Route::post('addDriver', [EmployeeController::class, 'addDriver']);
        Route::get('branchdrivers' , [EmployeeController::class , 'GetDriversForMyBranch']);
        Route::get('getallactivetrips' , [TripController::class , 'GetActiveTrips']);
-       Route::get('GetArchivedTrips' , [TripController::class , 'GetArchivedTrips']);         
+       Route::get('GetArchivedTrips' , [TripController::class , 'GetArchivedTrips']); 
+       Route::get('getallclosedtrips' , [TripController::class , 'GetClosedTripsmanager']);
+        
        Route::get('GetTripInformation/{trip_number}' , [TripController::class , 'GetTripInformation']); 
        Route::get('truckrecord/{desk}' , [TruckController::class , 'GetTruckRecord']); 
        Route::get('getdrivers' , [DriverController::class , 'GetDrivers']); 

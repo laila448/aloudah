@@ -536,6 +536,40 @@ public function addTrip(Request $request)
     }
 }
 //!Added this
+public function GetClosedTripsmanager()
+{
+    try {
+        $m = Auth::guard('branch_manager')->user();
+        $mBranchId = $m->branch_id;
+
+        $trips = Trip::with('driver:id,name', 'branch:id,address,desk', 'truck:id,number')
+            ->where('status', 'closed')
+            ->where('branch_id', $mBranchId) 
+            ->paginate(10);
+
+        if ($trips->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No closed trips found for your branch'
+            ], 404);
+        }
+
+    
+        return response()->json([
+            'success' => true,
+            'message' => 'Closed trips retrieved successfully',
+            'data' => $trips
+        ], 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'An error occurred while retrieving closed trips',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
+
 public function GetClosedTrips()
 {
     try {
