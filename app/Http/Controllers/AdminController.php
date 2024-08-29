@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Branch;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
@@ -26,8 +27,9 @@ class AdminController extends Controller
 
     public function index()
     {
-       
-            return view('index');
+        $branches = Branch::with('branch_manager')->get();
+      //  return view('branches.brancheslist',compact('branches'));
+            return view('index',compact('branches'));
         
 
      //   return view($id);

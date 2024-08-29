@@ -12,7 +12,7 @@ class truckController extends Controller
 {
     public function GetTrucks()
     {
-        $trucks=Truck::get();
+        $trucks=Truck::with('branch')->get();
         return view('trucks.truckslist',compact('trucks'));
     }
 
@@ -33,7 +33,7 @@ class truckController extends Controller
             Truck::create([
                 'number' => $request->number,
                 'line' => $request->line,
-                'created_by' => ( Auth::guard('emp_web')->user()->name),
+                'created_by' => ( Auth::guard('admin_web')->user()->name),
                 'adding_data' =>Carbon::now() ,
 
 

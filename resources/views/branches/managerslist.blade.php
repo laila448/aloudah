@@ -6,7 +6,7 @@
 				<div class="breadcrumb-header justify-content-between">
 					<div class="my-auto">
 						<div class="d-flex">
-							<h4 class="content-title mb-0 my-auto">Branches Managers  :</h4><span class="text-muted mt-1 tx-13 mr-2 mb-0"> </span>
+							<h4 class="content-title mb-0 my-auto">مدراء الأفرع    :</h4><span class="text-muted mt-1 tx-13 mr-2 mb-0"> </span>
 						</div>
 					</div>
 					<div class="d-flex my-xl-auto right-content">
@@ -74,7 +74,7 @@
 						<div class="card">
 							<div class="card-header pb-0">
 								<div class="d-flex justify-content-between">
-									<h4 class="card-title mg-b-0">Managers: </h4>
+									<h4 class="card-title mg-b-0">المدراء: </h4>
 									<i class="mdi mdi-dots-horizontal text-gray"></i>
 								</div>
 							</div>
@@ -84,10 +84,10 @@
 										<thead>
 											<tr>
 												<th>ID</th>
-                                                <th>Name</th>
-												<th>Phone</th>
-                                                <th>Branch_Address</th>
-                                                <th>Branch_Desk</th>
+                                                <th>الاسم</th>
+												<th>رقم_الهاتف</th>
+                                                <th>الفرع</th>
+                                                <th>المكتب</th>
                                                 <!-- <th>Operations</th> -->
 											</tr>
 										</thead>
@@ -104,7 +104,7 @@
                                                   <td>{{ $manager->branch->desk }}</td>
                                            
                                             <!-- manager -->
-<!-- 
+
                                                   <td>
                                                   <a class="modal-effect btn btn-sm btn-info" data-effect="effect-scale"
                                                 data-id="{{ $manager->id }}" data-name="{{ $manager->name }}"
@@ -116,7 +116,7 @@
                                                 data-toggle="modal" href="#modaldemo9" title="حذف"><i
                                                     class="las la-trash"></i></a>
                                       
-                                                   </td> -->
+                                                   </td>
                                                 </tr>
                                              @endforeach
 
@@ -127,6 +127,12 @@
                                 
 							</div><!-- bd -->
                           
+                            <!--manager  -->
+                            <div class="col-xl-3">
+                                    <a class="modal-effect btn btn-outline-primary btn-block"
+                                     data-effect="effect-scale" data-toggle="modal" href="#modaldemo1">إضافة   </a>
+                                    </div>
+						</div><!-- bd -->
 						</div><!-- bd -->
 					</div>
 					<!--/div-->
@@ -138,7 +144,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Edit </h5>
+                    <h5 class="modal-title" id="exampleModalLabel">تعديل </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -150,17 +156,17 @@
                         {{ csrf_field() }}
                         <div class="form-group">
                             <input type="hidden" name="id" id="id" value="">
-                            <label for="recipient-name" class="col-form-label">Name :</label>
+                            <label for="recipient-name" class="col-form-label">الاسم :</label>
                             <input class="form-control" name="name" id="name" type="string">
                         </div>
                         <div class="form-group">
-                            <label for="message-text" class="col-form-label">Phone:</label>
+                            <label for="message-text" class="col-form-label">رقم_الهاتف:</label>
                             <input class="form-control" id="phone_number" name="phone_number" type="integer">
                         </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Save</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">حفظ</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">الغاء</button>
                 </div>
                 </form>
             </div>
@@ -172,7 +178,7 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content modal-content-demo">
                 <div class="modal-header">
-                    <h6 class="modal-title">Delete </h6><button aria-label="Close" class="close" data-dismiss="modal"
+                    <h6 class="modal-title">حذف </h6><button aria-label="Close" class="close" data-dismiss="modal"
                         type="button"><span aria-hidden="true">&times;</span></button>
                 </div>
                 <form action="{{ route('deletebranchmanager') }}" method="post">
@@ -183,14 +189,71 @@
                         <input class="form-control" name="name" id="name" type="string" readonly>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-danger">Save</button>
+                       <button type="submit" class="btn btn-danger">حذف</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">الغاء</button>
+                        
                     </div>
                 </div>
             </form>
         </div>
     </div>
 				
+ 
+    <!-- Basic modal -->
+		<div class="modal" id="modaldemo1">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content modal-content-demo">
+					<div class="modal-header">
+						<h6 class="modal-title">  إضافة مدير فرع:</h6><button aria-label="Close" class="close" data-dismiss="modal" type="button"><span aria-hidden="true">&times;</span></button>
+					</div>
+					<div class="modal-body">
+                    <form action="{{ route('addbranchmanager') }}" method="post">
+                        {{ csrf_field() }}
+                        <div class="form-group">
+                            <label for="exampleInputEmail1"> الاسم</label>
+                            <input type="string" class="form-control" id="name" name="name">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputEmail1"> الايميل</label>
+                            <input type="email" class="form-control" id="email" name="email">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputEmail1"> كلمة_المرور</label>
+                            <input type="string" class="form-control" id="password" name="password">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="exampleInputEmail1"> العنوان</label>
+                            <input type="string" class="form-control" id="manager_address" name="manager_address">
+                        </div>
+
+                      
+						<div class="form-group">
+                            <label for="exampleFormControlTextarea1">رقم_الهاتف</label>
+                            <input type="integer" class="form-control" id="phone_number" name="phone_number" >
+                        </div>
+                        <div class="form-group">
+                             <label for="exampleFormControlSelect1">الفرع</label>
+                        <select class="form-control" id="branch_id" name="branch_id">
+                         <option value="">اختر الفرع</option>
+                           @foreach ($branches as $branch)
+                            <option value="{{ $branch->id }}">{{ $branch->desk }}</option>
+                                 @endforeach
+                                 </select>
+                          </div>
+
+					</div>
+					<div class="modal-footer">
+                    <button type="submit" class="btn btn-success">إضافة</button>
+                    <button class="btn ripple btn-secondary" data-dismiss="modal" type="button">الغاء</button>
+					</div>
+                    </form>
+				</div>
+
+                
+			</div>
+		</div>
+		<!-- End Basic modal -->
 
 				<!-- /row -->
 			</div>

@@ -15,21 +15,21 @@ return new class extends Migration
     {
         Schema::create('warehouse_managers', function (Blueprint $table) {
             $table->id();  
-            $table->string('national_id')->unique();
+            $table->string('national_id')->unique()->nullable();;
             $table->string('name')->unique();
              $table->string('email')->unique();
              $table->timestamp('email_verified_at')->nullable();
              $table->string('password');
             $table->integer('phone_number')->unique();
-            $table->string('gender');    
+            $table->string('gender')->nullable();;    
             $table->unsignedBigInteger('warehouse_id');
              $table->foreign('warehouse_id')->references('id')->on('warehouses')->onDelete('cascade');
-             $table->string('mother_name');
-             $table->date('date_of_birth');
+             $table->string('mother_name')->nullable();;
+             $table->date('date_of_birth')->nullable();;
              $table->string('manager_address');
-             $table->integer('salary');
+             $table->integer('salary')->nullable();;
              $table->string('rank')->default('warehouse_manager');
-             $table->date('employment_date');
+             $table->date('employment_date')->nullable();;
              $table->text('device_token')->nullable();
              $table->softDeletes();
              $table->timestamps();

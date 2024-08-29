@@ -6,7 +6,7 @@
 				<div class="breadcrumb-header justify-content-between">
 					<div class="my-auto">
 						<div class="d-flex">
-							<h4 class="content-title mb-0 my-auto">Branches  :</h4><span class="text-muted mt-1 tx-13 mr-2 mb-0"> </span>
+							<h4 class="content-title mb-0 my-auto">الأفرع  :</h4><span class="text-muted mt-1 tx-13 mr-2 mb-0"> </span>
 						</div>
 					</div>
 					<div class="d-flex my-xl-auto right-content">
@@ -74,7 +74,7 @@
 						<div class="card">
 							<div class="card-header pb-0">
 								<div class="d-flex justify-content-between">
-									<h4 class="card-title mg-b-0">Branches </h4>
+									<h4 class="card-title mg-b-0">الأفرع </h4>
 									<i class="mdi mdi-dots-horizontal text-gray"></i>
 								</div>
 							</div>
@@ -84,10 +84,10 @@
 										<thead>
 											<tr>
 												<th>ID</th>
-                                                <th>Address</th>
-												<th>Desk</th>
-												<th>Phone</th>
-                                                <th>Openning_Date</th>
+                                                <th>العنوان</th>
+												<th>الفرع</th>
+												<th>رقم_الهاتف</th>
+                                                <th>تاريخ_الافتتاح</th>
 											</tr>
 										</thead>
 										<tbody>
@@ -103,13 +103,22 @@
                                                   <td>{{ $branch->opening_date }}</td>
                                                   <td>{{ $branch->Operation }}</td>
                                     <!-- brach manager -->
-                                                  <!-- <td>
+                                                  <td>
+
+
+												  
+												  <a class="modal-effect btn btn-sm btn-info" data-effect="effect-scale"
+                                                data-id="{{ $branch->id }}" data-phone="{{ $branch->phone }}"  data-toggle="modal" 
+                                                href="#exampleModal2" title="تعديل"><i class="las la-pen"></i></a>
+
+
+
                                             <a class="modal-effect btn btn-sm btn-danger" data-effect="effect-scale"
                                                 data-id="{{ $branch->id }}" data-desk="{{ $branch->desk }}"
                                                 data-toggle="modal" href="#modaldemo9" title="حذف"><i
                                                     class="las la-trash"></i></a>
                                       
-                                                   </td> -->
+                                                   </td>
                                                 </tr>
                                              @endforeach
 
@@ -120,21 +129,51 @@
                                 
 							</div><!-- bd -->
 							<!--manager  -->
-                            <!-- <div class="col-xl-3">
+                            <div class="col-xl-3">
                                     <a class="modal-effect btn btn-outline-primary btn-block"
-                                     data-effect="effect-scale" data-toggle="modal" href="#modaldemo1">Add New Branch</a>
-                                    </div> -->
+                                     data-effect="effect-scale" data-toggle="modal" href="#modaldemo1">إضافة فرع جديد </a>
+                                    </div>
 						</div><!-- bd -->
 					</div>
-					<!--/div-->
+					<!--/div -->
  
+  <!-- edit -->
+  <div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">تعديل </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
 
+                    <form action="{{ route('editbranch') }}" method="post" autocomplete="off">
+                       
+                        {{ csrf_field() }}
+                        <div class="form-group">
+                            <input type="hidden" name="id" id="id" value="">
+                            <label for="recipient-name" class="col-form-label">الرقم :</label>
+                            <input class="form-control" name="phone" id="phone" type="integer">
+                        </div>
+                       
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">تاكيد</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">اغلاق</button>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
 <!-- delete -->
 <div class="modal" id="modaldemo9">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content modal-content-demo">
                 <div class="modal-header">
-                    <h6 class="modal-title">delete </h6><button aria-label="Close" class="close" data-dismiss="modal"
+                    <h6 class="modal-title">حذف </h6><button aria-label="Close" class="close" data-dismiss="modal"
                         type="button"><span aria-hidden="true">&times;</span></button>
                 </div>
                 <form action="{{ route('deletebranch') }}" method="post">
@@ -145,42 +184,49 @@
                         <input class="form-control" name="desk" id="desk" type="string" readonly>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">cancel</button>
-                        <button type="submit" class="btn btn-danger">delete</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">الغاء</button>
+                        <button type="submit" class="btn btn-danger">حذف</button>
                     </div>
                 </div>
             </form>
+
+
+
         </div>
     </div>
+    </div>
+
+
+	
     	<!-- Basic modal -->
 		<div class="modal" id="modaldemo1">
 			<div class="modal-dialog" role="document">
 				<div class="modal-content modal-content-demo">
 					<div class="modal-header">
-						<h6 class="modal-title"> Add :</h6><button aria-label="Close" class="close" data-dismiss="modal" type="button"><span aria-hidden="true">&times;</span></button>
+						<h6 class="modal-title"> إضافة :</h6><button aria-label="Close" class="close" data-dismiss="modal" type="button"><span aria-hidden="true">&times;</span></button>
 					</div>
 					<div class="modal-body">
                     <form action="{{ route('addbranch') }}" method="post">
                         {{ csrf_field() }}
 
                         <div class="form-group">
-                            <label for="exampleInputEmail1"> Address</label>
+                            <label for="exampleInputEmail1"> العنوان</label>
                             <input type="integer" class="form-control" id="address" name="address">
                         </div>
 
                         <div class="form-group">
-                            <label for="exampleFormControlTextarea1">Desk</label>
+                            <label for="exampleFormControlTextarea1">الفرع</label>
                             <input type="string" class="form-control" id="desk" name="desk" >
                         </div>
 						<div class="form-group">
-                            <label for="exampleFormControlTextarea1">Phone</label>
-                            <input type="string" class="form-control" id="phone" name="phone" >
+                            <label for="exampleFormControlTextarea1">رقم_الهاتف</label>
+                            <input type="integer" class="form-control" id="phone" name="phone" >
                         </div>
 
 					</div>
 					<div class="modal-footer">
-                    <button type="submit" class="btn btn-success">Add</button>
-                    <button class="btn ripple btn-secondary" data-dismiss="modal" type="button">Cancel</button>
+                    <button type="submit" class="btn btn-success">إضافة</button>
+                    <button class="btn ripple btn-secondary" data-dismiss="modal" type="button">الغاء</button>
 					</div>
                     </form>
 				</div>
@@ -189,7 +235,6 @@
 			</div>
 		</div>
 		<!-- End Basic modal -->
-
 				<!-- /row -->
 			</div>
 			<!-- Container closed -->
@@ -217,7 +262,19 @@
 <!--Internal  Datatable js -->
 <script src="{{ URL::asset('assets/js/table-data.js') }}"></script>
 <script src="{{ URL::asset('assets/js/modal.js') }}"></script>
+<script>
+    $('#exampleModal2').on('show.bs.modal', function(event) {
+        var button = $(event.relatedTarget)
+        var id = button.data('id')
+        var phone = button.data('phone')
+       
+        var modal = $(this)
+        modal.find('.modal-body #id').val(id);
+        modal.find('.modal-body #phone').val(phone);
+     
+    })
 
+</script>
 <script>
     $('#modaldemo9').on('show.bs.modal', function(event) {
         var button = $(event.relatedTarget)

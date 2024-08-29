@@ -420,6 +420,9 @@ public function AddBranchManager(Request $request)
             Log::info('Notification sent: Branch Deleted', ['branch_id' => $branch->id, 'admin' => $admin->name]);
             Notification::create([
                 'admin_id' => $admin->id,
+
+
+                
                 'title' => $title,
                 'body' => $body,
                 'status' => 'sent',

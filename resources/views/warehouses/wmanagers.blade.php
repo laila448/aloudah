@@ -6,7 +6,7 @@
 				<div class="breadcrumb-header justify-content-between">
 					<div class="my-auto">
 						<div class="d-flex">
-							<h4 class="content-title mb-0 my-auto">قائمة الشاحنات :</h4><span class="text-muted mt-1 tx-13 mr-2 mb-0"> </span>
+							<h4 class="content-title mb-0 my-auto">مدراء الأفرع    :</h4><span class="text-muted mt-1 tx-13 mr-2 mb-0"> </span>
 						</div>
 					</div>
 					<div class="d-flex my-xl-auto right-content">
@@ -74,7 +74,7 @@
 						<div class="card">
 							<div class="card-header pb-0">
 								<div class="d-flex justify-content-between">
-									<h4 class="card-title mg-b-0">الشاحنات </h4>
+									<h4 class="card-title mg-b-0">المدراء: </h4>
 									<i class="mdi mdi-dots-horizontal text-gray"></i>
 								</div>
 							</div>
@@ -84,35 +84,33 @@
 										<thead>
 											<tr>
 												<th>ID</th>
-                                                <th>الرقم</th>
-                                                <th>الفرع</th>
-												<th>الخط</th>
-												<th>تاريخ_الإضافة</th>
-                                                <th>العمليات</th>
-
+                                                <th>الاسم</th>
+												<th>رقم_الهاتف</th>
+                                                <th>العنوان</th>
+                                                <th>Operations</th>
 											</tr>
 										</thead>
 										<tbody>
                                         @php
                                         $count = 1;
                                          @endphp
-											 @foreach ($trucks as $truck)
+											 @foreach ($managers as $manager)
                                                 <tr>
                                                   <th scope="row">{{ $count++ }}</th>
-                                                  <td>{{ $truck->number }}</td>
-                                                  <td>{{ $truck->branch->desk }}</td>
+                                                  <td>{{ $manager->name }}</td>
+                                                  <td>{{ $manager->phone_number }}</td>
+                                                  <td>{{ $manager->warehouse->warehouse_name }}</td>
 
-                                                  <td>{{ $truck->line }}</td>
-                                                  <td>{{ $truck->adding_data }}</td>
+                                            <!-- manager -->
+
                                                   <td>
-                                    
-                                            <a class="modal-effect btn btn-sm btn-info" data-effect="effect-scale"
-                                                data-id="{{ $truck->id }}" data-number="{{ $truck->number }}"
-                                                data-line="{{ $truck->line }}" data-toggle="modal"
+                                                  <a class="modal-effect btn btn-sm btn-info" data-effect="effect-scale"
+                                                data-id="{{ $manager->id }}" data-name="{{ $manager->name }}"
+                                                data-phone_number="{{ $manager->phone_number }}" data-toggle="modal"
                                                 href="#exampleModal2" title="تعديل"><i class="las la-pen"></i></a>
-                                       
+                                           
                                             <a class="modal-effect btn btn-sm btn-danger" data-effect="effect-scale"
-                                                data-id="{{ $truck->id }}" data-number="{{ $truck->number }}"
+                                                data-id="{{ $manager->id }}" data-name="{{ $manager->name }}"
                                                 data-toggle="modal" href="#modaldemo9" title="حذف"><i
                                                     class="las la-trash"></i></a>
                                       
@@ -126,11 +124,20 @@
 								</div><!-- bd -->
                                 
 							</div><!-- bd -->
-                           
+                          
+                            <!--manager  -->
+                            <div class="col-xl-3">
+                                    <a class="modal-effect btn btn-outline-primary btn-block"
+                                     data-effect="effect-scale" data-toggle="modal" href="#modaldemo1">إضافة   </a>
+                                    </div>
+						</div><!-- bd -->
+						</div><!-- bd -->
 					</div>
 					<!--/div-->
-     <!-- edit -->
-     <div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+ 
+
+ <!-- edit -->
+ <div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -142,22 +149,22 @@
                 </div>
                 <div class="modal-body">
 
-                    <form action="{{ route('edittruck') }}" method="post" autocomplete="off">
+                    <form action="{{ route('editbranchmanager') }}" method="post" autocomplete="off">
                        
                         {{ csrf_field() }}
                         <div class="form-group">
                             <input type="hidden" name="id" id="id" value="">
-                            <label for="recipient-name" class="col-form-label">الرقم :</label>
-                            <input class="form-control" name="number" id="number" type="integer">
+                            <label for="recipient-name" class="col-form-label">الاسم :</label>
+                            <input class="form-control" name="name" id="name" type="string">
                         </div>
                         <div class="form-group">
-                            <label for="message-text" class="col-form-label">الخط:</label>
-                            <input class="form-control" id="line" name="line" type="string">
+                            <label for="message-text" class="col-form-label">رقم_الهاتف:</label>
+                            <input class="form-control" id="phone_number" name="phone_number" type="integer">
                         </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">تاكيد</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">اغلاق</button>
+                    <button type="submit" class="btn btn-primary">حفظ</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">الغاء</button>
                 </div>
                 </form>
             </div>
@@ -169,28 +176,84 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content modal-content-demo">
                 <div class="modal-header">
-                    <h6 class="modal-title">حذف </h6><button aria-label="Close" class="close" data-dismiss="modal"
-                        type="button"><span aria-hidden="true">&times;</span></button>
+                    <h6 class="modal-title">حذف </h6>
+                    <button aria-label="Close" class="close" data-dismiss="modal"
+                        type="button">
+                        <span aria-hidden="true">&times;</span></button>
                 </div>
-                <form action="{{ route('deletetruck') }}" method="post">
+                <form action="{{ route('deletewarehouse') }}" method="post">
                   
                     {{ csrf_field() }}
                     <div class="modal-body">
-                        <p>هل انت متاكد من عملية الحذف ؟</p><br>
                         <input type="hidden" name="id" id="id" value="">
-                        <input class="form-control" name="number" id="number" type="integer" readonly>
+                        <input class="form-control" name="name" id="name" type="string" readonly>
                     </div>
                     <div class="modal-footer">
+                       <button type="submit" class="btn btn-danger">حذف</button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">الغاء</button>
-                        <button type="submit" class="btn btn-danger">تاكيد</button>
+                        
                     </div>
                 </div>
             </form>
         </div>
     </div>
-					
+				
+ 
+    <!-- Basic modal -->
+		<div class="modal" id="modaldemo1">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content modal-content-demo">
+					<div class="modal-header">
+						<h6 class="modal-title">  إضافة مدير فرع:</h6><button aria-label="Close" class="close" data-dismiss="modal" type="button"><span aria-hidden="true">&times;</span></button>
+					</div>
+					<div class="modal-body">
+                    <form action="{{ route('addwmanager') }}" method="post">
+                        {{ csrf_field() }}
+                        <div class="form-group">
+                            <label for="exampleInputEmail1"> الاسم</label>
+                            <input type="string" class="form-control" id="name" name="name">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputEmail1"> الايميل</label>
+                            <input type="email" class="form-control" id="email" name="email">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputEmail1"> كلمة_المرور</label>
+                            <input type="string" class="form-control" id="password" name="password">
+                        </div>
 
-    
+                        <div class="form-group">
+                            <label for="exampleInputEmail1"> العنوان</label>
+                            <input type="string" class="form-control" id="manager_address" name="manager_address">
+                        </div>
+
+                      
+						<div class="form-group">
+                            <label for="exampleFormControlTextarea1">رقم_الهاتف</label>
+                            <input type="integer" class="form-control" id="phone_number" name="phone_number" >
+                        </div>
+                        <div class="form-group">
+                             <label for="exampleFormControlSelect1">المستودع</label>
+                        <select class="form-control" id="warehouse_id" name="warehouse_id">
+                         <option value="">اختر المستودع</option>
+                           @foreach ($warehouses as $warehous)
+                            <option value="{{ $warehous->id }}">{{ $warehous->warehouse_name }}</option>
+                                 @endforeach
+                                 </select>
+                          </div>
+
+					</div>
+					<div class="modal-footer">
+                    <button type="submit" class="btn btn-success">إضافة</button>
+                    <button class="btn ripple btn-secondary" data-dismiss="modal" type="button">الغاء</button>
+					</div>
+                    </form>
+				</div>
+
+                
+			</div>
+		</div>
+		<!-- End Basic modal -->
 
 				<!-- /row -->
 			</div>
@@ -219,18 +282,16 @@
 <!--Internal  Datatable js -->
 <script src="{{ URL::asset('assets/js/table-data.js') }}"></script>
 <script src="{{ URL::asset('assets/js/modal.js') }}"></script>
-
-
 <script>
     $('#exampleModal2').on('show.bs.modal', function(event) {
         var button = $(event.relatedTarget)
         var id = button.data('id')
-        var number = button.data('number')
-        var line = button.data('line')
+        var name = button.data('name')
+        var phone_number = button.data('phone_number')
         var modal = $(this)
         modal.find('.modal-body #id').val(id);
-        modal.find('.modal-body #number').val(number);
-        modal.find('.modal-body #line').val(line);
+        modal.find('.modal-body #name').val(name);
+        modal.find('.modal-body #phone_number').val(phone_number);
     })
 
 </script>
@@ -239,10 +300,10 @@
     $('#modaldemo9').on('show.bs.modal', function(event) {
         var button = $(event.relatedTarget)
         var id = button.data('id')
-        var number = button.data('number')
+        var name = button.data('name')
         var modal = $(this)
         modal.find('.modal-body #id').val(id);
-        modal.find('.modal-body #number').val(number);
+        modal.find('.modal-body #name').val(name);
     })
 
 </script>

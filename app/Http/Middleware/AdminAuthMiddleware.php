@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class EmployeeAuthMiddleware
+class AdminAuthMiddleware
 {
     /**
      * Handle an incoming request.
@@ -17,12 +17,9 @@ class EmployeeAuthMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        if ( !Auth::guard('admin_web')->check()) {
-            return redirect()->route('login');
+        if (!Auth::guard('admin_web')->check()) {
+            return redirect()->route('adminlogin');
         }
-
-        
-    
 
         return $next($request);
     }
