@@ -37,6 +37,9 @@ Route::post( 'login' , [AuthController::class , 'Login']);
 Route::post('logout' , [AuthController::class , 'Logout']);
 Route::get('get-role', [AuthController::class, 'getRole']);
 Route::post('sendresetlink' , [ResetPasswordController::class , 'SendResetLink']);
+Route::post('checkcustomer' , [AuthController::class , 'CheckCustomer']);
+Route::post('setpassword' , [AuthController::class , 'CustomerRegister']);
+Route::post('customerlogin' , [AuthController::class , 'CustomerLogin']);
 //Route::post('resetpassword' , [AuthController::class , 'ResetPassword'])->name('password.reset');
 
 
@@ -50,7 +53,7 @@ Route::group(['middleware' => 'BranchManager',
        Route::post('updatedriver' , [EmployeeController::class , 'UpdateDriver']);
        Route::post('deleteemployee' , [EmployeeController::class , 'DeleteEmployee']);
        Route::post('deletedriver' , [EmployeeController::class , 'DeleteDriver']);
-     //  Route::post('promoteemployee' , [EmployeeController::class , 'PromoteEmployee']);
+       Route::post('promoteemployee' , [EmployeeController::class , 'PromoteEmployee']);
        Route::post('rateemployee' , [EmployeeController::class , 'RateEmployee']);
        Route::post('addtruck' , [TruckController::class , 'AddTruck']);
        Route::post('updatetruck' , [TruckController::class , 'UpdateTruck']);
@@ -79,7 +82,7 @@ Route::group(['middleware' => 'BranchManager',
        Route::get('gettrucktrips/{id}' , [TruckController::class , 'GetTruckTrips']); 
        Route::get('gettrips' , [TripController::class , 'GetAllTrips']);  
       // Route::get('getmanifest/{trip_number}' , [TripController::class , 'GetManifest']); 
-      // Route::get('getmanifestshipping/{trip_number}' , [TripController::class , 'GetManifestShipping']); 
+       Route::get('getmanifestshipping/{trip_number}' , [TripController::class , 'GetManifestShipping']); 
        Route::get('getManifest/{manifest_number}' , [ShippingController::class , 'GetManifestWithInvoices']);
        Route::get('getshipping/{id}' , [ShippingController::class , 'getShipping']);
        Route::get('gearchivedemployee' , [EmployeeController::class , 'GetArchivedEmployee']); 
@@ -87,8 +90,10 @@ Route::group(['middleware' => 'BranchManager',
        Route::post('editmyprofile',[ProfileController::class , 'editMyProfile']);
        Route::get('drivers', [DriverController::class, 'GetAllDrivers']);
        Route::get('GetAllTripsForMyBranch', [TripController::class, 'GetAllTripsForMyBranch']);
-       Route::get('GetAllTripsForBranch/{id}',[TripController::class, 'GetAllTripsForBranch']);
        Route::get('GetAllTripsByTruck/{id}', [TripController::class, 'GetAllTripsByTruck']);
+       Route::get('getemployee/{id}' , [EmployeeController::class , 'GetEmployee']);
+       Route::get('getdriver/{id}' , [DriverController::class , 'GetDriver']);
+       Route::post('search' , [EmployeeController::class , 'SearchForEmployee']);
        //!N Added this
        Route::get('notifications', [TripController::class, 'getNotifications']);
 
@@ -129,8 +134,8 @@ Route::group(['middleware' => 'Employee',
         Route::get('alltrucksreports', [ReportController::class, 'getTruckReports']);
         Route::get('alltripsreports', [ReportController::class, 'getTripReports']);
         Route::get('GetAllTripsForMyBranch', [TripController::class, 'GetAllTripsForMyBranch']);
-        Route::get('GetAllTripsForBranch/{id}',[TripController::class, 'GetAllTripsForBranch']);
         Route::get('GetAllTripsByTruck/{id}', [TripController::class, 'GetAllTripsByTruck']);
+        Route::patch('closetrip/{trip_number}' , [TripController::class , 'CloseTrip']);
       
       
         Route::get('getbranchlatlng/{id}', [BranchController::class, 'getBranchlatlng']);
@@ -192,6 +197,7 @@ Route::group(['middleware' => 'Employee',
          Route::post('shippingprices', [ShippingController::class , 'DetermineShippingPrices']);
          Route::post('editshippingprices', [ShippingController::class , 'EditShippingPrices']);
          Route::get('priceslist', [ShippingController::class , 'GetPricesList']);
+         Route::get('GetAllTripsForBranch/{id}',[TripController::class, 'GetAllTripsForBranch']);
 
          Route::get('getManifest/{manifest_number}', [ShippingController::class, 'GetManifestWithInvoices']);
           //Route::get('notifications', [AuthController::class, 'getNotifications']);
@@ -219,6 +225,7 @@ Route::group(['middleware' => 'Employee',
           Route::get('getbranchlatlng/{id}', [BranchController::class, 'getBranchlatlng']);
           Route::get('getmytrips', [DriverController::class, 'GetMyTrips']);
           Route::post('update-location', [DriverController::class, 'updateLocation']);
+          Route::patch('arrivetrip/{trip_number}' , [TripController::class , 'ArriveTrip']);
 
      });   
 
@@ -234,7 +241,7 @@ Route::group(['middleware' => 'WarehouseManager',
           Route::get('notifications', [TripController::class, 'getNotifications']);
           Route::post('trip/status', [ShippmentTripStatusController::class, 'updateTripStatus']);
           Route::get('getManifest/{manifest_number}' , [ShippingController::class , 'GetManifestWithInvoices']);    
-
+          Route::get('getmanifestshipping/{trip_number}' , [TripController::class , 'GetManifestShipping']); 
           //!LQ
           Route::get('myprofile' , [ProfileController::class , 'getMyProfile']);
           Route::post('editmyprofile',[ProfileController::class , 'editMyProfile']);

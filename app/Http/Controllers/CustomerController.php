@@ -76,13 +76,12 @@ class CustomerController extends Controller
     
             // Get the authenticated employee
             $employee = Auth::guard('employee')->user();
-            $password = Str::random(8);
+           
     
             // Create the customer
             $customer = Customer::create([
                 'national_id' => $request->national_id,
                 'name' => $request->name,
-                'password' => Hash::make($password),
                 'phone_number' => $request->phone_number,
                 'gender' => $request->gender,
                 'mobile' => $request->mobile,

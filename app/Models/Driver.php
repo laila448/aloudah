@@ -34,6 +34,8 @@ class Driver extends Authenticatable implements JWTSubject
         'manager_name',
         'certificate',
         'device_token',
+        'id_front_image',
+        'id_back_image'
        // 'current_lat',
        // 'current_lng',
           ]; 

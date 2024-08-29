@@ -32,7 +32,9 @@ class Employee extends Authenticatable implements JWTSubject
         'employment_date',
         'resignation_date',
         'manager_name',
-        'device_token'
+        'device_token',
+        'id_front_image',
+        'id_back_image'
 
         
          ];

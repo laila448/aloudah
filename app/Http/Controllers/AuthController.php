@@ -23,6 +23,7 @@ use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\Facades\Notification as FacadesNotification;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
+use Lcobucci\JWT\Validation\Constraint\ValidAt;
 
 class AuthController extends Controller
 {
@@ -105,9 +106,6 @@ class AuthController extends Controller
         } elseif ($token = Auth::guard('employee')->attempt($credentials)) {
             $user = Auth::guard('employee')->user();
             $this->updateDeviceToken($user, Employee::class, $request->device_token);
-        } elseif ($token = Auth::guard('customer')->attempt($credentials)) {
-            $user = Auth::guard('customer')->user();
-            $this->updateDeviceToken($user, Customer::class, $request->device_token);
         } elseif ($token = Auth::guard('warehouse_manager')->attempt($credentials)) {
             $user = Auth::guard('warehouse_manager')->user();
             $this->updateDeviceToken($user, Warehouse_Manager::class, $request->device_token);
@@ -157,15 +155,21 @@ class AuthController extends Controller
         $title = 'Login Successful';
         $body = 'You have successfully logged in.';
 
+        $deviceToken = $user->device_token;
+        if($deviceToken){
         $message = CloudMessage::withTarget('token', $user->device_token)
             ->withNotification(FCMNotification::create($title, $body));
-
+        
         try {
             $this->messaging->send($message);
             Log::info('Notification sent to user', ['user_id' => $user->id]);
         } catch (Exception $e) {
             Log::error('Failed to send FCM message: ' . $e->getMessage(), ['user_id' => $user->id]);
         }
+    } else {
+        Log::warning('User device token not found, notification not sent.', ['user_id' => $user->id]);
+        return 'User device token not found';
+    }
     }
 
      public function getNotifications(Request $request)
@@ -221,6 +225,125 @@ class AuthController extends Controller
             'success' => false,
             'message' => 'Unauthorized'
         ], 401);
+    }
+
+    public function CheckCustomer(Request $request)
+    {
+        try{
+            $validator = Validator::make($request->all(),[
+                'national_id' => 'required'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $validator->errors()->toJson()
+                ], 400);
+            }
+
+            $customer = Customer::where('national_id' , $request->national_id)->first();
+
+            if(!$customer){
+                return response()->json([
+                    'success' => false ,
+                    'message' => 'Customer not found'
+                ], 404);
+            }
+
+            return response()->json([
+                'success' => true ,
+                'message' => 'Customer exist'
+            ], 200);
+
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while checking the customer',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+
+    }
+
+    public function CustomerRegister(Request $request)
+    {
+        try{
+
+            $validator = Validator::make($request->all(),[
+                'national_id' => 'required',
+                'password' => 'required|min:8'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $validator->errors()->toJson()
+                ], 400);
+            }
+
+            $customer = Customer::where('national_id' , $request->national_id)->first();
+
+            if(!$customer){
+                return response()->json([
+                    'success' => false ,
+                    'message' => 'Customer not found'
+                ], 404);
+            }
+
+            $customer->update([
+                'password' => bcrypt($request->password),
+            ]);
+
+            return response()->json([
+                'success' => true ,
+                'message' => 'Password updated successfully'
+            ], 200);
+            
+
+        }catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while setting the password',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function CustomerLogin(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'phone_number' => 'required|max:10',
+            'password' => 'required|min:8',
+            'device_token' => 'required',
+           
+        ]);
+
+        if ($validator->fails()) {
+            $errors = $validator->errors()->all();
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed. Please check the following errors:',
+                'errors' => $errors
+            ], 400);
+        }
+
+        $credentials = $request->only(['phone_number','password']);
+        $user = null;
+
+         if($token = Auth::guard('customer')->attempt($credentials)) {
+            $user = Auth::guard('customer')->user();
+            $this->updateDeviceToken($user, Customer::class, $request->device_token);
+        }
+
+        if ($user) {
+            $this->sendLoginNotification($user);
+            return response()->json([
+                'token' => $token,
+            ]);
+        }
+
+        return response()->json(['message' => 'Unauthorized'], 401);
     }
 }
 

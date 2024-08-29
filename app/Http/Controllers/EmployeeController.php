@@ -65,15 +65,17 @@ class EmployeeController extends Controller
         'name' => 'required|min:5|max:255|unique:drivers,name',
         'email' => 'required|string|email|unique:drivers,email',
         'phone_number' => 'required|max:10|unique:drivers,phone_number',
-        'gender' => 'required|in:male,female',
+       // 'gender' => 'required|in:male,female',
         'branch_id' => 'required|exists:branches,id',
-        'mother_name' => 'required|string',
-        'birth_date' => 'required|date_format:Y-m-d',
-        'birth_place' => 'required|string',
-        'mobile' => 'required|unique:drivers,mobile',
+       // 'mother_name' => 'required|string',
+       // 'birth_date' => 'required|date_format:Y-m-d',
+       // 'birth_place' => 'required|string',
+       // 'mobile' => 'required|unique:drivers,mobile',
         'address' => 'required|string',
-        'salary' => 'required',
-        'certificate' => 'required|unique:drivers,certificate'
+       // 'salary' => 'required',
+        'certificate' => 'required|unique:drivers,certificate',
+        'id_front_image' => 'required|image',
+        'id_back_image' => 'required|image'
     ]);
 
     if ($validator->fails()) {
@@ -105,6 +107,14 @@ class EmployeeController extends Controller
                 'manager_name' => $manager->name
             ]
         ));
+
+        $frontImagePath = $request->file('id_front_image')->store('driver_ids', 'public');
+        $driver->id_front_image = $frontImagePath;
+
+        $backImagePath = $request->file('id_back_image')->store('driver_ids', 'public');
+        $driver->id_back_image = $backImagePath;
+        
+        $driver->save();
 
         if ($driver) {
             Mail::to($driver->email)->send(new PasswordMail($driver->name, $password));
@@ -166,15 +176,17 @@ public function AddEmployee(Request $request)
         'name' => 'required|min:5|max:255|unique:employees,name',
         'email' => 'string|email|unique:employees,email',
         'phone_number' => 'required|max:10|unique:employees,phone_number',
-        'gender' => 'required|in:male,female',
+       // 'gender' => 'required|in:male,female',
         'password' => 'min:8',
         'branch_id' => 'required|exists:branches,id',
-        'mother_name' => 'required|string',
-        'birth_date' => 'required|date_format:Y-m-d',
-        'birth_place' => 'required|string',
-        'mobile' => 'required|unique:employees,mobile',
+       // 'mother_name' => 'required|string',
+       // 'birth_date' => 'required|date_format:Y-m-d',
+       // 'birth_place' => 'required|string',
+       // 'mobile' => 'required|unique:employees,mobile',
         'address' => 'required|string',
-        'salary' => 'required',
+       // 'salary' => 'required',
+       'id_front_image' => 'required|image',
+       'id_back_image' => 'required|image'
     ]);
 
     if ($validator->fails()) {
@@ -206,6 +218,14 @@ public function AddEmployee(Request $request)
                 'manager_name' => $manager->name
             ]
         ));
+
+        $frontImagePath = $request->file('id_front_image')->store('employee_ids', 'public');
+        $employee->id_front_image = $frontImagePath;
+
+        $backImagePath = $request->file('id_back_image')->store('employee_ids', 'public');
+        $employee->id_back_image = $backImagePath;
+        
+        $employee->save();
 
         if ($employee) {
             Mail::to($employee->email)->send(new PasswordMail($employee->name, $password));
@@ -548,11 +568,13 @@ public function AddEmployee(Request $request)
                     'rank' => $request->rank,
                     'employment_date' => now()->format('Y-m-d'),
                 ]);
+
+                 // Send notification
+                 $notificationStatus = $this->sendPromotionNotification($employee, $request->rank);
+    
                 $employee->delete();
     
-                // Send notification
-                $notificationStatus = $this->sendPromotionNotification($employee, $request->rank);
-    
+               
                 return response()->json([
                     'status' => 'success',
                     'message' => 'Employee has been promoted to Branch Manager',
@@ -575,10 +597,11 @@ public function AddEmployee(Request $request)
                     'rank' => $request->rank,
                     'employment_date' => now()->format('Y-m-d'),
                 ]);
-                $employee->delete();
+
+                 // Send notification
+                 $notificationStatus = $this->sendPromotionNotification($employee, $request->rank);
     
-                // Send notification
-                $notificationStatus = $this->sendPromotionNotification($employee, $request->rank);
+                $employee->delete();
     
                 return response()->json([
                     'status' => 'success',
@@ -586,22 +609,8 @@ public function AddEmployee(Request $request)
                     'notification_status' => $notificationStatus
                 ], 200);
     
-            } else {
-                $employee->update([
-                    'rank' => $request->rank,
-                    'branch_id' => $request->branch_id,
-                ]);
-    
-                // Send notification
-                $notificationStatus = $this->sendPromotionNotification($employee, $request->rank);
-    
-                return response()->json([
-                    'status' => 'success',
-                    'message' => 'Employee has been promoted',
-                    'notification_status' => $notificationStatus
-                ], 200);
             }
-    
+            
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -796,6 +805,9 @@ public function GetEmployee($id)
             $employeeData = $employee->makeHidden(['password']);
             $rating =round(Rating::where('employee_id', $id)->avg('rate'),1);
             $employeeData->rating = $rating;
+            $employeeData->id_front_image = asset($employee->id_front_image);
+            $employeeData->id_back_image = asset($employee->id_back_image);
+            
 
             return response()->json([
                 'status' => 'success',
@@ -998,6 +1010,48 @@ public function GetArchivedEmployee()
         return response()->json([
             'success' => false,
             'message' => 'An error occurred while fetching deleted employees',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
+
+public function SearchForEmployee(Request $request)
+{
+    try{
+
+        $validator = Validator::make($request->all(),[
+            'search_query' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            $errors = $validator->errors()->all();
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed. Please check the following errors:',
+                'errors' => $errors
+            ], 400);
+        }
+
+        $employees = Employee::where('name', 'like' , "%{$request->search_query}%")
+                            ->orWhere('national_id' , 'like' ,"%{$request->search_query}%" )
+                            ->paginate(10);
+
+        if($employees->isEmpty()){
+            return response()->json([
+                'success' => true,
+                'message' => 'No employees found'
+            ], 200);
+        }
+        return response()->json([
+            'success' => true,
+            'data' => $employees,
+            'message' => 'Employees retrieved successfully.'
+        ], 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'An error occurred while searching for employees',
             'error' => $e->getMessage()
         ], 500);
     }

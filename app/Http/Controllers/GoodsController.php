@@ -211,6 +211,7 @@ class GoodsController extends Controller
         try{
 
             $good = Good::where('barcode' , $request->barcode)->first();
+            $shipping = Shipping::where('barcode' , $request->barcode)->first();
 
             if(!$good){
                 return response()->json([
@@ -220,6 +221,9 @@ class GoodsController extends Controller
             }
 
             $good->update([
+                'received' => true
+            ]);
+            $shipping->update([
                 'received' => true
             ]);
 

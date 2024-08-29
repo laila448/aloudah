@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Branch;
+use App\Models\Branch_Manager;
 use App\Models\Manifest;
 use App\Models\Permission;
 use App\Models\Trip;
@@ -18,8 +19,10 @@ use Exception;
 use Illuminate\Support\Facades\Log;
 use App\Models\Notification as NotificationTable;
 
-use App\Jobs\CloseTripJob;
+
 use App\Models\Shipping;
+use App\Models\Warehouse;
+use App\Models\Warehouse_Manager;
 
 class TripController extends Controller
 {
@@ -224,7 +227,7 @@ public function addTrip(Request $request)
         $trip->date = now()->format('Y-m-d');
         $trip->status = 'active';  
         $trip->created_by = $loggedInEmployee->name;
-        $trip->closed_at = now()->addMinutes(60); // Set the closing time to 1 minute from now
+       // $trip->closed_at = now()->addMinutes(60); // Set the closing time to 1 minute from now
         $trip->save();
 
         $manifest = new Manifest();
@@ -235,14 +238,14 @@ public function addTrip(Request $request)
         $trip->manifest_id = $manifest->id;
         $trip->save();
 
-        Log::info('Trip created with ID: ' . $trip->id . ', closed_at: ' . $trip->closed_at->toDateTimeString());
+        Log::info('Trip created with ID: ' . $trip->id /*. ', closed_at: ' . $trip->closed_at->toDateTimeString()*/);
 
         // Debug log for job dispatch time
-        Log::info('Dispatching CloseTripJob at: ' . now()->toDateTimeString());
-        Log::info('Job should execute at: ' . now()->addMinutes(60)->toDateTimeString());
+       // Log::info('Dispatching CloseTripJob at: ' . now()->toDateTimeString());
+       // Log::info('Job should execute at: ' . now()->addMinutes(60)->toDateTimeString());
 
-        $job = (new CloseTripJob($trip->id))->delay(now()->addMinutes(60));
-        dispatch($job);
+       // $job = (new CloseTripJob($trip->id))->delay(now()->addMinutes(60));
+        //dispatch($job);
 
         try {
             $notificationStatus = $this->sendTripAddedNotification($loggedInEmployee, $trip);
@@ -306,7 +309,7 @@ public function addTrip(Request $request)
                 'source' => 'string|nullable',
                 'destination' => 'string|nullable',
                 'arrival_date' => 'date|nullable',
-                'status' => ['required', Rule::in(['active', 'closed', 'temporary'])]
+                'status' => [ Rule::in(['active', 'closed', 'temporary'])]
             ]);
     
             if ($validator->fails()) {
@@ -421,9 +424,11 @@ public function addTrip(Request $request)
                 ], 404);
             }
     
+            $notificationStatus = $this->sendTripCanceledNotification($loggedInEmployee, $trip);
+
             $trip->delete();
     
-            $notificationStatus = $this->sendTripCanceledNotification($loggedInEmployee, $trip);
+           
     
             return response()->json([
                 'success' => true,
@@ -454,6 +459,73 @@ public function addTrip(Request $request)
             try {
                 $this->messaging->send($message);
                 Log::info('Notification sent: Trip Canceled', ['employee_id' => $employee->id, 'trip_id' => $trip->id]);
+                return 'Notification sent successfully';
+            } catch (Exception $e) {
+                Log::error('Failed to send FCM message: ' . $e->getMessage(), ['employee_id' => $employee->id, 'trip_id' => $trip->id]);
+                return 'Failed to send notification';
+            }
+        } else {
+            Log::warning('Employee device token not found, notification not sent.', ['employee_id' => $employee->id]);
+            return 'Employee device token not found';
+        }
+    }
+
+    public function CloseTrip($trip_number)
+    {
+    try{
+        $employee = Auth::guard('employee')->user();
+        $permission = Permission::where('employee_id',$employee->id)->first();
+
+        if(!$permission->edit_close){
+            return response()->json([
+                'success' => false,
+                'message' => 'You do not have permission to close a trip'
+            ], 403);
+        }
+        $trip = Trip::where('number' , $trip_number)->first();
+        if(!$trip){
+            return response()->json([
+                'success' => false,
+                'message' => 'Trip not found'
+            ], 404);
+        }
+
+        $trip->update([
+            'status' => 'closed'
+        ]);
+
+        $notificationStatus = $this->sendTripClosedNotification($$employee, $trip);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Trip closed successfully',
+            'notification_status' => $notificationStatus
+        ], 200);
+
+    }
+    catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'An error occurred while closing the trip',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+    }
+
+    private function sendTripClosedNotification($employee, $trip)
+    {
+        $title = 'Trip Closed';
+        $body = "The trip with number {$trip->number} has been Closed.";
+    
+        $deviceToken = $employee->device_token;
+    
+        if ($deviceToken) {
+            $message = CloudMessage::withTarget('token', $deviceToken)
+                ->withNotification(Notification::create($title, $body));
+    
+            try {
+                $this->messaging->send($message);
+                Log::info('Notification sent: Trip Closed', ['employee_id' => $employee->id, 'trip_id' => $trip->id]);
                 return 'Notification sent successfully';
             } catch (Exception $e) {
                 Log::error('Failed to send FCM message: ' . $e->getMessage(), ['employee_id' => $employee->id, 'trip_id' => $trip->id]);
@@ -855,5 +927,66 @@ public function GetAllTripsByTruck($truck_id)
         ], 500);
     }
 
+}
+
+public function ArriveTrip($trip_number)
+{
+    try{
+       
+        $trip = Trip::where('number' , $trip_number)->first();
+        if(!$trip){
+            return response()->json([
+                'success' => false,
+                'message' => 'Trip not found'
+            ], 404);
+        }
+        $branch_manager = Branch_Manager::where('branch_id' , $trip->destination_id)->first();
+        $warehouse = Warehouse::where('branch_id' , $trip->destination_id)->first();
+        $warehouse_manager = Warehouse_Manager::where('warehouse_id' , $warehouse->id)->first();
+        $trip->update([
+            'arrival_date' => now()->format('Y-m-d'),
+        ]);
+
+        $notificationStatus = [$this->sendTripArrivedNotification($branch_manager, $trip),
+                                $this->sendTripArrivedNotification($warehouse_manager,$trip)];
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Trip arrived successfully',
+            'notification_status' => $notificationStatus
+        ], 200);
+
+    }
+    catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'An error occurred while editing arrival date',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
+private function sendTripArrivedNotification($manager, $trip)
+{
+    $title = 'Trip Arrived';
+    $body = "The trip with number {$trip->number} has been Arrived.";
+
+    $deviceToken = $manager->device_token;
+
+    if ($deviceToken) {
+        $message = CloudMessage::withTarget('token', $deviceToken)
+            ->withNotification(Notification::create($title, $body));
+
+        try {
+            $this->messaging->send($message);
+            Log::info('Notification sent: Trip Arrived', ['manager_id' => $manager->id, 'trip_id' => $trip->id]);
+            return 'Notification sent successfully';
+        } catch (Exception $e) {
+            Log::error('Failed to send FCM message: ' . $e->getMessage(), ['manager_id' => $manager->id, 'trip_id' => $trip->id]);
+            return 'Failed to send notification';
+        }
+    } else {
+        Log::warning('Manager device token not found, notification not sent.', ['manager_id' => $manager->id]);
+        return 'Manager device token not found';
+    }
 }
 }

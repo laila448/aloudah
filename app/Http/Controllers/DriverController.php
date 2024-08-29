@@ -370,4 +370,36 @@ public function getDriversByBranch(Request $request)
         ], 500);
     }
 }
+
+public function GetDriver($id)
+{
+    try {
+        $driver = Driver::where('id', $id)->first();
+
+        if ($driver) {
+            $driverData = $driver->makeHidden(['password']);
+            $driverData->id_front_image = asset($driver->id_front_image);
+            $driverData->id_back_image = asset($driver->id_back_image);
+            
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Driver retrieved successfully',
+                'data' => $driverData
+            ], 200);
+        }
+
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Driver not found'
+        ], 404);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'An error occurred while retrieving the driver',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
 }
