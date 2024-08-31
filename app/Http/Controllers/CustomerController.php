@@ -3,11 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
+use App\Models\Good;
+use App\Models\Manifest;
+use App\Models\Shipping;
+use App\Models\Trip;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+
+use function PHPUnit\Framework\isEmpty;
+use function PHPUnit\Framework\isNull;
 
 class CustomerController extends Controller
 {
@@ -264,4 +271,149 @@ class CustomerController extends Controller
     }
 }
 
+public function GetMyArrivedShippings(Request $request)
+{
+    try{
+        $myArrivedShippings=[];
+        $customer = Auth::guard('customer')->user(); //mobile
+        $shippings = Shipping::where('sender_number' , $customer->mobile)->get();
+
+        if($shippings->isEmpty()){
+            return response()->json([
+                'success' => false,
+                'message' => 'No shippings found'
+            ], 404);
+        }
+        foreach($shippings as $shipping){
+            $manifest_number = $shipping->manifest_number;
+          //  $manifest = Manifest::where('number' , $manifest_id)->first();
+            $trip = Trip::where('number' , $manifest_number)->first();
+            if($trip->arrival_date != null){
+                $shipping->arrival_date = $trip->arrival_date;
+                $myArrivedShippings[] = $shipping;
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Your arrived shippings retrieved successfully',
+            'data' => $myArrivedShippings
+        ], 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'An error occurred while retrieving your arrived shippings',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
+
+public function GetMyNotArrivedShippings(Request $request)
+{
+    try{
+        $myNotArrivedShippings=[];
+        $customer = Auth::guard('customer')->user(); //mobile
+        $shippings = Shipping::where('sender_number' , $customer->mobile)->get();
+
+        if($shippings->isEmpty()){
+            return response()->json([
+                'success' => false,
+                'message' => 'No shippings found'
+            ], 404);
+        }
+
+        foreach($shippings as $shipping){
+            $manifest_number = $shipping->manifest_number;
+            //  $manifest = Manifest::where('number' , $manifest_id)->first();
+              $trip = Trip::where('number' , $manifest_number)->first();
+            if($trip->arrival_date == null ){
+                $myNotArrivedShippings[] = $shipping;
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Your Not arrived shippings retrieved successfully',
+            'data' => $myNotArrivedShippings
+        ], 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'An error occurred while retrieving your Not arrived shippings',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
+
+public function GetMyReceivedShippings(Request $request)
+{
+    try{
+        $myReceivedShippings=[];
+        $customer = Auth::guard('customer')->user(); //mobile
+        $shippings = Shipping::where('receiver_number' , $customer->mobile)->get();
+
+        if($shippings->isEmpty()){
+            return response()->json([
+                'success' => false,
+                'message' => 'No shippings found'
+            ], 404);
+        }
+
+        foreach($shippings as $shipping){
+            if($shipping->received && Good::where('barcode' , $shipping->barcode)->exists()){
+                $myReceivedShippings[] = $shipping;
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Your received shippings retrieved successfully',
+            'data' => $myReceivedShippings
+        ], 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'An error occurred while retrieving your received shippings',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
+
+public function GetMyNotReceivedShippings(Request $request)
+{
+    try{
+        $myNotReceivedShippings=[];
+        $customer = Auth::guard('customer')->user(); //mobile
+        $shippings = Shipping::where('receiver_number' , $customer->mobile)->get();
+
+        if($shippings->isEmpty()){
+            return response()->json([
+                'success' => false,
+                'message' => 'No shippings found'
+            ], 404);
+        }
+
+        foreach($shippings as $shipping){
+            if(!$shipping->received && Good::where('barcode' , $shipping->barcode)->exists()){
+                $myNotReceivedShippings[] = $shipping;
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Your not received shippings retrieved successfully',
+            'data' => $myNotReceivedShippings
+        ], 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'An error occurred while retrieving your not received shippings',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
 }

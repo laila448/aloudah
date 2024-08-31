@@ -313,7 +313,7 @@ class AuthController extends Controller
     public function CustomerLogin(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'phone_number' => 'required|max:10',
+            'mobile' => 'required|max:10',
             'password' => 'required|min:8',
             'device_token' => 'required',
            
@@ -328,7 +328,7 @@ class AuthController extends Controller
             ], 400);
         }
 
-        $credentials = $request->only(['phone_number','password']);
+        $credentials = $request->only(['mobile','password']);
         $user = null;
 
          if($token = Auth::guard('customer')->attempt($credentials)) {

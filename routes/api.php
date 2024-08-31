@@ -96,6 +96,7 @@ Route::group(['middleware' => 'BranchManager',
        Route::get('getemployee/{id}' , [EmployeeController::class , 'GetEmployee']);
        Route::get('getdriver/{id}' , [DriverController::class , 'GetDriver']);
        Route::post('search' , [EmployeeController::class , 'SearchForEmployee']);
+       Route::get('aboutus' , [BranchController::class , 'BranchNumbers']);
        //!N Added this
        Route::get('notifications', [TripController::class, 'getNotifications']);
 
@@ -150,6 +151,7 @@ Route::group(['middleware' => 'Employee',
         Route::get('branches/{id}', [BranchController::class, 'GetBranchById']);
         Route::get('profile', [EmployeeController::class, 'GetProfile']);
         Route::post('customerByName', [CustomerController::class, 'GetCustomersByName']);
+        Route::get('aboutus' , [BranchController::class , 'BranchNumbers']);
 
      //    Route::get('myprofile' , [ProfileController::class , 'getMyProfile']);
        //!make this in front
@@ -218,6 +220,11 @@ Route::group(['middleware' => 'Employee',
      Route::group(['middleware' => 'Customer',
      'prefix' => 'customer'], function() {
           Route::post('addcompliant', [compliantController::class , 'AddCompliant']);
+          Route::get('arrivedshippings' , [CustomerController::class , 'GetMyArrivedShippings']);
+          Route::get('notarrivedshippings' , [CustomerController::class , 'GetMyNotArrivedShippings']);
+          Route::get('receivedshippings' , [CustomerController::class , 'GetMyReceivedShippings']);
+          Route::get('notreceivedshippings' , [CustomerController::class , 'GetMyNotReceivedShippings']);
+          Route::get('aboutus' , [BranchController::class , 'BranchNumbers']);
      });   
 
      Route::group(['middleware' => 'Driver',
@@ -228,6 +235,7 @@ Route::group(['middleware' => 'Employee',
           Route::get('getmytrips', [DriverController::class, 'GetMyTrips']);
           Route::post('update-location', [DriverController::class, 'updateLocation']);
           Route::patch('arrivetrip/{trip_number}' , [TripController::class , 'ArriveTrip']);
+          Route::get('aboutus' , [BranchController::class , 'BranchNumbers']);
 
      });   
 
@@ -247,6 +255,7 @@ Route::group(['middleware' => 'WarehouseManager',
           //!LQ
           Route::get('myprofile' , [ProfileController::class , 'getMyProfile']);
           Route::post('editmyprofile',[ProfileController::class , 'editMyProfile']);
+          Route::get('aboutus' , [BranchController::class , 'BranchNumbers']);
      });  
 
 

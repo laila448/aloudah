@@ -79,7 +79,7 @@ class GoodsController extends Controller
             'driver' => $driver->name,
             'destination' => $destination->address,
             'ship_date' => $shipping->created_at,
-            'date' => now()->format('Y-m-d'),
+            'date' => now()->format('Y-m-d H:i:s'),
             'sender' => $shipping->sender ,
             'receiver' => $shipping->receiver, 
             'barcode' => $shipping->barcode,
@@ -221,10 +221,12 @@ class GoodsController extends Controller
             }
 
             $good->update([
-                'received' => true
+                'received' => true,
+                'receiving_date' =>  now()->format('Y-m-d H:i:s')
             ]);
             $shipping->update([
-                'received' => true
+                'received' => true,
+                'receiving_date' =>  now()->format('Y-m-d H:i:s')
             ]);
 
             return response()->json([

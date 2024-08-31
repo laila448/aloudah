@@ -224,7 +224,7 @@ public function addTrip(Request $request)
         $trip->truck_id = $request->truck_id;
         $trip->driver_id = $request->driver_id;
         $trip->number = $tripNumber;
-        $trip->date = now()->format('Y-m-d');
+        $trip->date = now()->format('Y-m-d H:i:s');
         $trip->status = 'active';  
         $trip->created_by = $loggedInEmployee->name;
        // $trip->closed_at = now()->addMinutes(60); // Set the closing time to 1 minute from now
@@ -342,7 +342,7 @@ public function addTrip(Request $request)
     
             $trip->update(array_merge($validator->validated(), [
                 'edited_by' => $user->name,
-                'editing_date' => now()->format('Y-m-d')
+                'editing_date' => now()->format('Y-m-d H:i:s')
             ]));
     
             // Send notification
@@ -489,12 +489,18 @@ public function addTrip(Request $request)
                 'message' => 'Trip not found'
             ], 404);
         }
+        $manifest = Manifest::where('number' , $trip_number)->first();
 
         $trip->update([
-            'status' => 'closed'
+            'status' => 'closed',
+            'closed_at' =>  now()->format('Y-m-d H:i:s'),
         ]);
 
-        $notificationStatus = $this->sendTripClosedNotification($$employee, $trip);
+        $manifest->update([
+            'status' => 'closed',
+        ]);
+
+        $notificationStatus = $this->sendTripClosedNotification($employee, $trip);
 
         return response()->json([
             'success' => true,
@@ -978,7 +984,7 @@ public function ArriveTrip($trip_number)
         $warehouse = Warehouse::where('branch_id' , $trip->destination_id)->first();
         $warehouse_manager = Warehouse_Manager::where('warehouse_id' , $warehouse->id)->first();
         $trip->update([
-            'arrival_date' => now()->format('Y-m-d'),
+            'arrival_date' => now()->format('Y-m-d H:i:s'),
         ]);
 
         $notificationStatus = [$this->sendTripArrivedNotification($branch_manager, $trip),

@@ -586,4 +586,33 @@ public function AddBranchManager(Request $request)
             ], 500);
         }
     }
+
+    public function BranchNumbers()
+    {
+        try{
+        $branchs = Branch::select('desk' , 'phone')->get();
+
+        if($branchs){
+            return response()->json([
+                'success' => true,
+                'message' => 'Branchs retrieved successfully',
+                'data' => $branchs
+            ], 200);
+        }
+
+        return response()->json([
+            'success' => false ,
+            'message' => 'Branchs not found'
+          ], 404);
+
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve branches.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+
+    }
 }

@@ -29,5 +29,6 @@ class Good extends Model
       'receiver',
       'barcode',
       'received',
+      'receiving_date',
          ];
 }

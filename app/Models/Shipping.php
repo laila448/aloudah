@@ -36,6 +36,7 @@ class Shipping extends Model
      'collection',
      'barcode',
      'received',
+     'receiving_date',
     ];
     protected $hidden = ['created_at','updated_at'];
 
