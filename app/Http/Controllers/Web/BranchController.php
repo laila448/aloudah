@@ -38,7 +38,7 @@ public function AddBranch(Request $request)
 }
 
 public function AddBranchManager(Request $request)
-{
+{ 
  
     $validatedData = $request->validate([
         'name' => 'required',
@@ -46,6 +46,10 @@ public function AddBranchManager(Request $request)
         'password' => 'required',
         'manager_address' => 'required',
         'phone_number' => 'required',
+        'national_id' => 'required',
+        'gender' => '',
+        'mother_name' => '',
+        'date_of_birth' => '',
         'branch_id' => 'required',
     ]);
 
@@ -99,15 +103,18 @@ public function EditBranch( Request $request)
  }
 public function EditBranchManager( Request $request)
 {
-   
+    
     $id = $request->id;
 
     
 
-        $truck = Branch_Manager::find($id);
-        $truck->update([
+        $bm = Branch_Manager::find($id);
+        $bm->update([
             'name' => $request->name,
             'phone_number' => $request->phone_number,
+            'national_id' => $request->national_id,
+            'manager_address' => $request->manager_address,
+
         ]);
 
         session()->flash('edit','تم التعديل  بنجاج');

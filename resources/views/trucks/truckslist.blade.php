@@ -88,7 +88,10 @@
                                                 <th>الفرع</th>
 												<th>الخط</th>
 												<th>تاريخ_الإضافة</th>
+                                                <th> تفاصيل الرحلات</th>
                                                 <th>العمليات</th>
+                                               
+
 
 											</tr>
 										</thead>
@@ -104,9 +107,18 @@
 
                                                   <td>{{ $truck->line }}</td>
                                                   <td>{{ $truck->adding_data }}</td>
+
                                                   <td>
-                                    
-                                            <a class="modal-effect btn btn-sm btn-info" data-effect="effect-scale"
+    <form action="{{ route('trips.store') }}" method="POST" style="display: inline;">
+        @csrf
+        <input type="hidden" name="truck_id" value="{{ $truck->id }}">
+        <button type="submit" class=" btn btn-sm btn-warning" data-effect="effect-scale" title="عرض الرحلات">
+            <i class="fas fa-truck"></i>
+        </button>
+    </form>
+</td>
+                               <td>
+                                            <a class=" btn btn-sm btn-info" data-effect="effect-scale"
                                                 data-id="{{ $truck->id }}" data-number="{{ $truck->number }}"
                                                 data-line="{{ $truck->line }}" data-toggle="modal"
                                                 href="#exampleModal2" title="تعديل"><i class="las la-pen"></i></a>
@@ -116,7 +128,10 @@
                                                 data-toggle="modal" href="#modaldemo9" title="حذف"><i
                                                     class="las la-trash"></i></a>
                                       
+
                                                    </td>
+
+                                                   
                                                 </tr>
                                              @endforeach
 

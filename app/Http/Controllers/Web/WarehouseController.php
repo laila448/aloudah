@@ -60,6 +60,10 @@ class WarehouseController extends Controller
             'password' => 'required',
             'manager_address' => 'required',
             'phone_number' => 'required',
+            'national_id' => 'required',
+            'gender' => '',
+            'mother_name' => '',
+            'date_of_birth' => '',
             'warehouse_id' => 'required',
         ]);
     
@@ -109,39 +113,42 @@ class WarehouseController extends Controller
             return redirect('/employee/getAllWarehouses');
         
      }
-    public function EditBranchManager( Request $request)
+    public function editwmanager( Request $request)
     {
        
         $id = $request->id;
     
         
     
-            $truck = Branch_Manager::find($id);
-            $truck->update([
+            $wm = Warehouse_Manager::find($id);
+            $wm->update([
                 'name' => $request->name,
                 'phone_number' => $request->phone_number,
+                'national_id' => $request->national_id,
+                'manager_address' => $request->manager_address,
+    
             ]);
     
             session()->flash('edit','تم التعديل  بنجاج');
-            return redirect('/employee/getallmanagers');
+            return redirect('/employee/getallwmanagers');
         
      }
     
-    public function DeleteBranchManager(Request $request)
+    public function deletewmanager(Request $request)
     {
         $id = $request->id;
-        $branch_manager = Branch_Manager::find($id);
+        $w_manager = Warehouse_Manager::find($id);
     
-        $branch = Branch::where('branchmanager_id', $branch_manager->id)->first();
-        if ($branch) {
-            $branch->branchmanager_id = null;
-            $branch->save();
+        $w = Warehouse::where('warehouse_manager_id', $w_manager->id)->first();
+        if ($w) {
+            $w->warehouse_manager_id = null;
+            $w->save();
         }
     
-        $branch_manager->delete();
+        $w_manager->delete();
         
         session()->flash('delete','تم الحذف  بنجاح');
-        return redirect('/employee/getallmanagers');
+        return redirect('/employee/getallwmanagers');
     
     }
     }

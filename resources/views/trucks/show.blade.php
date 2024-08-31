@@ -6,7 +6,7 @@
 				<div class="breadcrumb-header justify-content-between">
 					<div class="my-auto">
 						<div class="d-flex">
-							<h4 class="content-title mb-0 my-auto">الأفرع  :</h4><span class="text-muted mt-1 tx-13 mr-2 mb-0"> </span>
+							<h4 class="content-title mb-0 my-auto">قائمة الشاحنات :</h4><span class="text-muted mt-1 tx-13 mr-2 mb-0"> </span>
 						</div>
 					</div>
 					<div class="d-flex my-xl-auto right-content">
@@ -65,100 +65,69 @@
     </div>
 @endif
 				<!-- row opened -->
-
-                
 				<div class="row row-sm">
 					<div class="col-xl-12">
-                        
 						<div class="card">
 							<div class="card-header pb-0">
 
 					<div class="col-xl-12">
- 
-                                    <!-- row opened -->
-                                    <div class="row row-sm">
-    <div class="col-xl-12">
-        <div class="card">
-            <div class="card-header pb-0">
-                <div class="d-flex justify-content-between">
-                    <h4 class="card-title mg-b-0">الأفرع</h4>
-                    <div class="col-md-4">
-                        <form action="{{ route('searchemployees') }}" method="GET">
-                            <div class="input-group">
-                                <input type="text" class="form-control" placeholder="Search by name or desk"
-                                    name="search" value="{{ request()->input('search') }}">
-                                <div class="input-group-append">
-                                    <button class="btn btn-primary" type="submit">
-                                        <i class="fa fa-search"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-         
-            </div>
-        </div>
-    </div>
-</div>
-								</div>
-                               
 						<div class="card">
 							<div class="card-header pb-0">
-                                
 								<div class="d-flex justify-content-between">
-									<h4 class="card-title mg-b-0"> </h4>
-                                    
+									<h4 class="card-title mg-b-0">الشاحنات </h4>
 									<i class="mdi mdi-dots-horizontal text-gray"></i>
-
-                                   
-
+								</div>
 							</div>
 							<div class="card-body">
 								<div class="table-responsive">
 									<table class="table table-striped mg-b-0 text-md-nowrap">
-										<thead>
+                                    <thead>
 											<tr>
-												<th>ID</th>
-                                                <th>الاسم</th>
-												<th>الفرع</th>
-												<th>رقم_الهاتف</th>
-												<th>العنوان</th>
-                                                <th>تاريخ_التوظيف</th>
+												
+                                                <th>رقم_الرحلة</th>
+												<th>السائق</th>
+												<th>الوجهة</th>
+                                                <th> تاريخ_الرحلة</th>
+                                                
+
 											</tr>
 										</thead>
 										<tbody>
-                                        @php
-                                        $count = 1;
-                                         @endphp
-											 @foreach ($employees as $employee)
-                                                <tr>
-                                                  <th scope="row">{{ $count++ }}</th>
-                                                  <td>{{ $employee->name }}</td>
-                                                  <td>{{ $employee->branch->desk }}</td>
-                                                  <td>{{ $employee->phone_number }}</td>
-                                                  <td>{{ $employee->address }}</td>
-                                                  <td>{{ $employee->employment_date }}</td>
+                                
+										
+				
+                    @foreach($tr as $t)
+					<tr>
+                        <td>{{ $t->number }}</td>
+						<td>{{ $t->driver->name }}</td>
+						<td>{{ $t->destination->desk }}</td>
+						<td>{{ $t->date }}</td>
+
+
+                        </tr>   
+                    @endforeach
                                                
+       
 
-
-
-                                                  
-                               
-                                                </tr>
-                                             @endforeach
+                                                   
+                                              
 
 										</tbody>
+                                   
 									</table>
                                    
 								</div><!-- bd -->
                                 
 							</div><!-- bd -->
-						
+                           
 					</div>
-					<!--/div -->
- 
+					<!--/div-->
+     
+
+   	
+
+    
+
 				<!-- /row -->
 			</div>
 			<!-- Container closed -->
@@ -186,28 +155,5 @@
 <!--Internal  Datatable js -->
 <script src="{{ URL::asset('assets/js/table-data.js') }}"></script>
 <script src="{{ URL::asset('assets/js/modal.js') }}"></script>
-<script>
-    $('#exampleModal2').on('show.bs.modal', function(event) {
-        var button = $(event.relatedTarget)
-        var id = button.data('id')
-        var phone = button.data('phone')
-       
-        var modal = $(this)
-        modal.find('.modal-body #id').val(id);
-        modal.find('.modal-body #phone').val(phone);
-     
-    })
 
-</script>
-<script>
-    $('#modaldemo9').on('show.bs.modal', function(event) {
-        var button = $(event.relatedTarget)
-        var id = button.data('id')
-        var desk = button.data('desk')
-        var modal = $(this)
-        modal.find('.modal-body #id').val(id);
-        modal.find('.modal-body #desk').val(desk);
-    })
-
-</script>
 @endsection

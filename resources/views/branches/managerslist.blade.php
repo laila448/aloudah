@@ -85,10 +85,12 @@
 											<tr>
 												<th>ID</th>
                                                 <th>الاسم</th>
+                                                <th>الرقم الوطني</th>
 												<th>رقم_الهاتف</th>
+                                                <th>العنوان</th>
                                                 <th>الفرع</th>
                                                 <th>المكتب</th>
-                                                <!-- <th>Operations</th> -->
+                                                <th>العمليات</th>
 											</tr>
 										</thead>
 										<tbody>
@@ -99,7 +101,10 @@
                                                 <tr>
                                                   <th scope="row">{{ $count++ }}</th>
                                                   <td>{{ $manager->name }}</td>
+                                                  <td>{{ $manager->national_id }}</td>                                                  
                                                   <td>{{ $manager->phone_number }}</td>
+                                                  <td>{{ $manager->manager_address }}</td>
+
                                                   <td>{{ $manager->branch->address }}</td>
                                                   <td>{{ $manager->branch->desk }}</td>
                                            
@@ -108,8 +113,12 @@
                                                   <td>
                                                   <a class="modal-effect btn btn-sm btn-info" data-effect="effect-scale"
                                                 data-id="{{ $manager->id }}" data-name="{{ $manager->name }}"
-                                                data-phone_number="{{ $manager->phone_number }}" data-toggle="modal"
+                                                data-phone_number="{{ $manager->phone_number }}"  
+                                                data-national_id="{{ $manager->national_id }}" 
+                                                data-manager_address="{{ $manager->manager_address }}" data-toggle="modal"
                                                 href="#exampleModal2" title="تعديل"><i class="las la-pen"></i></a>
+                                                
+                                              
                                            
                                             <a class="modal-effect btn btn-sm btn-danger" data-effect="effect-scale"
                                                 data-id="{{ $manager->id }}" data-name="{{ $manager->name }}"
@@ -132,7 +141,10 @@
                                     <a class="modal-effect btn btn-outline-primary btn-block"
                                      data-effect="effect-scale" data-toggle="modal" href="#modaldemo1">إضافة   </a>
                                     </div>
+
+                                    
 						</div><!-- bd -->
+                        
 						</div><!-- bd -->
 					</div>
 					<!--/div-->
@@ -162,6 +174,14 @@
                         <div class="form-group">
                             <label for="message-text" class="col-form-label">رقم_الهاتف:</label>
                             <input class="form-control" id="phone_number" name="phone_number" type="integer">
+                        </div>
+                        <div class="form-group">
+                            <label for="message-text" class="col-form-label">الرقم_الوطني:</label>
+                            <input class="form-control" id="national_id" name="national_id" type="integer">
+                        </div>
+                        <div class="form-group">
+                            <label for="message-text" class="col-form-label">العنوان:</label>
+                            <input class="form-control" id="manager_address" name="manager_address" type="string">
                         </div>
                 </div>
                 <div class="modal-footer">
@@ -241,8 +261,27 @@
                                  @endforeach
                                  </select>
                           </div>
-
-					</div>
+                          <div class="form-group">
+                            <label for="exampleFormControlTextarea1">الرقم_الوطني</label>
+                            <input type="integer" class="form-control" id="national_id" name="national_id" >
+                        </div>
+                        <div class="form-group">
+                      <label for="gender">الجنس</label>
+                         <select class="form-control" id="gender" name="gender">
+                          <option value="">اختر الجنس</option>
+                         <option value="male">ذكر</option>
+                         <option value="female">أنثى</option>
+                       </select>
+                    </div>
+                        	<div class="form-group">
+                            <label for="exampleFormControlTextarea1">اسم_الام</label>
+                            <input type="string" class="form-control" id="mother_name" name="mother_name" >
+                        </div>	
+                        <div class="form-group">
+                            <label for="exampleFormControlTextarea1">تاريخ_الميلاد</label>
+                            <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" >
+                        </div>	
+                      
 					<div class="modal-footer">
                     <button type="submit" class="btn btn-success">إضافة</button>
                     <button class="btn ripple btn-secondary" data-dismiss="modal" type="button">الغاء</button>
@@ -288,10 +327,16 @@
         var id = button.data('id')
         var name = button.data('name')
         var phone_number = button.data('phone_number')
+        var national_id = button.data('national_id') 
+        var manager_address = button.data('manager_address')
+
         var modal = $(this)
         modal.find('.modal-body #id').val(id);
         modal.find('.modal-body #name').val(name);
         modal.find('.modal-body #phone_number').val(phone_number);
+        modal.find('.modal-body #national_id').val(national_id);
+        modal.find('.modal-body #manager_address').val(manager_address);
+
     })
 
 </script>
