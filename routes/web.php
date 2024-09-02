@@ -79,6 +79,9 @@ Route::post('/logout',[App\Http\Controllers\Auth\AdminLoginController::class, 'l
  Route::group(['middleware' => 'EmployeeAuthMiddleware',
  'prefix' => 'employee'], function() { 
 Route::get('/truckslist' , [truckController::class , 'GetTrucks']);
+Route::post('/trips', [truckController::class, 'showtrucktrips'])->name('trips.store');
+
+
 Route::post('/addtruck' , [truckController::class , 'AddTruck'])->name('addtruck');
 Route::post('/deletetruck' , [truckController::class , 'DeleteTruck'])->name('deletetruck');
 Route::post('/edittruck' , [truckController::class , 'EditTruck'])->name('edittruck');
@@ -111,8 +114,8 @@ Route::get('/getAllWarehouses' , [WarehouseController::class , 'getAllWarehouses
 Route::get('/getallwmanagers' , [WarehouseController::class , 'getAllWarehousesM'])->name('getallwmanagers');
 
 Route::post('/addwmanager' , [WarehouseController::class , 'Addwmanager'])->name('addwmanager');
-Route::post('/editwmanager' , [WarehouseController::class , 'editbranchmanager'])->name('editbranchmanager');
-Route::post('/deletemanager' , [WarehouseController::class , 'deletewarehouse'])->name('deletewarehouse');
+Route::post('/editwmanager' , [WarehouseController::class , 'editwmanager'])->name('editwmanager');
+Route::post('/deletemanager' , [WarehouseController::class , 'deletewmanager'])->name('deletemanager');
 
 Route::post('/addwarehouse' , [WarehouseController::class , 'addwarehouse'])->name('addwarehouse');
 Route::post('/editwarehouse' , [WarehouseController::class , 'editwarehouse'])->name('editwarehouse');

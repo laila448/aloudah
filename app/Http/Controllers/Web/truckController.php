@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Models\Trip;
 use App\Models\Truck;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class truckController extends Controller
 {
@@ -15,8 +17,50 @@ class truckController extends Controller
         $trucks=Truck::with('branch')->get();
         return view('trucks.truckslist',compact('trucks'));
     }
+    
+
+    public function showtrucktrips(Request $request)
+    {
+        $id = $request->truck_id;
+            // Find the truck by number
+            // $truck = Truck::where('id', $id)->first();
+    
+   
+   
+            $tr=Trip::with('driver','destination')
+               ->where('truck_id', $id)
+              ->get();
 
 
+            // $trips = DB::table('trips')
+            //     ->select('number', 'date', 'driver_id')
+            //     ->where('truck_id', $id)
+            //     ->get();
+    
+            // $driverIds = $trips->pluck('driver_id')->unique();
+    
+            // $drivers = DB::table('drivers')
+            //     ->select('id', 'name')
+            //     ->whereIn('id', $driverIds)
+            //     ->get();
+    
+            // $truck->trips = $trips;
+    
+         
+    
+
+
+    //    $truck= Truck::find($id);
+    // $truck = Truck::with(['trips' => function ($query) {
+    //     $query->select('number', 'date', 'driver_id', 'branch_id', 'destination_id');
+    // }, 'trips.driver:name', 'branch', 'trips.branch:desk', 'trips.destination:desk'])
+    //     ->select('number')
+    //     ->find($id);
+
+        return view('trucks.show', compact('tr'));
+
+}
+    
     public function AddTruck(Request $request)
     {
 
