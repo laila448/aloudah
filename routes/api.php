@@ -252,6 +252,7 @@ Route::group(['middleware' => 'WarehouseManager',
           Route::post('trip/status', [ShippmentTripStatusController::class, 'updateTripStatus']);
           Route::get('getManifest/{manifest_number}' , [ShippingController::class , 'GetManifestWithInvoices']);    
           Route::get('getmanifestshipping/{trip_number}' , [TripController::class , 'GetManifestShipping']); 
+          Route::post('manifestinventory' , [GoodsController::class , 'ManifestInventory']);
           //!LQ
           Route::get('myprofile' , [ProfileController::class , 'getMyProfile']);
           Route::post('editmyprofile',[ProfileController::class , 'editMyProfile']);

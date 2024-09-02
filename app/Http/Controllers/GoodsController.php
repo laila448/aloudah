@@ -9,6 +9,7 @@ use App\Models\Price;
 use App\Models\Shipping;
 use App\Models\Trip;
 use App\Models\Truck;
+use App\Models\Warehouse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -424,4 +425,94 @@ class GoodsController extends Controller
             ], 500);
         }
     }    
+
+    public function ManifestInventory(Request $request){
+
+        $validator = Validator::make($request->all() ,[
+            'trip_number' => 'required',
+            'barcodes' => 'required|array',
+             'barcodes.*' => 'string'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->toJson()
+            ], 400);
+        }
+
+        try{
+            $user = Auth::guard('warehouse_manager')->user(); 
+            $warehouse  = Warehouse::where('id' , $user->warehouse_id)->first();
+            $trip = Trip::where('number' , $request->trip_number)->first();
+            if($warehouse->branch_id != $trip->destination_id){
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You can only check inventory to your own warehouse.'
+                ], 403);
+            }
+            $shippings = Shipping::where('manifest_number' , $request->trip_number)->get();
+           
+            $notFound = [];
+            $found = [];
+           
+           foreach($shippings as $shipping){
+            if(in_array($shipping->barcode,$request->barcodes)){
+                   $shipping->ischecked = true;
+                   $found[] = $shipping;
+                }
+                else{
+                    $shipping->ischecked = false;
+                    $notFound[] = $shipping;
+                 
+                }
+            }
+
+             // Send notification
+             $notificationStatus = $this->sendInventoryNotification($user, $found, $notFound);
+            
+             if(empty($notFound)){
+                foreach($shippings as $shipping){
+                    $price = Price::select('type')->where('id' , $shipping->price_id)->first();
+                    $truck = Truck::select('line')->where('id' , $trip->truck_id)->first();
+                    $driver = Driver::select('name')->where('id' , $trip->driver_id)->first();
+                    $destination = Branch::select('address')->where('id' , $shipping->destination_id)->first();
+                    $addGood = Good::create([
+                        'warehouse_id' => $user->warehouse_id,
+                        'type' => $price->type,
+                        'quantity' => $shipping->quantity,
+                        'weight' => $shipping->weight ,
+                        'size' => $shipping->size,
+                        'content' => $shipping->content,
+                        'marks' => $shipping->marks,
+                        'truck' => $truck->line,
+                        'driver' => $driver->name,
+                        'destination' => $destination->address,
+                        'ship_date' => $shipping->created_at,
+                        'date' => now()->format('Y-m-d H:i:s'),
+                        'sender' => $shipping->sender ,
+                        'receiver' => $shipping->receiver, 
+                        'barcode' => $shipping->barcode,
+                    ]);
+                }
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Inventory process completed successfully and the goods are added to the warehouse.',
+                    'data' => $shippings
+                ], 200); 
+            }
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Some shippings are missing.',
+                    'data' => $shippings
+                ], 200); 
+          
+        }catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Inventory failed.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }
