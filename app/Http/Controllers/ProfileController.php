@@ -19,7 +19,7 @@ class ProfileController extends Controller
         try{
             if(Auth::guard('admin')->check()){
                 $user_id = Auth::guard('admin')->id();
-               $admin = Admin::select('rank', 'email' , 'phone_number')
+               $admin = Admin::select('name' ,'rank', 'email' , 'phone_number')
                                 ->where('id' , $user_id)->first();
                 return response()->json([
                     'success' => true,
@@ -29,7 +29,7 @@ class ProfileController extends Controller
             }
             elseif(Auth::guard('employee')->check()){
                 $user_id = Auth::guard('employee')->id();
-                $employee = Employee::select('rank', 'email' , 'phone_number' , 'address' , 'birth_date')
+                $employee = Employee::select('name','rank', 'email' , 'phone_number' , 'address' , 'birth_date')
                                  ->where('id' , $user_id)->first();
                 $rating =round(Rating::where('employee_id', $user_id)->avg('rate'),1);
                 $vacations = Vacation::where('user_id' , $user_id)
@@ -44,7 +44,7 @@ class ProfileController extends Controller
             }
             elseif(Auth::guard('branch_manager')->check()){
                 $user_id = Auth::guard('branch_manager')->id();
-                $manager = Branch_Manager::select('rank', 'email' , 'phone_number' , 'manager_address' , 'date_of_birth')
+                $manager = Branch_Manager::select('name','rank', 'email' , 'phone_number' , 'manager_address' , 'date_of_birth')
                                  ->where('id' , $user_id)->first();
                  return response()->json([
                      'success' => true,
@@ -53,7 +53,7 @@ class ProfileController extends Controller
                  ], 200);
             }
             elseif(Auth::guard('warehouse_manager')->check()){
-                $user_id = Auth::guard('warehouse_manager')->id();
+                $user_id = Auth::guard('name','warehouse_manager')->id();
                 $manager = Warehouse_Manager::select('rank', 'email' , 'phone_number' , 'manager_address' , 'date_of_birth')
                                  ->where('id' , $user_id)->first();
                  return response()->json([
