@@ -152,6 +152,13 @@ Route::group(['middleware' => 'Employee',
         Route::get('profile', [EmployeeController::class, 'GetProfile']);
         Route::post('customerByName', [CustomerController::class, 'GetCustomersByName']);
         Route::get('aboutus' , [BranchController::class , 'BranchNumbers']);
+        Route::post('driversreport' , [ReportController::class , 'DriversReport']);
+        Route::get('getdriversreports' , [ReportController::class , 'GetDriversReports']);
+        Route::get('downloadreports/{reportId}', [ReportController::class, 'downloadReport']);
+        Route::post('trucksreport' , [ReportController::class , 'TrucksReport']);
+        Route::get('gettrucksreports' , [ReportController::class , 'GetTrucksReports']);
+        Route::post('destinationreport' , [ReportController::class , 'DestinationsReport']);
+        Route::get('getdestinationreports' , [ReportController::class , 'GetDestinationReports']);
 
      //    Route::get('myprofile' , [ProfileController::class , 'getMyProfile']);
        //!make this in front

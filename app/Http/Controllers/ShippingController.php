@@ -153,8 +153,8 @@ class ShippingController extends Controller
     public function getManifestWithInvoices($manifestNumber)
     {
         try {
-            //$manifest = Manifest::with('shippings')->where('number', $manifestNumber)->first();
-            $manifest = Manifest::where('number' , $manifestNumber)->first();
+            $manifest = Manifest::with('shippings')->where('number', $manifestNumber)->first();
+           // $manifest = Manifest::where('number' , $manifestNumber)->first();
             if (!$manifest) {
                 return response()->json([
                     'success' => false,
@@ -162,9 +162,15 @@ class ShippingController extends Controller
                 ], 404);
             }
 
-            $manifest->shippings = $manifest->shippings->map(function ($shipping) {
-                return $this->transformShipping($shipping);
-            });
+           // $manifest->shippings = $manifest->shippings->map(function ($shipping) {
+           //     return $this->transformShipping($shipping);
+           // });
+           foreach($manifest->shippings as $shipping){
+            $source = Branch::where('id' , $shipping->source_id)->first();
+            $type = Price::where('id' , $shipping->price_id)->first();
+            $shipping->source = $source->desk;
+            $shipping->type = $type->type;
+            }
 
             return response()->json([
                 'success' => true,
@@ -450,6 +456,7 @@ public function getShipping($shipping_id){
 //!Mark:Changed here
 private function transformShipping($shipping)
     {
+        $price = Price::where('id' , $shipping->price_id)->first();
         return [
             'id' => $shipping->id,
             'source_id'=>$shipping->source_id,
@@ -462,6 +469,7 @@ private function transformShipping($shipping)
             'sender_number' => $shipping->sender_number,
             'receiver_number' => $shipping->receiver_number,
             'quantity' => $shipping->quantity,
+            'type' => $price->type,
             'weight' => $shipping->weight,
             'size' => $shipping->size,
             'content' => $shipping->content,
