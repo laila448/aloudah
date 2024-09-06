@@ -97,6 +97,7 @@ Route::group(['middleware' => 'BranchManager',
        Route::get('getdriver/{id}' , [DriverController::class , 'GetDriver']);
        Route::post('search' , [EmployeeController::class , 'SearchForEmployee']);
        Route::get('aboutus' , [BranchController::class , 'BranchNumbers']);
+       Route::get('getcomplaints' , [compliantController::class , 'GetComplaints']);
        //!N Added this
        Route::get('notifications', [TripController::class, 'getNotifications']);
 
@@ -216,6 +217,7 @@ Route::group(['middleware' => 'Employee',
          Route::get('driversByBranch', [DriverController::class, 'getDriversByBranch']);
          Route::get('employeesByBranch', [EmployeeController::class, 'getEmployeesByBranch']);
          Route::get('archiveEmployeeByBranch', [BranchController::class, 'getArchivedEmployeeByBranch']);
+         Route::get('getcomplaints' , [compliantController::class , 'GetComplaints']);
      //!LQ
      Route::get('myprofile' , [ProfileController::class , 'getMyProfile']);
      Route::post('editmyprofile',[ProfileController::class , 'editMyProfile']);

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Complaint;
+use App\Models\Customer;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
@@ -83,6 +84,38 @@ public function AddCompliantEmp(Request $request)
         return response()->json([
             'success' => false,
             'message' => 'An error occurred while adding the complaint',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
+
+public function GetComplaints(){
+
+    try{
+
+        $complaints = Complaint::select('id' , 'customer_id' , 'message')->get();
+        if(!$complaints){
+            return response()->json([
+                'success' => true,
+                'message' => 'No complaint found.',
+            ], 200); 
+        }
+        foreach($complaints as $complaint){
+        $customer = Customer::where('id' , $complaint->customer_id)->first();
+        $complaint->customer_name = $customer->name;
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Complaints retrieved successfully. ',
+            'data' => $complaints
+        ], 200); 
+
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'An error occurred while retrieving the complaints',
             'error' => $e->getMessage()
         ], 500);
     }
