@@ -144,8 +144,7 @@
 											</div>
 										</div>
 									</div>
-									<a class="dropdown-item" href=""><i class="bx bx-user-circle"></i>Profile</a>
-									<a class="dropdown-item" href=""><i class="bx bx-cog"></i> Edit Profile</a>
+									<a class="dropdown-item" href="{{ url('/employee/' . $page='getmyprofile') }}"><i class="bx bx-user-circle"></i>Profile</a>
 								
 						<!-- <a class="dropdown-item" href="{{ route('logout') }}"><i class="bx bx-log-out"></i> Log Out</a> -->
 

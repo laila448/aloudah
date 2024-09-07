@@ -92,7 +92,6 @@
                                                 <th>address</th>
                                                 <th>address_details</th>
                                                 <th>notes</th>
-                                                <th>operations</th>
 
 											</tr>
 										</thead>
@@ -111,23 +110,7 @@
                                                   <td>{{ $customer->address }}</td>
                                                   <td>{{ $customer->address_detail }}</td>
                                                   <td>{{ $customer->notes }}</td>
-                                                  <td>
-                                    
-                                            <a class="modal-effect btn btn-sm btn-info" data-effect="effect-scale"
-                                            data-id="{{ $customer->id }}"  data-name="{{ $customer->name }}"
-                                                data-phone_number="{{ $customer->phone_number }}"
-                                                data-national_id="{{ $customer->national_id }}"  data-address="{{ $customer->address }}"
-                                                data-gender="{{ $customer->gender }}"
-                                                data-mobile="{{ $customer->mobile }}"
-                                                data-address_detail="{{ $customer->address_detail }}" data-toggle="modal"
-                                                href="#exampleModal2" title="Edit"><i class="las la-pen"></i></a>
-                                       
-                                            <a class="modal-effect btn btn-sm btn-danger" data-effect="effect-scale"
-                                                data-id="{{ $customer->id }}" data-number="{{ $customer->number }}"
-                                                data-toggle="modal" href="#modaldemo9" title="حذف"><i
-                                                    class="las la-trash"></i></a>
-                                      
-                                                   </td>
+                                            
                                                 </tr>
                                              @endforeach
 
@@ -137,10 +120,7 @@
 								</div><!-- bd -->
                                 
 							</div><!-- bd -->
-                            <div class="col-xl-3">
-                                    <a class="modal-effect btn btn-outline-primary btn-block"
-                                     data-effect="effect-scale" data-toggle="modal" href="#modaldemo1">Add</a>
-                                    </div>
+                            
 						</div><!-- bd -->
 					</div>
 					<!--/div-->

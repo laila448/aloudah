@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin;
 use App\Models\Branch;
 use App\Models\Branch_Manager;
 use Carbon\Carbon;
@@ -12,6 +13,29 @@ use Illuminate\Support\Facades\Hash;
 
 class BranchController extends Controller
 {
+public function  getmyprofile()
+{
+ return view('profile');
+}
+public function editprofile(Request $request)
+{
+
+    $id = $request->id;
+
+    $admin = Admin::find($id);
+    $admin->update([
+        'name' => $request->name,
+        'email' => $request->email,
+        'phone_number' => $request->phone_number,
+        'password' =>  Hash::make($request->password),
+
+    ]);
+
+    session()->flash('edit','تم التعديل  بنجاج');
+    return view('profile');
+
+}
+
 public function getBranches()
 {
     $branches = Branch::with('branch_manager')->get();

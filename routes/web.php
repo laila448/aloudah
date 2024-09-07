@@ -14,16 +14,6 @@ use App\Http\Controllers\Web\WarehouseController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
 
 Route::get('/', function () {
     return view('welcome');
@@ -40,10 +30,11 @@ Route::get('/empty', [App\Http\Controllers\HomeController::class, 'empty'])->nam
 
 //Auth::routes();
 
+
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 
-Route::group(['prefix' => 'admin'], function() {
+    Route::group(['prefix' => 'admin'], function() {
     Route::get('/login', [App\Http\Controllers\Auth\AdminController::class, 'showLoginFormadmin'])->name('admin2login');
     Route::post('/login', [App\Http\Controllers\Auth\AdminController::class, 'loginadmin'])->name('adminlogin');
     Route::post('/logout',[App\Http\Controllers\Auth\AdminController::class, 'logoutadmin'])->name('adminlogout');
@@ -54,20 +45,7 @@ Route::group(['prefix' => 'admin'], function() {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
- Route::group(['prefix' => 'employee'], function() {
+Route::group(['prefix' => 'employee'], function() {
 Route::get('/login', [App\Http\Controllers\Auth\AdminLoginController::class, 'showLoginForm'])->name('admin.login');
 Route::post('/login', [App\Http\Controllers\Auth\AdminLoginController::class, 'login'])->name('login');
 Route::post('/logout',[App\Http\Controllers\Auth\AdminLoginController::class, 'logout'])->name('logout');
@@ -76,12 +54,11 @@ Route::post('/logout',[App\Http\Controllers\Auth\AdminLoginController::class, 'l
  Route::get('/index', [App\Http\Controllers\AdminController::class, 'index'])->name('index');
 
  
- Route::group(['middleware' => 'EmployeeAuthMiddleware',
+Route::group(['middleware' => 'EmployeeAuthMiddleware',
  'prefix' => 'employee'], function() { 
 Route::get('/truckslist' , [truckController::class , 'GetTrucks']);
 Route::post('/trips', [truckController::class, 'showtrucktrips'])->name('trips.store');
-
-
+   
 Route::post('/addtruck' , [truckController::class , 'AddTruck'])->name('addtruck');
 Route::post('/deletetruck' , [truckController::class , 'DeleteTruck'])->name('deletetruck');
 Route::post('/edittruck' , [truckController::class , 'EditTruck'])->name('edittruck');
@@ -121,16 +98,8 @@ Route::post('/addwarehouse' , [WarehouseController::class , 'addwarehouse'])->na
 Route::post('/editwarehouse' , [WarehouseController::class , 'editwarehouse'])->name('editwarehouse');
 Route::post('/deletewarehouse' , [WarehouseController::class , 'deletewarehouse'])->name('deletewarehouse');
 
-
-
-
-
-
 Route::get('/getallemployees' , [EmployeeController::class , 'GetAllEmployees'])->name('getallemployees');
 Route::get('/searchemployees' , [EmployeeController::class , 'searchemployees'])->name('searchemployees');
-
-
-
 
 Route::get('/getdrivers' , [DriverController::class , 'GetDrivers'])->name('getdrivers');
 Route::post('/deletedriver' , [DriverController::class , 'DeleteDriver'])->name('deletedriver');
@@ -145,48 +114,10 @@ Route::post('/deletecustomer' , [CustomerController::class , 'DeleteCustomer'])-
 
 Route::get('/getcompliant' , [CustomerController::class , 'getCompliant'])->name('getcompliant');
 
+
+Route::get('/getmyprofile' , [BranchController::class , 'getmyprofile'])->name('getmyprofile');
+
+Route::post('/editprofile' , [BranchController::class , 'editprofile'])->name('editprofile');
+
+
 });
- //////////////////////ADMIN DASHBOARD //////////////////////
- 
-// Route::group(['middleware' => 'AdminAuthMiddleware',
-// 'prefix' => 'admin'], function() { 
-// Route::get('/truckslist' , [truckController::class , 'GetTrucks']);
-// Route::post('/addtruck' , [truckController::class , 'AddTruck'])->name('addtruck');
-// Route::post('/deletetruck' , [truckController::class , 'DeleteTruck'])->name('deletetruck');
-// Route::post('/edittruck' , [truckController::class , 'EditTruck'])->name('edittruck');
-
-// Route::get('/tripslist' , [tripController::class , 'GetTrips'])->name('tripslist');
-// Route::get('/temporarytrips' , [tripController::class , 'GetTemporaryTrips']);
-// Route::get('/closedtrips' , [tripController::class , 'GetClosedTrips']);
-// Route::post('/archivetrip', [tripController::class, 'ArchiveTrip'])->name('archivetrip');
-// Route::get('/archivedtrips' , [tripController::class , 'GetArchiveTrips']);
-// Route::post('/edittrip' , [tripController::class , 'EditTrip'])->name('edittrip');
-// Route::post('/archivetrip' , [tripController::class , 'ArchiveTrip'])->name('archivetrip');
-// Route::post('/deletetrip' , [tripController::class , 'DeleteTrip'])->name('deletetrip');
-// Route::get('/manifests' , [tripController::class , 'GetManifests'])->name('manifests');
-// Route::post('/manifestinformation' , [tripController::class , 'GetManifestinformation'])->name('manifestinformation');
-
-
-
-// Route::post('/addbranch' , [BranchController::class , 'AddBranch'])->name('addbranch');
-// Route::get('/getallbranches' , [BranchController::class , 'getBranches'])->name('getallbranches');
-// Route::get('/getallmanagers' , [BranchController::class , 'GetAllManagers'])->name('getallmanagers');
-// Route::post('/deletebranch' , [BranchController::class , 'DeleteBranch'])->name('deletebranch');
-// Route::post('/editbranchmanager' , [BranchController::class , 'EditBranchManager'])->name('editbranchmanager');
-// Route::post('/deletebranchmanager' , [BranchController::class , 'DeleteBranchManager'])->name('deletebranchmanager');
-
-
-// Route::get('/getdrivers' , [DriverController::class , 'GetDrivers'])->name('getdrivers');
-// Route::post('/deletedriver' , [DriverController::class , 'DeleteDriver'])->name('deletedriver');
-// Route::post('/editdriver' , [DriverController::class , 'EditDriver'])->name('editdriver');
-
-
-// Route::get('/getcustomers' , [CustomerController::class , 'GetCustomers'])->name('getcustomers');
-// Route::post('/addcustomer' , [CustomerController::class , 'AddCustomer'])->name('addcustomer');
-// Route::post('/editcustomer' , [CustomerController::class , 'EditCustomer'])->name('editcustomer');
-// Route::post('/deletecustomer' , [CustomerController::class , 'DeleteCustomer'])->name('deletecustomer');
-
-
-// Route::get('/getcompliant' , [CustomerController::class , 'getCompliant'])->name('getcompliant');
-
-// });
