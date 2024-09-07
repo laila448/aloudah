@@ -97,6 +97,7 @@ Route::group(['middleware' => 'BranchManager',
        Route::get('getdriver/{id}' , [DriverController::class , 'GetDriver']);
        Route::post('search' , [EmployeeController::class , 'SearchForEmployee']);
        Route::get('aboutus' , [BranchController::class , 'BranchNumbers']);
+       Route::get('getcomplaints' , [compliantController::class , 'GetComplaints']);
        //!N Added this
        Route::get('notifications', [TripController::class, 'getNotifications']);
 
@@ -152,6 +153,13 @@ Route::group(['middleware' => 'Employee',
         Route::get('profile', [EmployeeController::class, 'GetProfile']);
         Route::post('customerByName', [CustomerController::class, 'GetCustomersByName']);
         Route::get('aboutus' , [BranchController::class , 'BranchNumbers']);
+        Route::post('driversreport' , [ReportController::class , 'DriversReport']);
+        Route::get('getdriversreports' , [ReportController::class , 'GetDriversReports']);
+        Route::get('downloadreports/{reportId}', [ReportController::class, 'downloadReport']);
+        Route::post('trucksreport' , [ReportController::class , 'TrucksReport']);
+        Route::get('gettrucksreports' , [ReportController::class , 'GetTrucksReports']);
+        Route::post('destinationreport' , [ReportController::class , 'DestinationsReport']);
+        Route::get('getdestinationreports' , [ReportController::class , 'GetDestinationReports']);
 
      //    Route::get('myprofile' , [ProfileController::class , 'getMyProfile']);
        //!make this in front
@@ -209,6 +217,7 @@ Route::group(['middleware' => 'Employee',
          Route::get('driversByBranch', [DriverController::class, 'getDriversByBranch']);
          Route::get('employeesByBranch', [EmployeeController::class, 'getEmployeesByBranch']);
          Route::get('archiveEmployeeByBranch', [BranchController::class, 'getArchivedEmployeeByBranch']);
+         Route::get('getcomplaints' , [compliantController::class , 'GetComplaints']);
      //!LQ
      Route::get('myprofile' , [ProfileController::class , 'getMyProfile']);
      Route::post('editmyprofile',[ProfileController::class , 'editMyProfile']);
