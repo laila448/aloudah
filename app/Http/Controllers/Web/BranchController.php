@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Admin;
 use App\Models\Branch;
 use App\Models\Branch_Manager;
+use App\Models\Price;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -161,6 +162,61 @@ public function DeleteBranchManager(Request $request)
     
     session()->flash('delete','تم الحذف  بنجاح');
     return redirect('/employee/getallmanagers');
+
+}
+
+
+public function getprices()
+{ 
+    $types = Price::get();
+    return view('Price.priceslist',compact('types'));
+
+
+
+
+}
+public function addprice(Request $request)
+{ 
+    Price::create([
+        'type' => $request->type,
+        'cost' => $request->cost,
+        
+
+
+    ]);
+    session()->flash('Add', 'تمت الاضافة  بنجاح ');
+    return redirect('/employee/getprices');
+
+
+
+
+
+
+}
+public function editprice(Request $request)
+{ 
+    $id = $request->id;
+    $price = Price::find($id);
+    $price->update([
+        'type' => $request->type,
+        'cost' => $request->cost,
+    ]);
+
+    session()->flash('edit','تم التعديل  بنجاج');
+    return redirect('/employee/getprices');
+
+
+
+
+}
+public function deleteprice(Request $request)
+{ 
+    $id = $request->id;
+    Price::find($id)->delete();
+    session()->flash('delete','تم الحذف  بنجاح');
+    return redirect('/employee/getprices');
+
+
 
 }
 }

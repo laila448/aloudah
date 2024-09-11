@@ -615,4 +615,41 @@ public function AddBranchManager(Request $request)
         }
 
     }
-}
+
+
+    public function GetBranchInformatin()
+    {
+        $user = Auth::user();
+
+        $branchId = $user->branch_id;
+
+        $branch = Branch::with(['trips.driver'])
+            ->find($branchId);
+
+        if ($branch) {
+            $response = [
+                'desk' => $branch->desk,
+                'address' => $branch->address,
+                'manager' => $branch->branch_manager ? $branch->branch_manager->name : null, 
+                'mobile' => $branch->branch_manager ? $branch->branch_manager->phone_number : null, 
+                'opening_date' => $branch->opening_date,
+                'trips' => $branch->trips->map(function ($trip) {
+                    return [
+                        'number' => $trip->number,
+                        'date' => $trip->date,
+                        'driver_name' => $trip->driver ? $trip->driver->name : null, 
+                    ];
+                }),
+            ];
+
+            return response()->json($response);
+        } else {
+            return response()->json(['message' => 'Branch not found'], 404);
+        }
+    }
+
+
+
+
+    }
+

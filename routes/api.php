@@ -98,6 +98,8 @@ Route::group(['middleware' => 'BranchManager',
        Route::post('search' , [EmployeeController::class , 'SearchForEmployee']);
        Route::get('aboutus' , [BranchController::class , 'BranchNumbers']);
        Route::get('getcomplaints' , [compliantController::class , 'GetComplaints']);
+       Route::get('getbranchinformatin' , [BranchController ::class , 'GetBranchInformatin']);
+
        //!N Added this
        Route::get('notifications', [TripController::class, 'getNotifications']);
 

@@ -119,5 +119,12 @@ Route::get('/getmyprofile' , [BranchController::class , 'getmyprofile'])->name('
 
 Route::post('/editprofile' , [BranchController::class , 'editprofile'])->name('editprofile');
 
+Route::get('/getprices' , [BranchController::class , 'getprices'])->name('getprices');
+Route::post('/addprice' , [BranchController::class , 'addprice'])->name('addprice');
+Route::post('/editprice' , [BranchController::class , 'editprice'])->name('editprice');
+Route::post('/deleteprice' , [BranchController::class , 'deleteprice'])->name('deleteprice');
+
+
+
 
 });
