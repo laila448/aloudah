@@ -99,6 +99,8 @@ Route::group(['middleware' => 'BranchManager',
        Route::get('aboutus' , [BranchController::class , 'BranchNumbers']);
        Route::get('getcomplaints' , [compliantController::class , 'GetComplaints']);
        Route::get('getbranchinformatin' , [BranchController ::class , 'GetBranchInformatin']);
+       Route::get('mybranchtrucks' , [TruckController ::class , 'GetMyBranchTrucks']);
+      
 
        //!N Added this
        Route::get('notifications', [TripController::class, 'getNotifications']);

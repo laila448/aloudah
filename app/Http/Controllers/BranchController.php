@@ -623,8 +623,7 @@ public function AddBranchManager(Request $request)
 
         $branchId = $user->branch_id;
 
-        $branch = Branch::with(['trips.driver'])
-            ->find($branchId);
+        $branch = Branch::find($branchId);
 
         if ($branch) {
             $response = [
@@ -637,7 +636,7 @@ public function AddBranchManager(Request $request)
                     return [
                         'number' => $trip->number,
                         'date' => $trip->date,
-                        'driver_name' => $trip->driver ? $trip->driver->name : null, 
+                        'destination' => $trip->destination ? $trip->destination->desk : null, 
                     ];
                 }),
             ];

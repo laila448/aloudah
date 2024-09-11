@@ -372,4 +372,30 @@ private function sendTruckDeletedNotification($branchManager, $truck)
     }
 }
 
+public function GetMyBranchTrucks()
+{
+    try {
+        $branch_manager = Auth::guard('branch_manager')->user();
+        $trucks = Truck::where('branch_id' , $branch_manager->branch_id)->get();
+        if(!$trucks){
+            return response()->json([
+                'success' => false,
+                'message' => 'trucks not found'
+            ], 404);
+        }
+        return response()->json([
+            'success' => true,
+            'message' => 'Trucks retrieved successfully',
+            'data' => $trucks
+        ], 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'An error occurred while retrieving the trucks',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
+
 }
