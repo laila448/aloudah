@@ -244,6 +244,8 @@ Route::group(['middleware' => 'Employee',
           Route::get('receivedshippings' , [CustomerController::class , 'GetMyReceivedShippings']);
           Route::get('notreceivedshippings' , [CustomerController::class , 'GetMyNotReceivedShippings']);
           Route::get('aboutus' , [BranchController::class , 'BranchNumbers']);
+          Route::get('myprofile' , [ProfileController::class , 'getMyProfile']);
+          Route::post('editmyprofile',[ProfileController::class , 'editMyProfile']);
      });   
 
      Route::group(['middleware' => 'Driver',
