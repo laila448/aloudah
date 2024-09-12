@@ -100,6 +100,11 @@ Route::group(['middleware' => 'BranchManager',
        Route::get('getcomplaints' , [compliantController::class , 'GetComplaints']);
        Route::get('getbranchinformatin' , [BranchController ::class , 'GetBranchInformatin']);
        Route::get('mybranchtrucks' , [TruckController ::class , 'GetMyBranchTrucks']);
+       Route::get('getdriversreports' , [ReportController::class , 'GetDriversReports']);
+       Route::get('gettrucksreports' , [ReportController::class , 'GetTrucksReports']);
+       Route::get('getdestinationreports' , [ReportController::class , 'GetDestinationReports']);
+       Route::get('getreport/{reportId}', [ReportController::class, 'GetReport']);
+       Route::get('downloadreports/{reportId}', [ReportController::class, 'downloadReport']);
       
 
        //!N Added this
@@ -164,6 +169,7 @@ Route::group(['middleware' => 'Employee',
         Route::get('gettrucksreports' , [ReportController::class , 'GetTrucksReports']);
         Route::post('destinationreport' , [ReportController::class , 'DestinationsReport']);
         Route::get('getdestinationreports' , [ReportController::class , 'GetDestinationReports']);
+        Route::get('getreport/{reportId}', [ReportController::class, 'GetReport']);
 
      //    Route::get('myprofile' , [ProfileController::class , 'getMyProfile']);
        //!make this in front

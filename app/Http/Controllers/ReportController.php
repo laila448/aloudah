@@ -17,6 +17,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 //use Elibyy\TCPDF\Facades\TCPDF;
 use Illuminate\Support\Facades\View;
 use Elibyy\TCPDF\TCPDF;
+use Illuminate\Support\Facades\File;
 
 class ReportController extends Controller
 {
@@ -574,4 +575,24 @@ public function GetDestinationReports(){
         ], 500);
     }
 }
+
+public function GetReport($reportId)
+  {
+    try{
+      $report = Report::findOrFail($reportId);
+  
+      if (public_path($report->file_path)) {
+        return response()->file(public_path($report->file_path));
+      }
+  
+      return response()->json(['error' => 'File not found'], 404);
+      
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'An error occurred while getting the report',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+  }
 }
