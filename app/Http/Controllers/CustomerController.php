@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Branch;
+use App\Models\Complaint;
 use App\Models\Customer;
 use App\Models\Good;
 use App\Models\Manifest;
@@ -437,6 +438,35 @@ public function GetMyNotReceivedShippings(Request $request)
         return response()->json([
             'success' => false,
             'message' => 'An error occurred while retrieving your not received shippings',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
+
+public function GetMyComplaints()
+{
+    try{
+        $customer = Auth::guard('customer')->id();
+
+        $complaints = Complaint::where('customer_id' , $customer)->get();
+
+        if($complaints->isEmpty())
+        {
+            return response()->json([
+                'success' => false,
+                'message' => 'No complaints found'
+            ], 404);
+        }
+        return response()->json([
+            'success' => true,
+            'message' => 'Complaints retrieved successfully.',
+            'data' => $complaints,
+        ], 201); 
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'An error occurred while retrieving your complaints',
             'error' => $e->getMessage()
         ], 500);
     }

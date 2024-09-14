@@ -225,13 +225,13 @@ public function DriversReport(Request $request)
             'message' => 'Driver not found'
         ], 404);
     }
+    $user = Auth::guard('employee')->user();
     $trips = Trip::where('driver_id' , $driver->id)
+                    ->where('branch_id' , $user->branch_id)
                     ->whereBetween('date' ,[$request->from , $request->to])
                     ->orderBy('date')
                     ->get();
-    $trip_count = Trip::where('driver_id' , $driver->id)
-    ->whereBetween('date' ,[$request->from , $request->to])
-    ->count();
+    $trip_count = $trips->count();
     foreach($trips as $trip){
         $destination = Branch::where('id' , $trip->destination_id)->first();
         $truck = Truck::where('id' , $trip->truck_id)->first();
@@ -258,7 +258,6 @@ public function DriversReport(Request $request)
     $filename = 'drivers_report_' . now()->format('Y_m_d_H_i_s') . '.pdf';
     $storagePath = 'public/Drivers_reports/' . $filename;
     $pdf->Output(public_path('storage/Drivers_reports/'.$filename),'F');
-    $pdf->Output(public_path('storage/Drivers_reports/'.$filename),'I');
     $url = Storage::url('Drivers_reports/' . $filename);
 
     $report = Report::create([
@@ -356,13 +355,13 @@ public function downloadReport($reportId)
             'message' => 'Truck not found'
         ], 404);
     }
+    $user = Auth::guard('employee')->user();
     $trips = Trip::where('truck_id' , $truck->id)
+                    ->where('branch_id' , $user->branch_id)
                     ->whereBetween('date' ,[$request->from , $request->to])
                     ->orderBy('date')
                     ->get();
-    $trip_count = Trip::where('truck_id' , $truck->id)
-    ->whereBetween('date' ,[$request->from , $request->to])
-    ->count();
+    $trip_count = $trips->count();
     foreach($trips as $trip){
         $destination = Branch::where('id' , $trip->destination_id)->first();
         $driver = Driver::where('id' , $trip->driver_id)->first();
@@ -389,7 +388,6 @@ public function downloadReport($reportId)
     $filename = 'trucks_report_' . now()->format('Y_m_d_H_i_s') . '.pdf';
     $storagePath = 'public/Trucks_reports/' . $filename;
     $pdf->Output(public_path('storage/Trucks_reports/'.$filename),'F');
-    $pdf->Output(public_path('storage/Trucks_reports/'.$filename),'I');
     $url = Storage::url('Trucks_reports/' . $filename);
 
     $report = Report::create([
@@ -468,6 +466,7 @@ public function DestinationsReport(Request $request)
 
     $trips=[];
     $destination_desk = '';
+    $user = Auth::guard('employee')->user();
     if(!$request->exists('destination')){
        $trips = Trip::where('status' , $request->status)->get();
        $destination_desk = 'كل المدن';
@@ -475,6 +474,7 @@ public function DestinationsReport(Request $request)
     $destination = Branch::where('desk' , $request->destination)->first();
     $destination_desk = $destination->desk;
     $trips = Trip::where('destination_id' , $destination->id)
+                    ->where('branch_id' , $user->branch_id)
                     ->where('status' , $request->status)
                     ->whereBetween('date' ,[$request->from , $request->to])
                     ->orderBy('date')
@@ -518,7 +518,6 @@ public function DestinationsReport(Request $request)
     $filename = 'destination_report_' . now()->format('Y_m_d_H_i_s') . '.pdf';
     $storagePath = 'public/Destination_reports/' . $filename;
     $pdf->Output(public_path('storage/Destination_reports/'.$filename),'F');
-    $pdf->Output(public_path('storage/Destination_reports/'.$filename),'I');
     $url = Storage::url('Destination_reports/' . $filename);
 
     $report = Report::create([

@@ -246,6 +246,7 @@ Route::group(['middleware' => 'Employee',
           Route::get('aboutus' , [BranchController::class , 'BranchNumbers']);
           Route::get('myprofile' , [ProfileController::class , 'getMyProfile']);
           Route::post('editmyprofile',[ProfileController::class , 'editMyProfile']);
+          Route::get('getmycomplaints' , [CustomerController::class , 'GetMyComplaints']);
      });   
 
      Route::group(['middleware' => 'Driver',

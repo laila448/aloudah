@@ -62,7 +62,7 @@ class EmployeeController extends Controller
 {
     $validator = Validator::make($request->all(), [
         'national_id' => 'required|max:11|unique:drivers,national_id',
-        'name' => 'required|min:5|max:255|unique:drivers,name',
+        'name' => 'required|min:4|max:255|unique:drivers,name',
         'email' => 'required|string|email|unique:drivers,email',
         'phone_number' => 'required|max:10|unique:drivers,phone_number',
        // 'gender' => 'required|in:male,female',
@@ -173,7 +173,7 @@ public function AddEmployee(Request $request)
 {
     $validator = Validator::make($request->all(), [
         'national_id' => 'required|max:11|unique:employees,national_id',
-        'name' => 'required|min:5|max:255|unique:employees,name',
+        'name' => 'required|min:4|max:255|unique:employees,name',
         'email' => 'string|email|unique:employees,email',
         'phone_number' => 'required|max:10|unique:employees,phone_number',
        // 'gender' => 'required|in:male,female',

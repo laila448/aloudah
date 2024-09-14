@@ -34,7 +34,7 @@ class ShippingController extends Controller
                 'weight' => 'required|numeric',
                 'size' => 'required|string',
                 'content' => 'required|string',
-                'marks' => 'required|string',
+                'marks' => 'string|nullable',
                 'notes' => 'string|nullable',
                 'shipping_cost' => 'numeric|nullable',
                 'against_shipping' => 'numeric|nullable',

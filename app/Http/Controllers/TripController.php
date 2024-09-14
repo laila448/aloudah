@@ -972,13 +972,18 @@ public function GetAllTripsByTruck($truck_id)
 public function ArriveTrip($trip_number)
 {
     try{
-       
+       $driver = Auth::guard('driver')->id();
         $trip = Trip::where('number' , $trip_number)->first();
         if(!$trip){
             return response()->json([
                 'success' => false,
                 'message' => 'Trip not found'
             ], 404);
+        } elseif($driver != $trip->driver_id){
+            return response()->json([
+                'success' => false,
+                'message' => 'You do not have permission to this trip'
+            ], 403);
         }
         $branch_manager = Branch_Manager::where('branch_id' , $trip->destination_id)->first();
         $warehouse = Warehouse::where('branch_id' , $trip->destination_id)->first();
