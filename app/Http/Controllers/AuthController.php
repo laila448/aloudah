@@ -345,5 +345,63 @@ class AuthController extends Controller
 
         return response()->json(['message' => 'Unauthorized'], 401);
     }
+
+    public function GetMyNotifications()
+    {
+        try{
+            $notifications = null;
+            if(Auth::guard('employee')->check()){
+                $user_id = Auth::guard('employee')->id();
+                $notifications = Notification::where('user_id' , $user_id)
+                                            ->where('user_type' , 'employee')
+                                            ->orderByDesc('created_at')
+                                            ->get();
+            } elseif(Auth::guard('branch_manager')->check()){
+                $user_id = Auth::guard('branch_manager')->id();
+                $notifications = Notification::where('user_id' , $user_id)
+                                            ->where('user_type' , 'branch_manager')
+                                            ->orderByDesc('created_at')
+                                            ->get();
+            } elseif(Auth::guard('warehouse_manager')->check()){
+                $user_id = Auth::guard('warehouse_manager')->id();
+                $notifications = Notification::where('user_id' , $user_id)
+                                            ->where('user_type' , 'warehouse_manager')
+                                            ->orderByDesc('created_at')
+                                            ->get();
+            } elseif(Auth::guard('driver')->check()){
+                $user_id = Auth::guard('driver')->id();
+                $notifications = Notification::where('user_id' , $user_id)
+                                            ->where('user_type' , 'driver')
+                                            ->orderByDesc('created_at')
+                                            ->get();
+            } elseif(Auth::guard('customer')->check()){
+                $user_id = Auth::guard('customer')->id();
+                $notifications = Notification::where('user_id' , $user_id)
+                                            ->where('user_type' , 'customer')
+                                            ->orderByDesc('created_at')
+                                            ->get();
+            }
+
+            if(!$notifications){
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No notifications found'
+                ], 404);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Notifications retrieved successfully',
+                'data' => $notifications
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'An error occurred while retrieving your notifications',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }
 

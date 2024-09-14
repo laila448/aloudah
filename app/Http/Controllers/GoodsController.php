@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Branch;
+use App\Models\Customer;
 use App\Models\Driver;
 use App\Models\Good;
+use App\Models\Notification as ModelsNotification;
 use App\Models\Price;
 use App\Models\Shipping;
 use App\Models\Trip;
@@ -66,7 +68,7 @@ class GoodsController extends Controller
         $driver = Driver::select('name')->where('id' , $trip->driver_id)->first();
         $destination = Branch::select('address')->where('id' , $shipping->destination_id)->first();
         $user = Auth::guard('warehouse_manager')->user();
-    
+        
 
         $addGood = Good::create([
             'warehouse_id' => $user->warehouse_id,
@@ -85,8 +87,12 @@ class GoodsController extends Controller
             'receiver' => $shipping->receiver, 
             'barcode' => $shipping->barcode,
         ]);
-        $notificationStatus = $this->sendGoodAddedNotification($user, $addGood);
+        $notificationStatus[] = $this->sendGoodAddedNotification($user, $addGood);
 
+        $customer = Customer::where('mobile' , $shipping->receiver_number)->first();
+        if($customer){
+            $notificationStatus[] = $this->sendGoodArrivedNotification($customer , $shipping->number);
+        }
         return response()->json([
             'success' => true,
             'message' => 'Good has been added successfully',
@@ -126,6 +132,38 @@ class GoodsController extends Controller
             return 'Warehouse Manager device token not found';
         }
     }
+
+    private function sendGoodArrivedNotification($customer , $number)
+{
+    $title = 'Your shipment has arrived';
+    $body = "Your shipment with number {$number} has been arrived .";
+
+    $deviceToken = $customer->device_token;
+
+    if ($deviceToken) {
+        $message = CloudMessage::withTarget('token', $deviceToken)
+            ->withNotification(Notification::create($title, $body));
+
+        try {
+            ModelsNotification::create([
+                'user_id' => $customer->id,
+                'user_type' => 'customer',
+                'title' => $title,
+                'body' => $body,
+                'created_at' => now()
+            ]);
+            $this->messaging->send($message);
+            Log::info('Notification sent: shipment arrived', ['customer_id' => $customer->id, 'customer_name' => $customer->name]);
+            return 'Notification sent successfully';
+        } catch (Exception $e) {
+            Log::error('Failed to send FCM message: ' . $e->getMessage(), ['customer_id' => $customer->id, 'customer_name' => $customer->name]);
+            return 'Failed to send notification';
+        }
+    } else {
+        Log::warning('Customer device token not found, notification not sent.', ['customer_name' => $customer->name]);
+        return 'Customer device token not found';
+    }
+}
 
     public function deleteGood(Request $request){
        
@@ -230,6 +268,8 @@ class GoodsController extends Controller
                 'receiving_date' =>  now()->format('Y-m-d H:i:s')
             ]);
 
+            $customer = Customer::where('mobile' , $shipping->receiver_number)->first();
+            $notificationStatus = $this->sendGoodReceivedNotification($customer,$shipping->number);
             return response()->json([
                 'success' => true,
                 'message' => 'Good has been updated successfully'
@@ -243,6 +283,38 @@ class GoodsController extends Controller
         ], 500);
     }
     }
+
+    private function sendGoodReceivedNotification($customer , $number)
+{
+    $title = 'Your shipment has received';
+    $body = "Your shipment with number {$number} has been received .";
+
+    $deviceToken = $customer->device_token;
+
+    if ($deviceToken) {
+        $message = CloudMessage::withTarget('token', $deviceToken)
+            ->withNotification(Notification::create($title, $body));
+
+        try {
+            ModelsNotification::create([
+                'user_id' => $customer->id,
+                'user_type' => 'customer',
+                'title' => $title,
+                'body' => $body,
+                'created_at' => now()
+            ]);
+            $this->messaging->send($message);
+            Log::info('Notification sent: shipment received', ['customer_id' => $customer->id, 'customer_name' => $customer->name]);
+            return 'Notification sent successfully';
+        } catch (Exception $e) {
+            Log::error('Failed to send FCM message: ' . $e->getMessage(), ['customer_id' => $customer->id, 'customer_name' => $customer->name]);
+            return 'Failed to send notification';
+        }
+    } else {
+        Log::warning('Customer device token not found, notification not sent.', ['customer_name' => $customer->name]);
+        return 'Customer device token not found';
+    }
+}
 
     public function getAllGoods(){
 
@@ -477,6 +549,7 @@ class GoodsController extends Controller
                     $truck = Truck::select('line')->where('id' , $trip->truck_id)->first();
                     $driver = Driver::select('name')->where('id' , $trip->driver_id)->first();
                     $destination = Branch::select('address')->where('id' , $shipping->destination_id)->first();
+                    $customer = Customer::where('mobile' , $shipping->receiver_number)->first();
                     $addGood = Good::create([
                         'warehouse_id' => $user->warehouse_id,
                         'type' => $price->type,
@@ -494,6 +567,7 @@ class GoodsController extends Controller
                         'receiver' => $shipping->receiver, 
                         'barcode' => $shipping->barcode,
                     ]);
+                    $notificationStatus = $this->sendGoodArrivedNotification($customer , $shipping->number);
                 }
                 return response()->json([
                     'success' => true,

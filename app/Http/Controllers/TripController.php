@@ -282,6 +282,14 @@ public function addTrip(Request $request)
                 ->withNotification(Notification::create($title, $body));
     
             try {
+                NotificationTable::create([
+                    'user_id' => $employee->id,
+                    'user_type' => 'employee',
+                    'title' => $title,
+                    'body' => $body,
+                    'data' => [ 'trip_number' => $trip->number] ,
+                    'created_at' => now()
+                ]);
                 $this->messaging->send($message);
                 Log::info('Notification sent: Trip Added', ['employee_id' => $employee->id, 'trip_id' => $trip->id]);
                 return 'Notification sent successfully';
@@ -375,6 +383,14 @@ public function addTrip(Request $request)
                 ->withNotification(Notification::create($title, $body));
     
             try {
+                NotificationTable::create([
+                    'user_id' => $employee->id,
+                    'user_type' => 'employee',
+                    'title' => $title,
+                    'body' => $body,
+                    'data' => [ 'trip_number' => $trip->number] ,
+                    'created_at' => now()
+                ]);
                 $this->messaging->send($message);
                 Log::info('Notification sent: Trip Edited', ['employee_id' => $employee->id, 'trip_id' => $trip->id]);
                 return 'Notification sent successfully';
@@ -457,6 +473,14 @@ public function addTrip(Request $request)
                 ->withNotification(Notification::create($title, $body));
     
             try {
+                NotificationTable::create([
+                    'user_id' => $employee->id,
+                    'user_type' => 'employee',
+                    'title' => $title,
+                    'body' => $body,
+                    'data' => [ 'trip_number' => $trip->number] ,
+                    'created_at' => now()
+                ]);
                 $this->messaging->send($message);
                 Log::info('Notification sent: Trip Canceled', ['employee_id' => $employee->id, 'trip_id' => $trip->id]);
                 return 'Notification sent successfully';
@@ -530,6 +554,14 @@ public function addTrip(Request $request)
                 ->withNotification(Notification::create($title, $body));
     
             try {
+                NotificationTable::create([
+                    'user_id' => $employee->id,
+                    'user_type' => 'employee',
+                    'title' => $title,
+                    'body' => $body,
+                    'data' => [ 'trip_number' => $trip->number] ,
+                    'created_at' => now()
+                ]);
                 $this->messaging->send($message);
                 Log::info('Notification sent: Trip Closed', ['employee_id' => $employee->id, 'trip_id' => $trip->id]);
                 return 'Notification sent successfully';
@@ -992,8 +1024,8 @@ public function ArriveTrip($trip_number)
             'arrival_date' => now()->format('Y-m-d H:i:s'),
         ]);
 
-        $notificationStatus = [$this->sendTripArrivedNotification($branch_manager, $trip),
-                                $this->sendTripArrivedNotification($warehouse_manager,$trip)];
+        $notificationStatus = [$this->sendTripArrivedNotification($branch_manager,'branch_manager' ,$trip),
+                                $this->sendTripArrivedNotification($warehouse_manager,'warehouse_manager',$trip)];
 
         return response()->json([
             'success' => true,
@@ -1010,7 +1042,7 @@ public function ArriveTrip($trip_number)
         ], 500);
     }
 }
-private function sendTripArrivedNotification($manager, $trip)
+private function sendTripArrivedNotification($manager,$user_type ,$trip)
 {
     $title = 'Trip Arrived';
     $body = "The trip with number {$trip->number} has been Arrived.";
@@ -1022,6 +1054,14 @@ private function sendTripArrivedNotification($manager, $trip)
             ->withNotification(Notification::create($title, $body));
 
         try {
+            NotificationTable::create([
+                'user_id' => $manager->id,
+                'user_type' => $user_type,
+                'title' => $title,
+                'body' => $body,
+                'data' => [ 'trip_number' => $trip->number] ,
+                'created_at' => now()
+            ]);
             $this->messaging->send($message);
             Log::info('Notification sent: Trip Arrived', ['manager_id' => $manager->id, 'trip_id' => $trip->id]);
             return 'Notification sent successfully';

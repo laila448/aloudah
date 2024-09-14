@@ -191,14 +191,14 @@ public function getTruckReports(Request $request)
     return response()->json(['reports' => $reports]);
 }
 
-public function getTripReports(Request $request)
-{
-    $reports = Report::where('file_path', 'like', '%trip%')
-        ->orderByDesc('created_at')
-        ->get();
+//public function getTripReports(Request $request)
+//{
+//    $reports = Report::where('file_path', 'like', '%trip%')
+//        ->orderByDesc('created_at')
+//        ->get();
 
-    return response()->json(['reports' => $reports]);
-}
+//    return response()->json(['reports' => $reports]);
+//}
 
 public function DriversReport(Request $request)
 {
@@ -217,7 +217,14 @@ public function DriversReport(Request $request)
             'message' => $validator->errors()->toJson()
         ], 400);
     }
-
+    $user = Auth::guard('employee')->user();
+    $permission = Permission::where('employee_id' , $user->id)->first();
+    if(!$permission->add_report){
+        return response()->json([
+            'success' => false,
+            'message' => 'You do not have permission to generate reports'
+        ], 403);
+    }
     $driver = Driver::where('name' , $request->driver_name)->first();
     if(!$driver){
         return response()->json([
@@ -225,7 +232,7 @@ public function DriversReport(Request $request)
             'message' => 'Driver not found'
         ], 404);
     }
-    $user = Auth::guard('employee')->user();
+   
     $trips = Trip::where('driver_id' , $driver->id)
                     ->where('branch_id' , $user->branch_id)
                     ->whereBetween('date' ,[$request->from , $request->to])
@@ -285,7 +292,19 @@ public function DriversReport(Request $request)
 
 public function GetDriversReports(){
     try{
-        $reports = Report::where('file_path' , 'like' , "%Drivers_reports%")->get();
+
+        $user = Auth::guard('employee')->user();
+        $permission = Permission::where('employee_id' , $user->id)->first();
+        if(!$permission->view_report){
+        return response()->json([
+            'success' => false,
+            'message' => 'You do not have permission to view reports'
+        ], 403);
+    }
+    
+        $reports = Report::where('file_path' , 'like' , "%Drivers_reports%")
+                         ->orderByDesc('created_at')
+                         ->get();
         $reports_files = [];
 
         if($reports->isEmpty()){
@@ -347,7 +366,14 @@ public function downloadReport($reportId)
             'message' => $validator->errors()->toJson()
         ], 400);
     }
-
+    $user = Auth::guard('employee')->user();
+    $permission = Permission::where('employee_id' , $user->id)->first();
+    if(!$permission->add_report){
+        return response()->json([
+            'success' => false,
+            'message' => 'You do not have permission to generate reports'
+        ], 403);
+    }
     $truck = Truck::where('number' , $request->truck_number)->first();
     if(!$truck){
         return response()->json([
@@ -355,7 +381,7 @@ public function downloadReport($reportId)
             'message' => 'Truck not found'
         ], 404);
     }
-    $user = Auth::guard('employee')->user();
+   
     $trips = Trip::where('truck_id' , $truck->id)
                     ->where('branch_id' , $user->branch_id)
                     ->whereBetween('date' ,[$request->from , $request->to])
@@ -415,7 +441,19 @@ public function downloadReport($reportId)
 
 public function GetTrucksReports(){
     try{
-        $reports = Report::where('file_path' , 'like' , "%Trucks_reports%")->get();
+
+        $user = Auth::guard('employee')->user();
+        $permission = Permission::where('employee_id' , $user->id)->first();
+        if(!$permission->view_report){
+        return response()->json([
+            'success' => false,
+            'message' => 'You do not have permission to view reports'
+        ], 403);
+    }
+
+        $reports = Report::where('file_path' , 'like' , "%Trucks_reports%")
+                        ->orderByDesc('created_at')                
+                         ->get();
         $reports_files = [];
 
         if($reports->isEmpty()){
@@ -467,6 +505,13 @@ public function DestinationsReport(Request $request)
     $trips=[];
     $destination_desk = '';
     $user = Auth::guard('employee')->user();
+    $permission = Permission::where('employee_id' , $user->id)->first();
+    if(!$permission->add_report){
+        return response()->json([
+            'success' => false,
+            'message' => 'You do not have permission to generate reports'
+        ], 403);
+    }
     if(!$request->exists('destination')){
        $trips = Trip::where('status' , $request->status)->get();
        $destination_desk = 'كل المدن';
@@ -545,7 +590,18 @@ public function DestinationsReport(Request $request)
 
 public function GetDestinationReports(){
     try{
-        $reports = Report::where('file_path' , 'like' , "%Destination_reports%")->get();
+
+        $user = Auth::guard('employee')->user();
+        $permission = Permission::where('employee_id' , $user->id)->first();
+        if(!$permission->view_report){
+        return response()->json([
+            'success' => false,
+            'message' => 'You do not have permission to view reports'
+        ], 403);
+    }
+        $reports = Report::where('file_path' , 'like' , "%Destination_reports%")
+                         ->orderByDesc('created_at')
+                         ->get();
         $reports_files = [];
 
         if($reports->isEmpty()){
@@ -578,6 +634,17 @@ public function GetDestinationReports(){
 public function GetReport($reportId)
   {
     try{
+
+        if(Auth::guard('employee')->check()){
+        $user = Auth::guard('employee')->user();
+        $permission = Permission::where('employee_id' , $user->id)->first();
+        if(!$permission->view_report){
+        return response()->json([
+            'success' => false,
+            'message' => 'You do not have permission to view reports'
+        ], 403);
+    }
+    }
       $report = Report::findOrFail($reportId);
   
       if (public_path($report->file_path)) {
