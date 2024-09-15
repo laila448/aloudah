@@ -120,7 +120,8 @@ class ShippingController extends Controller
                 'discount' => $request->discount,
                 'collection' => $request->collection,
                 'barcode' => $barcode,
-                'quantity' => $request->quantity
+                'quantity' => $request->quantity,
+                'employee_id' => $employee->id
             ]);
     
             $shipping->number = $shipping->id;
