@@ -112,12 +112,26 @@
                                                 href="#exampleModal2" title="تعديل"><i class="las la-pen"></i></a>
 
 
+                                        
 
                                             <a class="modal-effect btn btn-sm btn-danger" data-effect="effect-scale"
                                                 data-id="{{ $branch->id }}" data-desk="{{ $branch->desk }}"
                                                 data-toggle="modal" href="#modaldemo9" title="حذف"><i
                                                     class="las la-trash"></i></a>
                                       
+<!-- 
+                                                    <a class="modal-effect btn btn-sm btn-warning" data-effect="effect-scale"
+                                                data-id="{{ $branch->id }}" data-phone="{{ $branch->phone }}"  data-toggle="modal" 
+                                                href="#exampleModal2" title="عرض الموظفين"><i class="las la-eye"></i></a> -->
+
+
+                                                <form action="{{ route('branch.emp') }}" method="POST" style="display: inline;">
+                                                    @csrf
+                                                  <input type="hidden" name="id" value="{{ $branch->id }}">
+                                                  <button type="submit" class=" btn btn-sm btn-warning" data-effect="effect-scale" title="عرض الموظفين">
+                                                     <i class="las la-eye"></i>
+                                                  </button>
+                                                 </form>
                                                    </td>
                                                 </tr>
                                              @endforeach

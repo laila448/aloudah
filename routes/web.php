@@ -84,6 +84,10 @@ Route::get('/getallmanagers' , [BranchController::class , 'GetAllManagers'])->na
 Route::post('/deletebranch' , [BranchController::class , 'DeleteBranch'])->name('deletebranch');
 Route::post('/editbranchmanager' , [BranchController::class , 'EditBranchManager'])->name('editbranchmanager');
 Route::post('/deletebranchmanager' , [BranchController::class , 'DeleteBranchManager'])->name('deletebranchmanager');
+Route::post('/branchemp', [BranchController::class, 'ShowBranchEmp'])->name('branch.emp');
+Route::post('/PromoteEmp', [BranchController::class, 'PromoteEmployee'])->name('PromoteEmp');
+Route::post('/PromoteEmpwh', [BranchController::class, 'PromoteEmployeeWH'])->name('PromoteEmpwh');
+
 
 
 
