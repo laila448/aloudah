@@ -22,6 +22,7 @@ use Kreait\Firebase\Messaging\CloudMessage;
 use Kreait\Firebase\Messaging\Notification;
 use Exception;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class EmployeeController extends Controller
 {
@@ -820,8 +821,8 @@ public function GetEmployee($id)
             $employeeData = $employee->makeHidden(['password']);
             $rating =round(Rating::where('employee_id', $id)->avg('rate'),1);
             $employeeData->rating = $rating;
-            $employeeData->id_front_image = asset($employee->id_front_image);
-            $employeeData->id_back_image = asset($employee->id_back_image);
+            $employeeData->id_front_image = Storage::url($employee->id_front_image);
+            $employeeData->id_back_image = Storage::url($employee->id_back_image);
             
 
             return response()->json([

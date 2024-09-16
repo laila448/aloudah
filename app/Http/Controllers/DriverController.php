@@ -11,6 +11,8 @@ use Kreait\Firebase\Messaging\CloudMessage;
 use Kreait\Firebase\Messaging\Notification;
 use Exception;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+
 class DriverController extends Controller
 {
     private $messaging;
@@ -122,13 +124,17 @@ class DriverController extends Controller
     {
         try{
         $id= Auth::guard('driver')->user()->id;
-        $driver = Driver::select('name','phone_number','address','employment_date')->where('id',$id)->get();
+        $driver = Driver::select('name','phone_number','address','employment_date' , 'id_front_image' , 'id_back_image')
+                        ->where('id',$id)->get();
         if (!$driver) {
             return response()->json([
                 'success' => false,
                 'message' => ' not found'
             ], 404);
         }
+
+        $driver->id_front_image = Storage::url($driver->id_front_image);
+        $driver->id_back_image = Storage::url($driver->id_back_image);
     
         return response()->json([
             'success' => true,
@@ -380,8 +386,8 @@ public function GetDriver($id)
 
         if ($driver) {
             $driverData = $driver->makeHidden(['password']);
-            $driverData->id_front_image = asset($driver->id_front_image);
-            $driverData->id_back_image = asset($driver->id_back_image);
+            $driverData->id_front_image = Storage::url($driver->id_front_image);
+            $driverData->id_back_image = Storage::url($driver->id_back_image);
             
 
             return response()->json([
