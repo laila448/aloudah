@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Driver;
 use App\Models\Trip;
+use App\Models\Vacation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Kreait\Firebase\Factory;
@@ -125,14 +126,16 @@ class DriverController extends Controller
         try{
         $id= Auth::guard('driver')->user()->id;
         $driver = Driver::select('name','phone_number','address','employment_date' , 'id_front_image' , 'id_back_image')
-                        ->where('id',$id)->get();
+                        ->where('id',$id)->first();
         if (!$driver) {
             return response()->json([
                 'success' => false,
                 'message' => ' not found'
             ], 404);
         }
-
+        $vacations = Vacation::where('user_id' , $driver->id)
+                                    ->where('user_type' , 'driver')->get();
+        $driver->vacations = $vacations;
         $driver->id_front_image = Storage::url($driver->id_front_image);
         $driver->id_back_image = Storage::url($driver->id_back_image);
     

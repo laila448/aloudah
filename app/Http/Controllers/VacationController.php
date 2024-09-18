@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Driver;
 use App\Models\Employee;
 use App\Models\Notification as ModelsNotification;
 use App\Models\Vacation;
@@ -84,11 +85,11 @@ class VacationController extends Controller
     }
     
     
-    public function AddVacationForWhManager(Request $request)
+    public function AddVacationForDriver(Request $request)
     {
         try {
             $validator = Validator::make($request->all(), [
-                'wmanager_id' => 'required|numeric',
+                'driver_id' => 'required|numeric',
                 'start' => 'required|date_format:Y-m-d',
                 'end' => 'required|date_format:Y-m-d',
                 'reason' => 'required|string'
@@ -101,19 +102,19 @@ class VacationController extends Controller
                 ], 400);
             }
     
-            $whmanager = Warehouse_Manager::where('id', $request->wmanager_id)->first();
+            $driver = Driver::where('id', $request->driver_id)->first();
     
-            if (!$whmanager) {
+            if (!$driver) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Warehouse manager not found'
+                    'message' => 'Driver not found'
                 ], 404);
             }
     
             $manager = Auth::guard('branch_manager')->user();
             $vacation = Vacation::create([
-                'user_id' => $request->wmanager_id,
-                'user_type' => 'warehouse_manager',
+                'user_id' => $request->driver_id,
+                'user_type' => 'driver',
                 'start' => $request->start,
                 'end' => $request->end,
                 'reason' => $request->reason,
@@ -121,7 +122,7 @@ class VacationController extends Controller
             ]);
     
             // Send notification
-            $notificationStatus = $this->sendVacationAddedNotification($whmanager, 'warehouse_manager',$vacation);
+            $notificationStatus = $this->sendVacationAddedNotification($driver, 'driver',$vacation);
     
             return response()->json([
                 'success' => true,
@@ -206,18 +207,18 @@ class VacationController extends Controller
         }
     }
     
-    public function GetWhManagerVacation($id)
+    public function GetDriverVacation($id)
 {
     try {
-        $wmanager = Warehouse_Manager::where('id', $id)->first();
+        $driver = Driver::where('id', $id)->first();
 
-        if (!$wmanager) {
+        if (!$driver) {
             return response()->json([
                 'success' => false,
-                'message' => 'Warehouse manager not found'
+                'message' => 'Driver not found'
             ], 404);
         }
-        $vacations = Vacation::where('user_type', 'warehouse_manager')
+        $vacations = Vacation::where('user_type', 'driver')
                             ->where('user_id', $id)
                             ->get();
 

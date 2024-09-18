@@ -812,6 +812,32 @@ public function EditPermissions(Request $request)
         ], 500);
     }
 }
+
+public function GetPermissions($id){
+
+    try{
+
+        $permissions = Permission::where('employee_id' , $id)->first();
+        if(!$permissions){
+            return response()->json([
+                'success' => false,
+                'message' => 'Permissions not found'
+            ], 404);
+        }
+        return response()->json([
+            'success' => true,
+            'message' => 'Permissions retrieved successfully.',
+            'data' => $permissions
+        ], 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'An error occurred while retrieving permissions',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
 public function GetEmployee($id)
 {
     try {
