@@ -298,7 +298,6 @@ public function AddEmployee(Request $request)
                 'email' => 'string|email|unique:employees',
                 'phone_number' => 'max:10',
                 'gender' => 'in:male,female',
-                'password' => 'min:8',
                 'branch_id' => 'numeric',
                 'mother_name' => 'string',
                 'birth_date' => 'date_format:Y-m-d',
@@ -736,7 +735,7 @@ public function GetAllEmployees()
 {
     try {
         $branchId = Auth::guard('branch_manager')->user()->branch_id;
-        $employees = Employee::where('branch_id', $branchId)->get(['id', 'name', 'email', 'phone_number']);
+        $employees = Employee::where('branch_id', $branchId)->get(['id','national_id', 'name', 'email', 'phone_number','resignation_date']);
 
         return response()->json([
             'status' => 'success',

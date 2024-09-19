@@ -127,6 +127,9 @@ class ShippingController extends Controller
             $shipping->number = $shipping->id;
             $shipping->save();
     
+            $shipping->source = Branch::where('id' , $shipping->source_id)->first()->desk;
+            $shipping->destination = Branch::where('id' , $shipping->destination_id)->first()->desk;
+
             $manifest = Manifest::where('number', $request->manifest_number)->first();
     
             if ($manifest) {

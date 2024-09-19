@@ -57,7 +57,7 @@ class ProfileController extends Controller
                  ], 200);
             }
             elseif(Auth::guard('warehouse_manager')->check()){
-                $user_id = Auth::guard('name','warehouse_manager')->id();
+                $user_id = Auth::guard('warehouse_manager')->id();
                 $manager = Warehouse_Manager::select('rank', 'email' , 'phone_number' , 'manager_address' , 'date_of_birth')
                                  ->where('id' , $user_id)->first();
                  return response()->json([

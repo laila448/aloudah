@@ -160,7 +160,7 @@ class DriverController extends Controller
     {
         try {
             $id = Auth::guard('driver')->user()->id;
-            $closedTrips = Trip::select('number', 'date', 'branch_id')
+            $closedTrips = Trip::select('number', 'date', 'branch_id', 'arrival_date')
                                 ->where('driver_id', $id)
                                 ->where('status', 'closed')
                                 ->paginate(10);
