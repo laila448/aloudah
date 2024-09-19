@@ -326,7 +326,6 @@ public function AddEmployee(Request $request)
     
             $employee->update(array_merge(
                 $validator->validated(),
-                $request->password ? ['password' => bcrypt($request->password)] : []
             ));
     
             // Send notification
