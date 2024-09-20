@@ -531,10 +531,12 @@ class GoodsController extends Controller
            foreach($shippings as $shipping){
             if(in_array($shipping->barcode,$request->barcodes)){
                    $shipping->ischecked = true;
+                   $shipping->save();
                    $found[] = $shipping;
                 }
                 else{
                     $shipping->ischecked = false;
+                    $shipping->save();
                     $notFound[] = $shipping;
                  
                 }
@@ -572,13 +574,11 @@ class GoodsController extends Controller
                 return response()->json([
                     'success' => true,
                     'message' => 'Inventory process completed successfully and the goods are added to the warehouse.',
-                    'data' => $shippings
                 ], 200); 
             }
                 return response()->json([
                     'success' => true,
                     'message' => 'Some shippings are missing.',
-                    'data' => $shippings
                 ], 200); 
           
         }catch (\Exception $e) {
