@@ -34,7 +34,7 @@ class ShippingController extends Controller
                 'weight' => 'required|numeric',
                 'size' => 'required|string',
                 'content' => 'required|string',
-                'marks' => 'required|string',
+                'marks' => 'string|nullable',
                 'notes' => 'string|nullable',
                 'shipping_cost' => 'numeric|nullable',
                 'against_shipping' => 'numeric|nullable',
@@ -451,6 +451,120 @@ public function getShipping($shipping_id){
         'error' => $e->getMessage()
     ], 500);
 }
+}
+
+public function EditInvoice(Request $request)
+{
+    try{
+        $validator = Validator::make($request->all(),[
+            'shipping_id' => 'required',
+            'destination_id' => 'numeric|exists:branches,id',
+            'manifest_number' => 'string',
+            'sender' => 'string',
+            'receiver' => 'string',
+            'sender_number' => 'max:15',
+            'receiver_number' => 'max:15',
+            'num_of_packages' => 'numeric',
+            'type_id' => 'numeric',
+            'weight' => 'numeric',
+            'size' => 'string',
+            'content' => 'string',
+            'marks' => 'string',
+            'notes' => 'string',
+            'shipping_cost' => 'numeric',
+            'against_shipping' => 'numeric',
+            'adapter' => 'numeric',
+            'advance' => 'numeric',
+            'miscellaneous' => 'numeric',
+            'prepaid' => 'numeric',
+            'discount' => 'numeric',
+            'collection' => 'numeric',
+            'quantity' => 'numeric'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->toJson()
+            ], 400);
+        }
+        $employee_id = Auth::guard('employee')->id();
+        $shipping = Shipping::where('id' , $request->shipping_id)->first();
+        if(!$shipping){
+            return response()->json([
+                'success' => false,
+                'message' => 'Invoice not found'
+            ], 404);
+        }
+        elseif($employee_id != $shipping->employee_id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You do not have permission to edit the invoice'
+            ], 403);
+        }
+        elseif($shipping->received){
+            return response()->json([
+                'success' => false,
+                'message' => 'You can not edit the invoice after it is received'
+            ], 403);
+        }
+        if($request->exists('type_id') || $request->exists('weight')){
+        $shippingCost = $this->calculateShippingCost($request->type_id, $request->weight);
+        }
+        $shipping->update(array_merge(
+            $validator->validated(),
+            ['shipping_cost' => $shippingCost] ));
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Invoice updated successfully',
+            ], 200);
+            
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'An error occurred while updating the invoice',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
+
+public function DeleteInvoice($id){
+    try{
+        $shipping = Shipping::where('id' , $id)->first();
+        $employee_id = Auth::guard('employee')->id();
+        if(!$shipping){
+            return response()->json([
+                'success' => false,
+                'message' => 'Invoice not found'
+            ], 404);
+        }
+        elseif($employee_id != $shipping->employee_id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You do not have permission to delete the invoice'
+            ], 403);
+        }
+        elseif($shipping->received){
+            return response()->json([
+                'success' => false,
+                'message' => 'You can not delete the invoice after it is received'
+            ], 403);
+        }
+
+        $shipping->delete();
+        return response()->json([
+            'success' => true,
+            'message' => 'Invoice deleted successfully',
+        ], 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'An error occurred while deleting the invoice',
+            'error' => $e->getMessage()
+        ], 500);
+    }
 }
 
 //!Mark:Changed here

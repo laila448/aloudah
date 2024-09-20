@@ -315,11 +315,13 @@ class DriverController extends Controller
     }
 
     ///////////////warning/////////////
-private function sendLocationUpdatedNotification($driver)
+private function sendLocationUpdatedNotification($trip)
 {
     $title = 'Location Updated';
     $body = "Your location has been updated successfully.";
 
+    $driver_id = $trip->driver_id;
+    $driver = Driver::where('id' , $driver_id)->first(); 
     $deviceToken = $driver->device_token;
 
     if ($deviceToken) {

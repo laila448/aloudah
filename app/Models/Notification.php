@@ -7,29 +7,17 @@ use Illuminate\Database\Eloquent\Model;
 class Notification extends Model
 {
     use HasFactory;
-
+    protected $table = 'notifications';
     protected $fillable = [
-        'branch_manager_id',
-        'warehouse_manager_id',
+        'user_id',
+        'user_type',
         'title',
         'body',
-        'type',
         'is_read',
         'data',
-        'status',
     ];
 
     protected $casts = [
         'data' => 'array',
     ];
-
-    public function branchManager()
-    {
-        return $this->belongsTo(Branch_Manager::class);
-    }
-
-    public function warehouseManager()
-    {
-        return $this->belongsTo(Warehouse_Manager::class);
-    }
 }

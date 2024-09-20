@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('trucks', function (Blueprint $table) {
             $table->id();
-            $table->integer('number');
+            $table->string('number');
             $table->string('line');
             $table->string('created_by');
             $table->date('adding_data');

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" >
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,8 +9,6 @@
         body {
             font-family: 'Amiri','DejaVu Sans', 'Arial', sans-serif;
             margin: 20px;
-            direction: rtl; /* Set the direction of the entire document to RTL */
-            text-align: right; /* Align the text to the right */
         }
         .header {
             text-align: center;
@@ -29,24 +27,20 @@
             margin-bottom: 10px;
             display: inline-block;
             margin-top: 20px;
-            direction: rtl; /* Set the direction of the entire document to RTL */
             text-align: center;
         }
         .header .date-range {
             font-size: 1em;
             margin-bottom: 5px;
-            direction: rtl; /* Set the direction of the entire document to RTL */
             text-align: center;
         }
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
-            direction: rtl;
         }
         table, th, td {
             border: 1px solid black;
-            direction: rtl; /* Set the direction of the entire document to RTL */
             text-align: right;
         }
         th, td {
@@ -54,12 +48,10 @@
             padding: 8px;
             text-align: center;
             font-family: 'Amiri','DejaVu Sans', 'Arial', sans-serif;
-            direction: rtl;
             unicode-bidi: embed;
         }
         th {
             background-color: #f2f2f2;
-            direction: rtl;
         }
     </style>
 </head>
@@ -68,12 +60,12 @@
 
     <img src='/logo.jpg' alt="Logo" class="left" height="50">
 
-        <div class="title" style="position: absolute; top: 20px; left: 50px;"> شركة العودة  </div>
+        <div class="title" style="position: absolute; top: 20px; left: 50px;"> Aloudah company  </div>
         <div class="driver-name">
-            <span>  الرحلات المتجهة إلى : {{$branch_desk}}  ({{$trip_count}}) </span>  
+            <span> Trips to : {{$branch_desk}}  ({{$trip_count}}) </span>  
         </div>
         <div class="date-range">
-            <span>  حالة الرحلة : {{$status}}       من تاريخ : {{$from}}      إلى تاريخ : {{$to}}</span>
+        <span>trip status : {{$status}}      ,     from : {{$from}}     ,     to : {{$to}}</span>
         </div>
        
         <div style="border: 0.5px solid black;"></div>
@@ -82,18 +74,18 @@
     <table>
         <thead>
             <tr>
-                <th>تاريخ الرحلة</th>
-                <th>رقم الرحلة</th>
-                <th>الوجهة</th>
-                <th>السائق</th>
-                <th>المجموع العام</th>
-                <th>مسبق</th>
-                <th>محول</th>
-                <th>الخصم</th>
-                <th>المجموع العام - الخصم</th>
-                <th>متفرقات مدفوعة</th>
-                <th>ضد الشحن</th>
-                <th>الفرع</th>
+                <th>Trip date</th>
+                <th>Trip number</th>
+                <th>Destination</th>
+                <th>Driver</th>
+                <th>General total</th>
+                <th>Advance</th>
+                <th>Adapter</th>
+                <th>Discount</th>
+                <th>General total - Discount</th>
+                <th>Misc paid</th>
+                <th>Against shipping</th>
+                <th>Branch</th>
             </tr>
         </thead>
         <tbody>

@@ -106,7 +106,7 @@
 									<a class="modal-effect btn btn-sm btn-info" data-effect="effect-scale"
 										data-id="{{ $manifest->id }}" data-number="{{ $manifest->number }}"
 										data-status="{{ $manifest->status }}" data-toggle="modal"
-										href="#exampleModal2" title="Show"><i class="las la-pen"></i></a>
+										href="#exampleModal2" title="Show"><i class="las la-eye"></i></a>
 							   
 									<a class="modal-effect btn btn-sm btn-danger" data-effect="effect-scale"
 										data-id="{{ $manifest->id }}" data-number="{{ $manifest->number }}"
@@ -149,7 +149,7 @@
                         <div class="form-group">
                             <input type="hidden" name="id" id="id" value="">
                             <label for="recipient-name" class="col-form-label"> Manifest Number:</label>
-                            <input class="form-control" name="number" id="number" type="integer" readonly>
+                            <input class="form-control" name="number" id="number" type="string" readonly>
                         </div>
                         
                 </div>

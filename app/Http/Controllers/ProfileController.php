@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Admin;
 use App\Models\Branch_Manager;
+use App\Models\Customer;
 use App\Models\Employee;
 use App\Models\Rating;
 use App\Models\Vacation;
@@ -62,7 +63,16 @@ class ProfileController extends Controller
                      'message' => 'Warehouse manager profile retrieved successfully.'
                  ], 200);
             }
-           
+            elseif(Auth::guard('customer')->check()){
+                $user_id = Auth::guard('customer')->id();
+                $customer = Customer::select('name', 'mobile' , 'address')
+                                 ->where('id' , $user_id)->first();
+                 return response()->json([
+                     'success' => true,
+                     'data' => $customer ,
+                     'message' => 'Customer profile retrieved successfully.'
+                 ], 200);
+            }
 
         }catch (\Exception $e) {
             return response()->json([
@@ -153,6 +163,19 @@ class ProfileController extends Controller
                  return response()->json([
                      'success' => true,
                      'message' => 'Warehouse manager profile updated successfully.'
+                 ], 200);
+            }
+            elseif(Auth::guard('customer')->check()){
+                $user_id = Auth::guard('customer')->id();
+                $customer = Customer::where('id' , $user_id)->first();
+                if($request->exists('address')){
+                    $customer->address= $request->address ;
+                }
+                $customer->save();
+               
+                 return response()->json([
+                     'success' => true,
+                     'message' => 'Customer profile updated successfully.'
                  ], 200);
             }
            

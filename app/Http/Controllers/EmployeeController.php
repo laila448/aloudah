@@ -7,6 +7,7 @@ use App\Models\Branch;
 use App\Models\Branch_Manager;
 use App\Models\Driver;
 use App\Models\Employee;
+use App\Models\Notification as ModelsNotification;
 use App\Models\Permission;
 use App\Models\Rating;
 use App\Models\Warehouse_Manager;
@@ -62,7 +63,7 @@ class EmployeeController extends Controller
 {
     $validator = Validator::make($request->all(), [
         'national_id' => 'required|max:11|unique:drivers,national_id',
-        'name' => 'required|min:5|max:255|unique:drivers,name',
+        'name' => 'required|min:4|max:255|unique:drivers,name',
         'email' => 'required|string|email|unique:drivers,email',
         'phone_number' => 'required|max:10|unique:drivers,phone_number',
        // 'gender' => 'required|in:male,female',
@@ -173,7 +174,7 @@ public function AddEmployee(Request $request)
 {
     $validator = Validator::make($request->all(), [
         'national_id' => 'required|max:11|unique:employees,national_id',
-        'name' => 'required|min:5|max:255|unique:employees,name',
+        'name' => 'required|min:4|max:255|unique:employees,name',
         'email' => 'string|email|unique:employees,email',
         'phone_number' => 'required|max:10|unique:employees,phone_number',
        // 'gender' => 'required|in:male,female',
@@ -631,6 +632,13 @@ public function AddEmployee(Request $request)
             ->withNotification(Notification::create($title, $body));
 
         try {
+            ModelsNotification::create([
+                'user_id' => $employee->id,
+                'user_type' => 'employee',
+                'title' => $title,
+                'body' => $body,
+                'created_at' => now()
+            ]);
             $this->messaging->send($message);
             Log::info('Notification sent: Promotion Received', ['employee_id' => $employee->id, 'employee_name' => $employee->name]);
             return 'Notification sent successfully';
@@ -703,6 +711,13 @@ private function sendRatingNotification($employee, $rating)
             ->withNotification(Notification::create($title, $body));
 
         try {
+            ModelsNotification::create([
+                'user_id' => $employee->id,
+                'user_type' => 'employee',
+                'title' => $title,
+                'body' => $body,
+                'created_at' => now()
+            ]);
             $this->messaging->send($message);
             Log::info('Notification sent: New Rating Received', ['employee_id' => $employee->id, 'employee_name' => $employee->name]);
             return 'Notification sent successfully';

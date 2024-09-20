@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Employee;
+use App\Models\Notification as ModelsNotification;
 use App\Models\Vacation;
 use App\Models\Warehouse;
 use App\Models\Warehouse_Manager;
@@ -65,7 +66,7 @@ class VacationController extends Controller
             ]);
     
             // Send notification
-            $notificationStatus = $this->sendVacationAddedNotification($employee, $vacation);
+            $notificationStatus = $this->sendVacationAddedNotification($employee, 'employee',$vacation);
     
             return response()->json([
                 'success' => true,
@@ -120,7 +121,7 @@ class VacationController extends Controller
             ]);
     
             // Send notification
-            $notificationStatus = $this->sendVacationAddedNotification($whmanager, $vacation);
+            $notificationStatus = $this->sendVacationAddedNotification($whmanager, 'warehouse_manager',$vacation);
     
             return response()->json([
                 'success' => true,
@@ -138,7 +139,7 @@ class VacationController extends Controller
     }
     
 
-    private function sendVacationAddedNotification($user, $vacation)
+    private function sendVacationAddedNotification($user,$user_type ,$vacation)
 {
     $title = 'Vacation Approved';
     $body = "Your vacation from {$vacation->start} to {$vacation->end} for reason '{$vacation->reason}' has been approved.";
@@ -150,6 +151,13 @@ class VacationController extends Controller
             ->withNotification(Notification::create($title, $body));
 
         try {
+            ModelsNotification::create([
+                'user_id' => $user->id,
+                'user_type' => $user_type,
+                'title' => $title,
+                'body' => $body,
+                'created_at' => now()
+            ]);
             $this->messaging->send($message);
             Log::info('Notification sent: Vacation Added', ['user_id' => $user->id, 'vacation_id' => $vacation->id]);
             return 'Notification sent successfully';

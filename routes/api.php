@@ -105,6 +105,7 @@ Route::group(['middleware' => 'BranchManager',
        Route::get('getdestinationreports' , [ReportController::class , 'GetDestinationReports']);
        Route::get('getreport/{reportId}', [ReportController::class, 'GetReport']);
        Route::get('downloadreports/{reportId}', [ReportController::class, 'downloadReport']);
+       Route::get('getnotifications' , [AuthController::class , 'GetMyNotifications']);
       
 
        //!N Added this
@@ -170,6 +171,10 @@ Route::group(['middleware' => 'Employee',
         Route::post('destinationreport' , [ReportController::class , 'DestinationsReport']);
         Route::get('getdestinationreports' , [ReportController::class , 'GetDestinationReports']);
         Route::get('getreport/{reportId}', [ReportController::class, 'GetReport']);
+        Route::post('updateinvoice' , [ShippingController::class , 'EditInvoice']);
+        Route::delete('deleteinvoice/{id}' , [ShippingController::class , 'DeleteInvoice']);
+        Route::get('getnotifications' , [AuthController::class , 'GetMyNotifications']);
+
 
      //    Route::get('myprofile' , [ProfileController::class , 'getMyProfile']);
        //!make this in front
@@ -244,6 +249,11 @@ Route::group(['middleware' => 'Employee',
           Route::get('receivedshippings' , [CustomerController::class , 'GetMyReceivedShippings']);
           Route::get('notreceivedshippings' , [CustomerController::class , 'GetMyNotReceivedShippings']);
           Route::get('aboutus' , [BranchController::class , 'BranchNumbers']);
+          Route::get('myprofile' , [ProfileController::class , 'getMyProfile']);
+          Route::post('editmyprofile',[ProfileController::class , 'editMyProfile']);
+          Route::get('getmycomplaints' , [CustomerController::class , 'GetMyComplaints']);
+          Route::get('getnotifications' , [AuthController::class , 'GetMyNotifications']);
+
      });   
 
      Route::group(['middleware' => 'Driver',
@@ -255,6 +265,8 @@ Route::group(['middleware' => 'Employee',
           Route::post('update-location', [DriverController::class, 'updateLocation']);
           Route::patch('arrivetrip/{trip_number}' , [TripController::class , 'ArriveTrip']);
           Route::get('aboutus' , [BranchController::class , 'BranchNumbers']);
+          Route::get('getnotifications' , [AuthController::class , 'GetMyNotifications']);
+
 
      });   
 
@@ -276,6 +288,8 @@ Route::group(['middleware' => 'WarehouseManager',
           Route::get('myprofile' , [ProfileController::class , 'getMyProfile']);
           Route::post('editmyprofile',[ProfileController::class , 'editMyProfile']);
           Route::get('aboutus' , [BranchController::class , 'BranchNumbers']);
+          Route::get('getnotifications' , [AuthController::class , 'GetMyNotifications']);
+
      });  
 
 

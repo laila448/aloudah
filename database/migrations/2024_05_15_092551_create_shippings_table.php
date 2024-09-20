@@ -30,8 +30,8 @@ return new class extends Migration
             $table->foreign('price_id')->references('id')->on('prices')->onDelete('cascade');
             $table->double('weight');
             $table->string('size');
-            $table->string('content');
-            $table->string('marks');
+            $table->string('content')->nullable();
+            $table->string('marks')->nullable();
             $table->string('notes')->nullable();
             $table->string('shipping_cost')->nullable();
             $table->string('against_shipping')->nullable();

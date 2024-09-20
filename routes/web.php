@@ -8,6 +8,7 @@ use App\Http\Controllers\Web\CustomerController;
 use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\DriverController;
 use App\Http\Controllers\Web\EmployeeController;
+use App\Http\Controllers\Web\ReportController;
 use App\Http\Controllers\Web\tripController;
 use App\Http\Controllers\Web\truckController;
 use App\Http\Controllers\Web\WarehouseController;
@@ -129,6 +130,8 @@ Route::post('/editprice' , [BranchController::class , 'editprice'])->name('editp
 Route::post('/deleteprice' , [BranchController::class , 'deleteprice'])->name('deleteprice');
 
 
-
+Route::get('/reports' , [ReportController::class , 'Reports'])->name('reports');
+Route::post('/generate-report', [ReportController::class, 'generateReport'])->name('generateReport');
+Route::post('/export-report', [ReportController::class, 'exportReportToPDF'])->name('exportReport');
 
 });

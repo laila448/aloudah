@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Branch;
+use App\Models\Complaint;
 use App\Models\Customer;
 use App\Models\Good;
 use App\Models\Manifest;
+use App\Models\Price;
 use App\Models\Shipping;
 use App\Models\Trip;
 use Illuminate\Http\Request;
@@ -289,7 +292,12 @@ public function GetMyArrivedShippings(Request $request)
           //  $manifest = Manifest::where('number' , $manifest_id)->first();
             $trip = Trip::where('number' , $manifest_number)->first();
             if($trip->arrival_date != null){
+                $destination = Branch::where('id' , $shipping->destination_id)->first();
+                $type = Price::where('id' , $shipping->price_id)->first();
+                $shipping->destination = $destination->desk ;
+                $shipping->type = $type->type;
                 $shipping->arrival_date = $trip->arrival_date;
+                $shipping->shipping_date = $shipping->created_at->format('Y-m-d');
                 $myArrivedShippings[] = $shipping;
             }
         }
@@ -328,6 +336,12 @@ public function GetMyNotArrivedShippings(Request $request)
             //  $manifest = Manifest::where('number' , $manifest_id)->first();
               $trip = Trip::where('number' , $manifest_number)->first();
             if($trip->arrival_date == null ){
+                $destination = Branch::where('id' , $shipping->destination_id)->first();
+                $type = Price::where('id' , $shipping->price_id)->first();
+                $shipping->destination = $destination->desk ;
+                $shipping->type = $type->type;
+                $shipping->arrival_date = $trip->arrival_date;
+                $shipping->shipping_date = $shipping->created_at->format('Y-m-d');
                 $myNotArrivedShippings[] = $shipping;
             }
         }
@@ -362,7 +376,13 @@ public function GetMyReceivedShippings(Request $request)
         }
 
         foreach($shippings as $shipping){
-            if($shipping->received && Good::where('barcode' , $shipping->barcode)->exists()){
+            if($shipping->received && Good::where('barcode' , $shipping->barcode)->exists()){ 
+                $source = Branch::where('id' , $shipping->source_id)->first();
+                $type = Price::where('id' , $shipping->price_id)->first();
+                $trip = Trip::where('number' , $shipping->manifest_number)->first();
+                $shipping->source = $source->desk ;
+                $shipping->type = $type->type;
+                $shipping->arrival_date = $trip->arrival_date;
                 $myReceivedShippings[] = $shipping;
             }
         }
@@ -398,6 +418,12 @@ public function GetMyNotReceivedShippings(Request $request)
 
         foreach($shippings as $shipping){
             if(!$shipping->received && Good::where('barcode' , $shipping->barcode)->exists()){
+                $source = Branch::where('id' , $shipping->source_id)->first();
+                $type = Price::where('id' , $shipping->price_id)->first();
+                $trip = Trip::where('number' , $shipping->manifest_number)->first();
+                $shipping->source = $source->desk ;
+                $shipping->type = $type->type;
+                $shipping->arrival_date = $trip->arrival_date;
                 $myNotReceivedShippings[] = $shipping;
             }
         }
@@ -412,6 +438,35 @@ public function GetMyNotReceivedShippings(Request $request)
         return response()->json([
             'success' => false,
             'message' => 'An error occurred while retrieving your not received shippings',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
+
+public function GetMyComplaints()
+{
+    try{
+        $customer = Auth::guard('customer')->id();
+
+        $complaints = Complaint::where('customer_id' , $customer)->get();
+
+        if($complaints->isEmpty())
+        {
+            return response()->json([
+                'success' => false,
+                'message' => 'No complaints found'
+            ], 404);
+        }
+        return response()->json([
+            'success' => true,
+            'message' => 'Complaints retrieved successfully.',
+            'data' => $complaints,
+        ], 201); 
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'An error occurred while retrieving your complaints',
             'error' => $e->getMessage()
         ], 500);
     }

@@ -136,16 +136,15 @@ private function sendDoneAddedBranchNotification($branch)
             ->withNotification(FCMNotification::create($title, $body));
 
         try {
-            $this->messaging->send($message);
-            Log::info('Notification sent: Done added branch', ['branch_id' => $branch->id, 'admin' => $admin->name]);
-
             Notification::create([
-                'admin_id' => $admin->id,
+                'user_id' => $admin->id,
+                'user_type' => 'admin',
                 'title' => $title,
                 'body' => $body,
-                'status' => 'sent',
                 'created_at' => now()
             ]);
+            $this->messaging->send($message);
+            Log::info('Notification sent: Done added branch', ['branch_id' => $branch->id, 'admin' => $admin->name]);
             return 'Notification sent successfully';
         } catch (Exception $e) {
             Log::error('Failed to send FCM message: ' . $e->getMessage(), ['branch_id' => $branch->id, 'admin' => $admin->name]);
@@ -243,16 +242,15 @@ public function AddBranchManager(Request $request)
                 ->withNotification(FCMNotification::create($title, $body));
     
             try {
-                $this->messaging->send($message);
-                Log::info('Notification sent: Branch Manager Added', ['branch_manager_id' => $branchManager->id, 'admin' => $admin->name]);
-
                 Notification::create([
-                    'admin_id' => $admin->id,
+                    'user_id' => $admin->id,
+                    'user_type' => 'admin',
                     'title' => $title,
                     'body' => $body,
-                    'status' => 'sent',
                     'created_at' => now()
                 ]);
+                $this->messaging->send($message);
+                Log::info('Notification sent: Branch Manager Added', ['branch_manager_id' => $branchManager->id, 'admin' => $admin->name]);
                 return 'Notification sent successfully';
             } catch (Exception $e) {
                 Log::error('Failed to send FCM message: ' . $e->getMessage(), ['branch_manager_id' => $branchManager->id, 'admin' => $admin->name]);
@@ -339,16 +337,15 @@ public function AddBranchManager(Request $request)
                 ->withNotification(FCMNotification::create($title, $body));
     
             try {
-                $this->messaging->send($message);
-                Log::info('Notification sent: Branch Updated', ['branch_id' => $branch->id, 'admin' => $admin->name]);
-    
                 Notification::create([
-                    'admin_id' => $admin->id,
+                    'user_id' => $admin->id,
+                    'user_type' => 'admin',
                     'title' => $title,
                     'body' => $body,
-                    'status' => 'sent',
                     'created_at' => now()
                 ]);
+                $this->messaging->send($message);
+                Log::info('Notification sent: Branch Updated', ['branch_id' => $branch->id, 'admin' => $admin->name]);
                 return 'Notification sent successfully';
             } catch (Exception $e) {
                 Log::error('Failed to send FCM message: ' . $e->getMessage(), ['branch_id' => $branch->id, 'admin' => $admin->name]);
@@ -416,19 +413,15 @@ public function AddBranchManager(Request $request)
             ->withNotification(FCMNotification::create($title, $body));
 
         try {
-            $this->messaging->send($message);
-            Log::info('Notification sent: Branch Deleted', ['branch_id' => $branch->id, 'admin' => $admin->name]);
             Notification::create([
-                'admin_id' => $admin->id,
-
-
-                
+                'user_id' => $admin->id,
+                'user_type' => 'admin',
                 'title' => $title,
                 'body' => $body,
-                'status' => 'sent',
                 'created_at' => now()
             ]);
-          
+            $this->messaging->send($message);
+            Log::info('Notification sent: Branch Deleted', ['branch_id' => $branch->id, 'admin' => $admin->name]);
             return 'Notification sent successfully';
         } catch (Exception $e) {
             Log::error('Failed to send FCM message: ' . $e->getMessage(), ['branch_id' => $branch->id, 'admin' => $admin->name]);
@@ -646,9 +639,5 @@ public function AddBranchManager(Request $request)
             return response()->json(['message' => 'Branch not found'], 404);
         }
     }
-
-
-
-
     }
 
