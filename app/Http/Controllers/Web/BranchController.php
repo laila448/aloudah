@@ -51,21 +51,27 @@ public function getBranches()
 
 public function AddBranch(Request $request)
 {
+    $request->validate([
+        'address' => 'required|string',
+        'desk' => 'required|string',
+        'phone' => 'required|string',
+        'branch_lat' => 'required|numeric',
+        'branch_lng' => 'required|numeric',
+    ]);
+
     Branch::create([
         'address' => $request->address,
         'desk' => $request->desk,
         'phone' => $request->phone,
-        'created_by' => ( Auth::guard('admin_web')->user()->name),
-        'opening_date' =>Carbon::now() ,
-    
-
-
+        'branch_lat' => $request->branch_lat, // Save latitude
+        'branch_lng' => $request->branch_lng, // Save longitude
+        'created_by' => Auth::guard('admin_web')->user()->name,
+        'opening_date' => Carbon::now(),
     ]);
-    session()->flash('Add', ' Added Successfully ');
+
+    session()->flash('Add', 'Added Successfully');
     return redirect('/employee/getallbranches');
-
 }
-
 public function AddBranchManager(Request $request)
 { 
  

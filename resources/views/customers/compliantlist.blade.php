@@ -84,10 +84,10 @@
 										<thead>
 											<tr>
 												<th>ID</th>
-                                                <th>Customer_Name</th>
-												<th>Phone</th>
-                                                <th>Compliant</th>
-                                                <th>Date</th>
+                                                <th>رقم_الزبون</th>
+												<th>رقم_الهاتف</th>
+                                                <th>الشكوى</th>
+                                                <th>التاريخ</th>
 
 											</tr>
 										</thead>

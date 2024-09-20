@@ -87,14 +87,14 @@
 									<table class="table text-md-nowrap" id="example1">
 										<thead>
 											<tr>
-												<th class="wd-15p border-bottom-0">Trip_Number </th>
-												<th class="wd-15p border-bottom-0">Truck</th>
-												<th class="wd-20p border-bottom-0">Driver</th>
-												<th class="wd-15p border-bottom-0">Source </th>
-												<th class="wd-10p border-bottom-0">Destination</th>
-												<th class="wd-25p border-bottom-0">Status</th>
-												<th class="wd-25p border-bottom-0">Date</th>
-												<th class="wd-25p border-bottom-0">Operation</th>
+												<th class="wd-15p border-bottom-0">رقم_الرحلة </th>
+												<th class="wd-15p border-bottom-0">الشاحنة</th>
+												<th class="wd-20p border-bottom-0">السائق</th>
+												<th class="wd-15p border-bottom-0">المصدر </th>
+												<th class="wd-10p border-bottom-0">الوجهة</th>
+												<th class="wd-25p border-bottom-0">الحالة</th>
+												<th class="wd-25p border-bottom-0">التاريخ</th>
+											
 											
 											</tr>
 										</thead>   
@@ -109,19 +109,7 @@
                                                   <td>{{ $trip->destination->address }}</td>
                                                   <td>{{ $trip->status }}</td>
 												  <td>{{ $trip->date }}</td>
-												  <td>
-                                    
-									<a class="modal-effect btn btn-sm btn-info" data-effect="effect-scale"
-										data-id="{{ $trip->id }}" data-number="{{ $trip->number }}"
-										data-status="{{ $trip->status }}" data-toggle="modal"
-										href="#exampleModal2" title="تعديل"><i class="las la-pen"></i></a>
-							   
-									<a class="modal-effect btn btn-sm btn-danger" data-effect="effect-scale"
-										data-id="{{ $trip->id }}" data-number="{{ $trip->number }}"
-										data-toggle="modal" href="#modaldemo9" title="حذف"><i
-											class="las la-trash"></i></a>
-							  
-										   </td>
+												
 											</tr>
 											@endforeach
 
@@ -155,11 +143,11 @@
                         {{ csrf_field() }}
                         <div class="form-group">
                             <input type="hidden" name="id" id="id" value="">
-                            <label for="recipient-name" class="col-form-label"> trip number:</label>
+                            <label for="recipient-name" class="col-form-label"> رقم_الرحلة :</label>
                             <input class="form-control" name="number" id="number" type="integer">
                         </div>
                         <div class="form-group">
-                            <label for="message-text" class="col-form-label">trip status:</label>
+                            <label for="message-text" class="col-form-label">حالة_الرحلة :</label>
                             <input class="form-control" id="status" name="status" type="string">
                         </div>
                 </div>
