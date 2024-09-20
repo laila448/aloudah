@@ -120,7 +120,7 @@
 											</tr>
 										</thead>   
 										<tbody>
-											
+											 
 											 @foreach ($shippings as $shipping)
                                                 <tr>  
 												<td>{{"#"}}{{ $shipping->number }}</td>   

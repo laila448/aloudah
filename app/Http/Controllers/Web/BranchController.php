@@ -6,8 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\Admin;
 use App\Models\Branch;
 use App\Models\Branch_Manager;
+use App\Models\Employee;
 use App\Models\Price;
+use App\Models\Warehouse;
+use App\Models\Warehouse_Manager;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -219,4 +223,120 @@ public function deleteprice(Request $request)
 
 
 }
+
+
+
+public function ShowBranchEmp(Request $request)
+{
+
+    $id = $request->id;
+
+
+    $emps=Employee::where('branch_id',$id)->get();
+    return view('branches.emps',compact('emps'));
+
+
+
+
 }
+
+public function PromoteEmployee(Request $request)
+{
+   
+
+        $employee = Employee::where('id', $request->id)->first();
+
+     
+        $branch = Branch::find($request->branch_id);
+
+        if ($branch && is_null($branch->branchmanager_id)) {
+            $branchManager= Branch_Manager::create([
+                'national_id' => $employee->national_id,
+                'name' => $employee->name,
+                'email' => $employee->email,
+                'password' => $employee->password,
+                'phone_number' => $employee->phone_number,
+                'branch_id' => $request->branch_id,
+                'gender' => $employee->gender,
+                'mother_name' => $employee->mother_name,
+                'date_of_birth' => $employee->birth_date,
+                'manager_address' => $employee->address,
+                'employment_date' => now()->format('Y-m-d'),
+            ]);
+            $branch->branchmanager_id = $branchManager->id;
+        $branch->save();
+
+         
+            $employee->delete();
+
+            session()->flash('edit','تم الترقية  بنجاج');
+
+          
+           $branches = Branch::with('branch_manager')->get();
+           return view('branches.brancheslist',compact('branches'));
+        }
+
+        else {
+
+            session()->flash('delete', 'لا يمكن الترقية، الفرع لديه مدير بالفعل.');
+            $branches = Branch::with('branch_manager')->get();
+            return view('branches.brancheslist',compact('branches'));
+        
+        }
+            
+          
+        }
+        
+
+        public function PromoteEmployeeWH(Request $request)
+{
+   
+
+        $employee = Employee::where('id', $request->id)->first();
+
+        $warehouse = Warehouse::where('branch_id', $request->branch_id)->first();
+
+        if ($warehouse && is_null($warehouse->warehouse_manager_id)) {
+         
+            $warehouseManager =   Warehouse_Manager::create([
+                'national_id' => $employee->national_id,
+                'name' => $employee->name,
+                'email' => $employee->email,
+                'password' => $employee->password,
+                'phone_number' => $employee->phone_number,
+                'warehouse_id' => $warehouse->id, 
+                'branch_id' => $request->branch_id,
+                'gender' => $employee->gender,
+                'mother_name' => $employee->mother_name,
+                'date_of_birth' => $employee->birth_date,
+                'manager_address' => $employee->address,
+                'employment_date' => now()->format('Y-m-d'),
+            ]);
+                // Update the warehouse with the new warehouse manager's ID
+                 $warehouse->warehouse_manager_id = $warehouseManager->id;
+                 $warehouse->save();
+         
+            $employee->delete();
+
+            session()->flash('edit','تم الترقية  بنجاج');
+
+          
+           $branches = Branch::with('branch_manager')->get();
+           return view('branches.brancheslist',compact('branches'));
+        }
+
+        else {
+
+            session()->flash('delete', 'لا يمكن الترقية، المستودع لديه مدير بالفعل.');
+            $branches = Branch::with('branch_manager')->get();
+            return view('branches.brancheslist',compact('branches'));
+        
+        }
+          
+ }
+        
+  
+
+}    
+
+

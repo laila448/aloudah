@@ -8,6 +8,7 @@ use App\Http\Controllers\Web\CustomerController;
 use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\DriverController;
 use App\Http\Controllers\Web\EmployeeController;
+use App\Http\Controllers\Web\ReportController;
 use App\Http\Controllers\Web\tripController;
 use App\Http\Controllers\Web\truckController;
 use App\Http\Controllers\Web\WarehouseController;
@@ -84,6 +85,10 @@ Route::get('/getallmanagers' , [BranchController::class , 'GetAllManagers'])->na
 Route::post('/deletebranch' , [BranchController::class , 'DeleteBranch'])->name('deletebranch');
 Route::post('/editbranchmanager' , [BranchController::class , 'EditBranchManager'])->name('editbranchmanager');
 Route::post('/deletebranchmanager' , [BranchController::class , 'DeleteBranchManager'])->name('deletebranchmanager');
+Route::post('/branchemp', [BranchController::class, 'ShowBranchEmp'])->name('branch.emp');
+Route::post('/PromoteEmp', [BranchController::class, 'PromoteEmployee'])->name('PromoteEmp');
+Route::post('/PromoteEmpwh', [BranchController::class, 'PromoteEmployeeWH'])->name('PromoteEmpwh');
+
 
 
 
@@ -125,6 +130,8 @@ Route::post('/editprice' , [BranchController::class , 'editprice'])->name('editp
 Route::post('/deleteprice' , [BranchController::class , 'deleteprice'])->name('deleteprice');
 
 
-
+Route::get('/reports' , [ReportController::class , 'Reports'])->name('reports');
+Route::post('/generate-report', [ReportController::class, 'generateReport'])->name('generateReport');
+Route::post('/export-report', [ReportController::class, 'exportReportToPDF'])->name('exportReport');
 
 });
