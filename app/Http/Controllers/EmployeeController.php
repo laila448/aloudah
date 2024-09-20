@@ -294,7 +294,7 @@ public function AddEmployee(Request $request)
         try {
             $validator = Validator::make($request->all(), [
                 'national_id' => 'max:11',
-                'name' => 'min:5|max:255|unique:employees',
+                'name' => 'min:3|max:255|unique:employees',
                 'email' => 'string|email|unique:employees',
                 'phone_number' => 'max:10',
                 'gender' => 'in:male,female',
@@ -825,7 +825,32 @@ public function GetPermissions($id){
         return response()->json([
             'success' => true,
             'message' => 'Permissions retrieved successfully.',
-            'data' => $permissions
+            'data' => [
+                'employee_id' => $permissions->employee_id,
+                'trips' => [
+                        'add_trip' => $permissions->add_trip ,
+                        'edit_trip' => $permissions->edit_trip ,
+                        'delete_trip' => $permissions->delete_trip ,
+                        'drawer' => $permissions->drawer ,
+                        'email' => $permissions->email ,
+                        'trip_list' => $permissions->trip_list ,
+                        'print_road' => $permissions->print_road ,
+                        'print_trips' => $permissions->print_trips ,
+                        'edit_close' => $permissions->edit_close
+                ],
+                'manifest' => [
+                        'add_manifest' => $permissions->add_manifest ,
+                        'edit_manifest' => $permissions->edit_manifest ,
+                        'delete_manifest' => $permissions->delete_manifest ,
+                        'view_manifest' => $permissions->view_manifest
+                ],
+                'reports' => [
+                        'add_report' => $permissions->add_report ,
+                        'edit_report' => $permissions->edit_report ,
+                        'delete_report' => $permissions->delete_report ,
+                        'view_report' => $permissions->view_report
+                ]
+            ]
         ], 200);
 
     } catch (\Exception $e) {
