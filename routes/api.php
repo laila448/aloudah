@@ -62,9 +62,9 @@ Route::group(['middleware' => 'BranchManager',
        Route::get('getbranches', [BranchController::class , 'GetAllBranches'] );
        Route::get('gettrucks' , [TruckController::class , 'GetTrucks']);      
        Route::post('addvacationforemployee' , [VacationController::class , 'AddVacationForEmployee']);
-       Route::post('addvacationforwmanager' , [VacationController::class , 'AddVacationForWhManager']);
+       Route::post('addvacationfordriver' , [VacationController::class , 'AddVacationForDriver']);
        Route::get('getemployeevacation/{id}' , [VacationController::class , 'GetEmployeeVacation']);
-       Route::get('getwmanagervacation/{id}' , [VacationController::class , 'GetWhManagerVacation']);      
+       Route::get('getdrivervacation/{id}' , [VacationController::class , 'GetDriverVacation']);      
        Route::post('editpermissions' , [EmployeeController::class , 'EditPermissions']);
        Route::get('truckrecord/{desk}' , [TruckController::class , 'GetTruckRecord']);       
        Route::get('truckinformation/{truck_number}' , [TruckController::class , 'GetTruckInformation']);   
@@ -106,6 +106,7 @@ Route::group(['middleware' => 'BranchManager',
        Route::get('getreport/{reportId}', [ReportController::class, 'GetReport']);
        Route::get('downloadreports/{reportId}', [ReportController::class, 'downloadReport']);
        Route::get('getnotifications' , [AuthController::class , 'GetMyNotifications']);
+       Route::get('getemployeepermissions/{id}' , [EmployeeController::class , 'GetPermissions']);
       
 
        //!N Added this
@@ -205,7 +206,7 @@ Route::group(['middleware' => 'Employee',
          Route::post('deleteWarehouse', [WarehouseController::class , 'deleteWarehouse'] );
          Route::get('getbranches', [BranchController::class , 'GetAllBranches'] );
          Route::get('getemployeevacation/{id}' , [VacationController::class , 'GetEmployeeVacation']);
-         Route::get('getwmanagervacation/{id}' , [VacationController::class , 'GetWhManagerVacation']);
+         Route::get('getdrivervacation/{id}' , [VacationController::class , 'GetDriverVacation']);
          Route::get('gettrucks' , [TruckController::class , 'GetTrucks']);       
          Route::get('truckrecord/{desk}' , [TruckController::class , 'GetTruckRecord']);       
          Route::get('truckinformation/{truck_number}' , [TruckController::class , 'GetTruckInformation']);       

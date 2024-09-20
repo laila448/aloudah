@@ -11,6 +11,7 @@ use App\Models\Vacation;
 use App\Models\Warehouse_Manager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class ProfileController extends Controller
@@ -30,13 +31,15 @@ class ProfileController extends Controller
             }
             elseif(Auth::guard('employee')->check()){
                 $user_id = Auth::guard('employee')->id();
-                $employee = Employee::select('name','rank', 'email' , 'phone_number' , 'address' , 'birth_date')
+                $employee = Employee::select('name','rank', 'email' , 'phone_number' , 'address' , 'id_front_image', 'id_back_image')
                                  ->where('id' , $user_id)->first();
                 $rating =round(Rating::where('employee_id', $user_id)->avg('rate'),1);
                 $vacations = Vacation::where('user_id' , $user_id)
                                     ->where('user_type' , 'employee')->get();
                 $employee->rating = $rating;
                 $employee->vacations = $vacations;
+                $employee->id_front_image = Storage::url($employee->id_front_image);
+                $employee->id_back_image = Storage::url($employee->id_back_image);
                  return response()->json([
                      'success' => true,
                      'data' => $employee ,
@@ -54,7 +57,7 @@ class ProfileController extends Controller
                  ], 200);
             }
             elseif(Auth::guard('warehouse_manager')->check()){
-                $user_id = Auth::guard('name','warehouse_manager')->id();
+                $user_id = Auth::guard('warehouse_manager')->id();
                 $manager = Warehouse_Manager::select('rank', 'email' , 'phone_number' , 'manager_address' , 'date_of_birth')
                                  ->where('id' , $user_id)->first();
                  return response()->json([

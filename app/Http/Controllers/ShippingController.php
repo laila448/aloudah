@@ -120,12 +120,16 @@ class ShippingController extends Controller
                 'discount' => $request->discount,
                 'collection' => $request->collection,
                 'barcode' => $barcode,
-                'quantity' => $request->quantity
+                'quantity' => $request->quantity,
+                'employee_id' => $employee->id
             ]);
     
             $shipping->number = $shipping->id;
             $shipping->save();
     
+            $shipping->source = Branch::where('id' , $shipping->source_id)->first()->desk;
+            $shipping->destination = Branch::where('id' , $shipping->destination_id)->first()->desk;
+
             $manifest = Manifest::where('number', $request->manifest_number)->first();
     
             if ($manifest) {

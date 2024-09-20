@@ -22,6 +22,7 @@ use Kreait\Firebase\Messaging\CloudMessage;
 use Kreait\Firebase\Messaging\Notification;
 use Exception;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class EmployeeController extends Controller
 {
@@ -297,7 +298,6 @@ public function AddEmployee(Request $request)
                 'email' => 'string|email|unique:employees',
                 'phone_number' => 'max:10',
                 'gender' => 'in:male,female',
-                'password' => 'min:8',
                 'branch_id' => 'numeric',
                 'mother_name' => 'string',
                 'birth_date' => 'date_format:Y-m-d',
@@ -326,7 +326,6 @@ public function AddEmployee(Request $request)
     
             $employee->update(array_merge(
                 $validator->validated(),
-                $request->password ? ['password' => bcrypt($request->password)] : []
             ));
     
             // Send notification
@@ -735,7 +734,7 @@ public function GetAllEmployees()
 {
     try {
         $branchId = Auth::guard('branch_manager')->user()->branch_id;
-        $employees = Employee::where('branch_id', $branchId)->get(['id', 'name', 'email', 'phone_number']);
+        $employees = Employee::where('branch_id', $branchId)->get(['id','national_id', 'name', 'email', 'phone_number','resignation_date']);
 
         return response()->json([
             'status' => 'success',
@@ -811,6 +810,32 @@ public function EditPermissions(Request $request)
         ], 500);
     }
 }
+
+public function GetPermissions($id){
+
+    try{
+
+        $permissions = Permission::where('employee_id' , $id)->first();
+        if(!$permissions){
+            return response()->json([
+                'success' => false,
+                'message' => 'Permissions not found'
+            ], 404);
+        }
+        return response()->json([
+            'success' => true,
+            'message' => 'Permissions retrieved successfully.',
+            'data' => $permissions
+        ], 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'An error occurred while retrieving permissions',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
 public function GetEmployee($id)
 {
     try {
@@ -820,8 +845,8 @@ public function GetEmployee($id)
             $employeeData = $employee->makeHidden(['password']);
             $rating =round(Rating::where('employee_id', $id)->avg('rate'),1);
             $employeeData->rating = $rating;
-            $employeeData->id_front_image = asset($employee->id_front_image);
-            $employeeData->id_back_image = asset($employee->id_back_image);
+            $employeeData->id_front_image = Storage::url($employee->id_front_image);
+            $employeeData->id_back_image = Storage::url($employee->id_back_image);
             
 
             return response()->json([

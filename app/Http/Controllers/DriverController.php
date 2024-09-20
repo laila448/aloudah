@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Driver;
 use App\Models\Trip;
+use App\Models\Vacation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Kreait\Firebase\Factory;
@@ -11,6 +12,8 @@ use Kreait\Firebase\Messaging\CloudMessage;
 use Kreait\Firebase\Messaging\Notification;
 use Exception;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+
 class DriverController extends Controller
 {
     private $messaging;
@@ -122,13 +125,19 @@ class DriverController extends Controller
     {
         try{
         $id= Auth::guard('driver')->user()->id;
-        $driver = Driver::select('name','phone_number','address','employment_date')->where('id',$id)->get();
+        $driver = Driver::select('name','phone_number','address','employment_date' , 'id_front_image' , 'id_back_image')
+                        ->where('id',$id)->first();
         if (!$driver) {
             return response()->json([
                 'success' => false,
                 'message' => ' not found'
             ], 404);
         }
+        $vacations = Vacation::where('user_id' , $driver->id)
+                                    ->where('user_type' , 'driver')->get();
+        $driver->vacations = $vacations;
+        $driver->id_front_image = Storage::url($driver->id_front_image);
+        $driver->id_back_image = Storage::url($driver->id_back_image);
     
         return response()->json([
             'success' => true,
@@ -151,7 +160,7 @@ class DriverController extends Controller
     {
         try {
             $id = Auth::guard('driver')->user()->id;
-            $closedTrips = Trip::select('number', 'date', 'branch_id')
+            $closedTrips = Trip::select('number', 'date', 'branch_id', 'arrival_date')
                                 ->where('driver_id', $id)
                                 ->where('status', 'closed')
                                 ->paginate(10);
@@ -380,8 +389,8 @@ public function GetDriver($id)
 
         if ($driver) {
             $driverData = $driver->makeHidden(['password']);
-            $driverData->id_front_image = asset($driver->id_front_image);
-            $driverData->id_back_image = asset($driver->id_back_image);
+            $driverData->id_front_image = Storage::url($driver->id_front_image);
+            $driverData->id_back_image = Storage::url($driver->id_back_image);
             
 
             return response()->json([
