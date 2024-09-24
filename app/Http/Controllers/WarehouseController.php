@@ -382,9 +382,10 @@ private function sendWarehouseDeletedNotification($manager, $warehouse)
         }
     }
 
-    public function GetWarehouse($id){
+    public function GetWarehouse(){
         try{
-            $warehouse = Warehouse::select('branch_id' , 'warehouse_name' , 'address' , 'area','notes' , )->where('id' , $id)->first();
+            $branch_manager = Auth::guard('branch_manager')->user();
+            $warehouse = Warehouse::select('branch_id' , 'warehouse_name' , 'address' , 'area','notes' , )->where('id' , $branch_manager->branch_id)->first();
             if(!$warehouse){
                 return response()->json([
                     'success' => false,

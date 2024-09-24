@@ -108,7 +108,7 @@ Route::group(['middleware' => 'BranchManager',
        Route::get('getnotifications' , [AuthController::class , 'GetMyNotifications']);
        Route::get('getemployeepermissions/{id}' , [EmployeeController::class , 'GetPermissions']);
        Route::get('getdrivertrips/{id}', [DriverController::class, 'GetDriverTrips']);
-       Route::get('getwarehouse/{id}' , [WarehouseController::class , 'GetWarehouse']);
+       Route::get('getwarehouse' , [WarehouseController::class , 'GetWarehouse']);
 
        //!N Added this
        Route::get('notifications', [TripController::class, 'getNotifications']);
