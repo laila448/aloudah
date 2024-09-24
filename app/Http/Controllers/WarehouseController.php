@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\PasswordMail;
+use App\Models\Branch;
 use App\Models\Warehouse;
 use App\Models\Warehouse_Manager;
 use Dotenv\Parser\Value;
@@ -376,6 +377,33 @@ private function sendWarehouseDeletedNotification($manager, $warehouse)
             return response()->json([
                 'success' => false,
                 'message' => 'An error occurred while retrieving the warehouse manager',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function GetWarehouse($id){
+        try{
+            $warehouse = Warehouse::select('branch_id' , 'warehouse_name' , 'address' , 'area','notes' , )->where('id' , $id)->first();
+            if(!$warehouse){
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Warehouse not found'
+                ], 404);
+            }
+            $branch = Branch::where('id' , $warehouse->branch_id)->first();
+            $warehouse->branch_name = $branch->desk;
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Warehouse retrieved successfully',
+                'data' => $warehouse
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while retrieving the warehouse.',
                 'error' => $e->getMessage()
             ], 500);
         }

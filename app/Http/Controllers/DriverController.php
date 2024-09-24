@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Branch;
 use App\Models\Driver;
 use App\Models\Trip;
 use App\Models\Vacation;
@@ -55,14 +56,17 @@ class DriverController extends Controller
     public function GetDriverTrips($id)
     {
         try{
-        $driver = Trip::select('number','date')->where('driver_id',$id)->paginate(10);
+        $driver = Trip::select('number','destination_id','date')->where('driver_id',$id)->paginate(10);
         if (!$driver) {
             return response()->json([
                 'success' => false,
                 'message' => 'Driver not found'
             ], 404);
         }
-    
+        foreach($driver as $d){
+        $destination = Branch::where('id' , $d->destination_id)->first();
+        $d->destination = $destination->desk;
+        }
         return response()->json([
             'success' => true,
             'data' => $driver ,

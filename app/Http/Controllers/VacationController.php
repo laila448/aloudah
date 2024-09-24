@@ -32,7 +32,7 @@ class VacationController extends Controller
             $validator = Validator::make($request->all(), [
                 'employee_id' => 'required|numeric',
                 'start' => 'required|date_format:Y-m-d',
-                'end' => 'required|date_format:Y-m-d',
+                'end' => 'required|date_format:Y-m-d|after:start',
                 'reason' => 'required|string'
             ]);
     
@@ -91,7 +91,7 @@ class VacationController extends Controller
             $validator = Validator::make($request->all(), [
                 'driver_id' => 'required|numeric',
                 'start' => 'required|date_format:Y-m-d',
-                'end' => 'required|date_format:Y-m-d',
+                'end' => 'required|date_format:Y-m-d|after:start',
                 'reason' => 'required|string'
             ]);
     

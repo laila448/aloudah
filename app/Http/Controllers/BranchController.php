@@ -270,7 +270,7 @@ public function AddBranchManager(Request $request)
                 'branch_id' => 'required|numeric',
                 'address' => 'string',
                 'phone' => 'numeric|min:4',
-                'name' => 'min:5|max:255',
+                'name' => 'min:4|max:255',
                 'phone_number' => 'max:10',
                 'manager_address' => 'string',
                 'gender' => 'in:male,female',
