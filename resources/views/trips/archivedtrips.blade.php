@@ -87,15 +87,15 @@
 									<table class="table text-md-nowrap" id="example1">
 										<thead>
 											<tr>
-												<th class="wd-15p border-bottom-0">Trip_Number </th>
-												<th class="wd-15p border-bottom-0">Truck</th>
-												<th class="wd-20p border-bottom-0">Driver</th>
-												<th class="wd-15p border-bottom-0">Source </th>
-												<th class="wd-25p border-bottom-0">Date</th>
-												<th class="wd-10p border-bottom-0">Destination</th>
-												<th class="wd-25p border-bottom-0">Status</th>
-												<th class="wd-25p border-bottom-0">Arrival_Date</th>
-												<th class="wd-25p border-bottom-0">Edit_By</th>
+												<th class="wd-15p border-bottom-0">رقم_الرحلة </th>
+												<th class="wd-15p border-bottom-0">الشاحنة</th>
+												<th class="wd-20p border-bottom-0">السائق</th>
+												<th class="wd-15p border-bottom-0">المصدر </th>
+												<th class="wd-25p border-bottom-0">التاريخ</th>
+												<th class="wd-10p border-bottom-0">الوجهة</th>
+												<th class="wd-25p border-bottom-0">الحالة</th>
+												<th class="wd-25p border-bottom-0">تاريخ_الوصول</th>
+												<th class="wd-25p border-bottom-0">تم _التعديل</th>
 											</tr>
 										</thead>   
 										<tbody>

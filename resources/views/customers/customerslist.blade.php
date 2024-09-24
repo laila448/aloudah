@@ -84,14 +84,14 @@
 										<thead>
 											<tr>
 												<th>ID</th>
-                                                <th>Name</th>
-												<th>National_id</th>
-												<th>Phone</th>
-                                                <th>Gedner</th>
-                                                <th>mobile</th>
-                                                <th>address</th>
-                                                <th>address_details</th>
-                                                <th>notes</th>
+                                                <th>الاسم</th>
+												<th>الرقم_الوطني</th>
+												<th>رقم_الهاتف</th>
+                                                <th>الجنس</th>
+                                                <th>تلفون</th>
+                                                <th>العنوان</th>
+                                                <th>تفاصيل_العنوان</th>
+                                                <th>ملاحظات</th>
 
 											</tr>
 										</thead>

@@ -87,14 +87,14 @@
 									<table class="table text-md-nowrap" id="example1">
 										<thead>
 											<tr>
-												<th class="wd-15p border-bottom-0">Trip_Number </th>
-												<th class="wd-15p border-bottom-0">Truck</th>
-												<th class="wd-20p border-bottom-0">Driver</th>
-												<th class="wd-15p border-bottom-0">Source </th>
-												<th class="wd-10p border-bottom-0">Destination</th>
-												<th class="wd-25p border-bottom-0">Status</th>
-												<th class="wd-25p border-bottom-0">Date</th>
-												<th class="wd-25p border-bottom-0">Operation</th>
+												<th class="wd-15p border-bottom-0">رقم_الرحلة </th>
+												<th class="wd-15p border-bottom-0">الشاحنة</th>
+												<th class="wd-20p border-bottom-0">السائق</th>
+												<th class="wd-15p border-bottom-0">المصدر </th>
+												<th class="wd-10p border-bottom-0">الوجهة</th>
+												<th class="wd-25p border-bottom-0">الحالة</th>
+												<th class="wd-25p border-bottom-0">التاريخ</th>
+												<th class="wd-25p border-bottom-0">العمليات</th>
 											
 											</tr>
 										</thead>   
@@ -136,7 +136,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Archive :  </h5>
+                    <h5 class="modal-title" id="exampleModalLabel">ارشفة :  </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -148,7 +148,7 @@
                         {{ csrf_field() }}
                         <div class="form-group">
                             <input type="hidden" name="id" id="id" value="">
-                            <label for="recipient-name" class="col-form-label"> trip number:</label>
+                            <label for="recipient-name" class="col-form-label">  رقم_الرحلة:</label>
                             <input class="form-control" name="number" id="number" type="string">
                         </div>
                        

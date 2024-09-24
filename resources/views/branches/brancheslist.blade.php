@@ -213,41 +213,50 @@
 
 	
     	<!-- Basic modal -->
-		<div class="modal" id="modaldemo1">
-			<div class="modal-dialog" role="document">
-				<div class="modal-content modal-content-demo">
-					<div class="modal-header">
-						<h6 class="modal-title"> إضافة :</h6><button aria-label="Close" class="close" data-dismiss="modal" type="button"><span aria-hidden="true">&times;</span></button>
-					</div>
-					<div class="modal-body">
-                    <form action="{{ route('addbranch') }}" method="post">
-                        {{ csrf_field() }}
+<div class="modal" id="modaldemo1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content modal-content-demo">
+            <div class="modal-header">
+                <h6 class="modal-title">إضافة:</h6>
+                <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <form action="{{ route('addbranch') }}" method="post">
+                    {{ csrf_field() }}
 
-                        <div class="form-group">
-                            <label for="exampleInputEmail1"> العنوان</label>
-                            <input type="integer" class="form-control" id="address" name="address">
-                        </div>
+                    <div class="form-group">
+                        <label for="address">العنوان</label>
+                        <input type="text" class="form-control" id="address" name="address" required>
+                    </div>
 
-                        <div class="form-group">
-                            <label for="exampleFormControlTextarea1">الفرع</label>
-                            <input type="string" class="form-control" id="desk" name="desk" >
-                        </div>
-						<div class="form-group">
-                            <label for="exampleFormControlTextarea1">رقم_الهاتف</label>
-                            <input type="integer" class="form-control" id="phone" name="phone" >
-                        </div>
+                    <div class="form-group">
+                        <label for="desk">الفرع</label>
+                        <input type="text" class="form-control" id="desk" name="desk" required>
+                    </div>
 
-					</div>
-					<div class="modal-footer">
-                    <button type="submit" class="btn btn-success">إضافة</button>
-                    <button class="btn ripple btn-secondary" data-dismiss="modal" type="button">الغاء</button>
-					</div>
-                    </form>
-				</div>
+                    <div class="form-group">
+                        <label for="phone">رقم الهاتف</label>
+                        <input type="text" class="form-control" id="phone" name="phone" required>
+                    </div>
 
-                
-			</div>
-		</div>
+                    <div class="form-group">
+                        <button type="button" class="btn btn-info" id="openMap">اختر الموقع على الخريطة</button>
+                    </div>
+
+                    <input type="hidden" id="branch_lat" name="branch_lat">
+                    <input type="hidden" id="branch_lng" name="branch_lng">
+
+                    <div id="map" style="height: 400px; display: none;"></div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">إضافة</button>
+                        <button class="btn ripple btn-secondary" data-dismiss="modal" type="button">الغاء</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 		<!-- End Basic modal -->
 				<!-- /row -->
 			</div>
@@ -276,6 +285,42 @@
 <!--Internal  Datatable js -->
 <script src="{{ URL::asset('assets/js/table-data.js') }}"></script>
 <script src="{{ URL::asset('assets/js/modal.js') }}"></script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY" async defer></script>
+<script>
+    let map;
+    let marker;
+
+    document.getElementById('openMap').addEventListener('click', function() {
+        document.getElementById('map').style.display = 'block';
+        initMap();
+    });
+
+    function initMap() {
+        const initialLocation = { lat: 33.5138, lng: 36.2765 }; // Default location in Syria
+        map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 6,
+            center: initialLocation,
+        });
+
+        marker = new google.maps.Marker({
+            position: initialLocation,
+            map: map,
+            draggable: true,
+        });
+
+        google.maps.event.addListener(marker, 'dragend', function(event) {
+            document.getElementById('branch_lat').value = event.latLng.lat();
+            document.getElementById('branch_lng').value = event.latLng.lng();
+        });
+
+        google.maps.event.addListener(map, 'click', function(event) {
+            marker.setPosition(event.latLng);
+            document.getElementById('branch_lat').value = event.latLng.lat();
+            document.getElementById('branch_lng').value = event.latLng.lng();
+        });
+    }
+</script>
 <script>
     $('#exampleModal2').on('show.bs.modal', function(event) {
         var button = $(event.relatedTarget)

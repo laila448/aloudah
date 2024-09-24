@@ -87,10 +87,10 @@
 									<table class="table text-md-nowrap" id="example1">
 										<thead>
 											<tr>
-												<th class="wd-15p border-bottom-0">Manifest_Number </th>
-												<th class="wd-15p border-bottom-0">Status</th>
-												<th class="wd-20p border-bottom-0">Date</th>
-												<th class="wd-25p border-bottom-0">Operation</th>
+												<th class="wd-15p border-bottom-0">رقم_المانفيست </th>
+												<th class="wd-15p border-bottom-0">الحالة</th>
+												<th class="wd-20p border-bottom-0">التاريخ</th>
+												<th class="wd-25p border-bottom-0">العمليات</th>
 											
 											</tr>
 										</thead>   
@@ -136,7 +136,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">View Manifest Information : </h5>
+                    <h5 class="modal-title" id="exampleModalLabel">  عرض معلومات المانفيست : </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -148,14 +148,14 @@
                         {{ csrf_field() }}
                         <div class="form-group">
                             <input type="hidden" name="id" id="id" value="">
-                            <label for="recipient-name" class="col-form-label"> Manifest Number:</label>
+                            <label for="recipient-name" class="col-form-label">  الرقم:</label>
                             <input class="form-control" name="number" id="number" type="string" readonly>
                         </div>
                         
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">View</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">عرض</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">إلغاء</button>
                 </div>
                 </form>
             </div>

@@ -133,5 +133,9 @@ Route::post('/deleteprice' , [BranchController::class , 'deleteprice'])->name('d
 Route::get('/reports' , [ReportController::class , 'Reports'])->name('reports');
 Route::post('/generate-report', [ReportController::class, 'generateReport'])->name('generateReport');
 Route::post('/export-report', [ReportController::class, 'exportReportToPDF'])->name('exportReport');
+Route::get('/truckreports' , [ReportController::class , 'TruckReports'])->name('reptruckreportsrts');
+Route::get('/destreports' , [ReportController::class , 'DestReports'])->name('destreports');
+Route::post('/generateTruckReport', [ReportController::class, 'generateTruckReport'])->name('generateTruckReport');
+Route::post('/generateDestReport', [ReportController::class, 'generateDestReport'])->name('generateDestReport');
 
 });
