@@ -67,7 +67,6 @@ class EmployeeController extends Controller
         'name' => 'required|min:3|max:255|unique:drivers,name',
         'email' => 'required|string|email|unique:drivers,email',
         'phone_number' => 'required|max:10|unique:drivers,phone_number',
-        'branch_id' => 'required|exists:branches,id',
         'certificate' => 'required|unique:drivers,certificate',
         'id_front_image' => 'required|image',
         'id_back_image' => 'required|image'
@@ -84,14 +83,6 @@ class EmployeeController extends Controller
 
     $manager = Auth::guard('branch_manager')->user();
 
-    // Check if the branch ID in the request matches the branch manager's branch ID
-    if ($request->branch_id != $manager->branch_id) {
-        return response()->json([
-            'success' => false,
-            'message' => 'You can only add drivers to your own branch.'
-        ], 403);
-    }
-
     try {
         $password = Str::random(8);
         $driver = Driver::create(array_merge(
@@ -99,7 +90,8 @@ class EmployeeController extends Controller
             [
                 'password' => bcrypt($password),
                 'employment_date' => now()->format('Y-m-d'),
-                'manager_name' => $manager->name
+                'manager_name' => $manager->name,
+                'branch_id' => $manager->branch_id
             ]
         ));
 
@@ -172,7 +164,6 @@ public function AddEmployee(Request $request)
         'email' => 'string|email|unique:employees,email',
         'phone_number' => 'required|max:10|unique:employees,phone_number',
         'password' => 'min:8',
-        'branch_id' => 'required|exists:branches,id',
        'id_front_image' => 'required|image',
        'id_back_image' => 'required|image'
     ]);
@@ -188,13 +179,6 @@ public function AddEmployee(Request $request)
 
     $manager = Auth::guard('branch_manager')->user();
 
-    // Check if the branch ID in the request matches the branch manager's branch ID
-    if ($request->branch_id != $manager->branch_id) {
-        return response()->json([
-            'success' => false,
-            'message' => 'You can only add employees to your own branch.'
-        ], 403);
-    }
 
     try {
         $password = Str::random(8);
@@ -203,7 +187,8 @@ public function AddEmployee(Request $request)
             [
                 'password' => bcrypt($password),
                 'employment_date' => now()->format('Y-m-d'),
-                'manager_name' => $manager->name
+                'manager_name' => $manager->name,
+                'branch_id' => $manager->branch_id
             ]
         ));
 
