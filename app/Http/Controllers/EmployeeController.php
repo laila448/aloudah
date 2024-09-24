@@ -67,14 +67,7 @@ class EmployeeController extends Controller
         'name' => 'required|min:3|max:255|unique:drivers,name',
         'email' => 'required|string|email|unique:drivers,email',
         'phone_number' => 'required|max:10|unique:drivers,phone_number',
-       // 'gender' => 'required|in:male,female',
         'branch_id' => 'required|exists:branches,id',
-       // 'mother_name' => 'required|string',
-       // 'birth_date' => 'required|date_format:Y-m-d',
-       // 'birth_place' => 'required|string',
-       // 'mobile' => 'required|unique:drivers,mobile',
-        'address' => 'required|string',
-       // 'salary' => 'required',
         'certificate' => 'required|unique:drivers,certificate',
         'id_front_image' => 'required|image',
         'id_back_image' => 'required|image'
@@ -178,15 +171,8 @@ public function AddEmployee(Request $request)
         'name' => 'required|min:3|max:255|unique:employees,name',
         'email' => 'string|email|unique:employees,email',
         'phone_number' => 'required|max:10|unique:employees,phone_number',
-       // 'gender' => 'required|in:male,female',
         'password' => 'min:8',
         'branch_id' => 'required|exists:branches,id',
-       // 'mother_name' => 'required|string',
-       // 'birth_date' => 'required|date_format:Y-m-d',
-       // 'birth_place' => 'required|string',
-       // 'mobile' => 'required|unique:employees,mobile',
-        'address' => 'required|string',
-       // 'salary' => 'required',
        'id_front_image' => 'required|image',
        'id_back_image' => 'required|image'
     ]);
@@ -303,7 +289,6 @@ public function AddEmployee(Request $request)
                 'birth_date' => 'date_format:Y-m-d',
                 'birth_place' => 'string',
                 'mobile' => 'max:10',
-                'address' => 'string',
                 'employee_id' => 'required|numeric'
             ]);
     
@@ -385,7 +370,6 @@ public function AddEmployee(Request $request)
                 'birth_date' => 'date_format:Y-m-d',
                 'birth_place' => 'string',
                 'mobile' => 'max:10',
-                'address' => 'string', 
                 'driver_id' => 'required|numeric'
             ]);
     

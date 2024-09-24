@@ -24,7 +24,7 @@ return new class extends Migration
            // $table->date('birth_date');
            // $table->string('birth_place');
            // $table->string('mobile')->unique();
-            $table->string('address');
+            $table->string('address')->nullable();
             $table->string('rank')->default('driver');
            // $table->integer('salary');
             $table->date('employment_date');
