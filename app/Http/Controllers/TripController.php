@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Branch;
 use App\Models\Branch_Manager;
+use App\Models\Driver;
 use App\Models\Manifest;
 use App\Models\Permission;
 use App\Models\Trip;
@@ -514,7 +515,7 @@ public function addTrip(Request $request)
             ], 404);
         }
         $manifest = Manifest::where('number' , $trip_number)->first();
-
+        $driver = Driver::where('id' , $trip->driver_id)->first();
         $trip->update([
             'status' => 'closed',
             'closed_at' =>  now()->format('Y-m-d H:i:s'),
@@ -524,8 +525,8 @@ public function addTrip(Request $request)
             'status' => 'closed',
         ]);
 
-        $notificationStatus = $this->sendTripClosedNotification($employee, $trip);
-
+        $notificationStatus = [$this->sendTripClosedNotification($employee, 'employee' ,$trip) ,
+                                $this->sendTripClosedNotification($driver , 'driver' ,$trip)];
         return response()->json([
             'success' => true,
             'message' => 'Trip closed successfully',
@@ -542,7 +543,7 @@ public function addTrip(Request $request)
     }
     }
 
-    private function sendTripClosedNotification($employee, $trip)
+    private function sendTripClosedNotification($employee, $user_type ,$trip)
     {
         $title = 'Trip Closed';
         $body = "The trip with number {$trip->number} has been Closed.";
@@ -556,7 +557,7 @@ public function addTrip(Request $request)
             try {
                 NotificationTable::create([
                     'user_id' => $employee->id,
-                    'user_type' => 'employee',
+                    'user_type' => $user_type,
                     'title' => $title,
                     'body' => $body,
                     'data' => [ 'trip_number' => $trip->number] ,
