@@ -665,6 +665,9 @@ public function GetClosedTripsmanager()
             ], 404);
         }
 
+        foreach ($trips->items() as $trip) {
+            $trip->destination_name = $this->getDestinationName($trip->destination_id);
+        }
     
         return response()->json([
             'success' => true,
