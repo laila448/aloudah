@@ -1065,10 +1065,11 @@ public function SearchForEmployee(Request $request)
                 'errors' => $errors
             ], 400);
         }
-
-        $employees = Employee::where('name', 'like' , "%{$request->search_query}%")
-                            ->orWhere('national_id' , 'like' ,"%{$request->search_query}%" )
-                            ->paginate(10);
+        $manager = Auth::guard('branch_manager')->user();
+        $employees = Employee::where('branch_id' , $manager->branch_id) 
+                                ->where('name', 'like' , "%{$request->search_query}%")
+                                ->orWhere('national_id' , 'like' ,"%{$request->search_query}%" )
+                                ->get();
 
         if($employees->isEmpty()){
             return response()->json([
