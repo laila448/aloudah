@@ -51,7 +51,6 @@ public function GetTruckTrips($id)
 {
     try {
         $validator = Validator::make($request->all(), [
-            'branch_id' => 'required|numeric',
             'number' => 'required|min:4|max:20|string|unique:trucks,number',
             'line' => 'required|string',
             'notes' => 'string|nullable',
@@ -75,7 +74,7 @@ public function GetTruckTrips($id)
         }
 
         $truck = Truck::create([
-            'branch_id' => $request->branch_id,
+            'branch_id' => $createdby->branch_id,
             'number' => $request->number,
             'line' => $request->line,
             'notes' => $request->notes,
