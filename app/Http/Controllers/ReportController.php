@@ -293,6 +293,7 @@ public function DriversReport(Request $request)
 public function GetDriversReports(){
     try{
 
+        if(Auth::guard('employee')->check()){
         $user = Auth::guard('employee')->user();
         $permission = Permission::where('employee_id' , $user->id)->first();
         if(!$permission->view_report){
@@ -301,7 +302,7 @@ public function GetDriversReports(){
             'message' => 'You do not have permission to view reports'
         ], 403);
     }
-    
+}
         $reports = Report::where('file_path' , 'like' , "%Drivers_reports%")
                          ->orderByDesc('created_at')
                          ->get();
@@ -442,6 +443,7 @@ public function downloadReport($reportId)
 public function GetTrucksReports(){
     try{
 
+        if(Auth::guard('employee')->check()){
         $user = Auth::guard('employee')->user();
         $permission = Permission::where('employee_id' , $user->id)->first();
         if(!$permission->view_report){
@@ -450,7 +452,7 @@ public function GetTrucksReports(){
             'message' => 'You do not have permission to view reports'
         ], 403);
     }
-
+        }
         $reports = Report::where('file_path' , 'like' , "%Trucks_reports%")
                         ->orderByDesc('created_at')                
                          ->get();
@@ -591,6 +593,7 @@ public function DestinationsReport(Request $request)
 public function GetDestinationReports(){
     try{
 
+        if(Auth::guard('employee')->check()){
         $user = Auth::guard('employee')->user();
         $permission = Permission::where('employee_id' , $user->id)->first();
         if(!$permission->view_report){
@@ -599,6 +602,7 @@ public function GetDestinationReports(){
             'message' => 'You do not have permission to view reports'
         ], 403);
     }
+}
         $reports = Report::where('file_path' , 'like' , "%Destination_reports%")
                          ->orderByDesc('created_at')
                          ->get();
