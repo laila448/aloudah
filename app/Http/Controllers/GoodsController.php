@@ -269,7 +269,9 @@ class GoodsController extends Controller
             ]);
 
             $customer = Customer::where('mobile' , $shipping->receiver_number)->first();
+            if($customer){
             $notificationStatus = $this->sendGoodReceivedNotification($customer,$shipping->number);
+            }
             return response()->json([
                 'success' => true,
                 'message' => 'Good has been updated successfully'
