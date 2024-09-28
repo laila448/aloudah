@@ -31,7 +31,7 @@ class ProfileController extends Controller
             }
             elseif(Auth::guard('employee')->check()){
                 $user_id = Auth::guard('employee')->id();
-                $employee = Employee::select('name','rank', 'email' , 'phone_number' , 'address' , 'id_front_image', 'id_back_image')
+                $employee = Employee::select('name','rank', 'email' , 'phone_number' , 'id_front_image', 'id_back_image')
                                  ->where('id' , $user_id)->first();
                 $rating =round(Rating::where('employee_id', $user_id)->avg('rate'),1);
                 $vacations = Vacation::where('user_id' , $user_id)

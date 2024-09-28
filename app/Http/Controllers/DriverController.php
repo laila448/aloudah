@@ -129,7 +129,7 @@ class DriverController extends Controller
     {
         try{
         $id= Auth::guard('driver')->user()->id;
-        $driver = Driver::select('name','phone_number','address','employment_date' , 'id_front_image' , 'id_back_image')
+        $driver = Driver::select('name','phone_number','employment_date' , 'id_front_image' , 'id_back_image')
                         ->where('id',$id)->first();
         if (!$driver) {
             return response()->json([
