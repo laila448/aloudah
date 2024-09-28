@@ -569,8 +569,10 @@ class GoodsController extends Controller
                         'receiver' => $shipping->receiver, 
                         'barcode' => $shipping->barcode,
                     ]);
+                    if($customer){
                     $notificationStatus = $this->sendGoodArrivedNotification($customer , $shipping->number);
                 }
+            }
                 return response()->json([
                     'success' => true,
                     'message' => 'Inventory process completed successfully and the goods are added to the warehouse.',
