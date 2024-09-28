@@ -13,6 +13,7 @@ class Report extends Model
       'file_path',
       'start_date',
       'end_date',
+      'branch_id'
   ];
 
 }

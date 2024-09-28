@@ -182,24 +182,7 @@ public function CreateTruckReport(Request $request){
 
 
 
-public function getTruckReports(Request $request)
-{
-    $reports = Report::where('file_path', 'like', '%truck%')
-        ->orderByDesc('created_at')
-        ->get();
-
-    return response()->json(['reports' => $reports]);
-}
-
-//public function getTripReports(Request $request)
-//{
-//    $reports = Report::where('file_path', 'like', '%trip%')
-//        ->orderByDesc('created_at')
-//        ->get();
-
-//    return response()->json(['reports' => $reports]);
-//}
-
+////////////////////////////////////////////////////////
 public function DriversReport(Request $request)
 {
     try{
@@ -239,6 +222,12 @@ public function DriversReport(Request $request)
                     ->orderBy('date')
                     ->get();
     $trip_count = $trips->count();
+    if($trip_count == 0 ){
+        return response()->json([
+            'success' => false,
+            'message' => 'No data found to generate the report'
+        ], 404);
+    }
     foreach($trips as $trip){
         $destination = Branch::where('id' , $trip->destination_id)->first();
         $truck = Truck::where('id' , $trip->truck_id)->first();
@@ -271,6 +260,7 @@ public function DriversReport(Request $request)
         'file_path' => $url,
         'start_date' => $request->from,
         'end_date' => $request->to,
+        'branch_id' => $user->branch_id
     ]);
 
     return response()->json([
@@ -293,8 +283,10 @@ public function DriversReport(Request $request)
 public function GetDriversReports(){
     try{
 
+        $branch_id = null;
         if(Auth::guard('employee')->check()){
         $user = Auth::guard('employee')->user();
+        $branch_id = $user->branch_id;
         $permission = Permission::where('employee_id' , $user->id)->first();
         if(!$permission->view_report){
         return response()->json([
@@ -303,7 +295,13 @@ public function GetDriversReports(){
         ], 403);
     }
 }
-        $reports = Report::where('file_path' , 'like' , "%Drivers_reports%")
+        if(Auth::guard('branch_manager')->check()){
+        $user = Auth::guard('branch_manager')->user();
+        $branch_id = $user->branch_id;
+    }
+
+        $reports = Report::where('branch_id' , $branch_id)
+                        ->where('file_path' , 'like' , "%Drivers_reports%")
                          ->orderByDesc('created_at')
                          ->get();
         $reports_files = [];
@@ -389,6 +387,12 @@ public function downloadReport($reportId)
                     ->orderBy('date')
                     ->get();
     $trip_count = $trips->count();
+    if($trip_count == 0 ){
+        return response()->json([
+            'success' => false,
+            'message' => 'No data found to generate the report'
+        ], 404);
+    }
     foreach($trips as $trip){
         $destination = Branch::where('id' , $trip->destination_id)->first();
         $driver = Driver::where('id' , $trip->driver_id)->first();
@@ -421,6 +425,7 @@ public function downloadReport($reportId)
         'file_path' => $url,
         'start_date' => $request->from,
         'end_date' => $request->to,
+        'branch_id' => $user->branch_id
     ]);
 
     return response()->json([
@@ -528,6 +533,12 @@ public function DestinationsReport(Request $request)
                     ->get();
     }
    $trip_count = $trips->count();
+   if($trip_count == 0 ){
+    return response()->json([
+        'success' => false,
+        'message' => 'No data found to generate the report'
+    ], 404);
+}
     if($trip_count>0){
     foreach($trips as $trip){
         $trip_destination = Branch::where('id' , $trip->destination_id)->first();
@@ -571,6 +582,7 @@ public function DestinationsReport(Request $request)
         'file_path' => $url,
         'start_date' => $request->from,
         'end_date' => $request->to,
+        'branch_id' => $user->branch_id
     ]);
 
     return response()->json([
